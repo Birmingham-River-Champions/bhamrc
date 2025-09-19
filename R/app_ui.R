@@ -8,13 +8,16 @@ app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
+
     # Your application UI logic
     fluidPage(
       tags$head(
+        HTML("<html lang='en'>"),
+        # Css stylesheet
         tags$link(
           rel = "stylesheet",
           type = "text/css",
-          href = "brc_styles.css"
+          href = "custom.css"
         )
       ),
       titlePanel(

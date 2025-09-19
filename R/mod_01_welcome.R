@@ -11,7 +11,6 @@ mod_01_welcome_ui <- function(id) {
   ns <- NS(id)
   tagList(
     tags$div(
-      class = "welcome-text",
       list_to_p(
         list(
           HTML(
