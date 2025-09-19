@@ -12,7 +12,9 @@ Description: Birmingham River Champions is a package containing a Shiny applicat
 License: MIT + file LICENSE
 Imports: 
     config,
+    DBI,
     golem,
+    RSQLite,
     shiny
 Encoding: UTF-8
 LazyData: true
