@@ -1,0 +1,713 @@
+/* General styles for the app */
+.title-panel {
+    padding: 0px;
+    /* Add padding for spacing */
+    display: flex;
+    align-items: center;
+    /* Center items vertically */
+    justify-content: space-between;
+    /* Space out the content, pushing right-aligned items to the right */
+}
+
+.title-panel .logo-container {
+    display: flex;
+    align-items: center;
+    /* Center items vertically */
+}
+
+.title-panel img.logo {
+    height: 150px;
+    /* Main logo height */
+    margin-right: 20px;
+    /* Add some space between the logo and text */
+}
+
+.title-panel .text-container {
+    font-size: 24px;
+    /* Font size for the text */
+    color: #333;
+    /* Text color */
+    font-weight: bold;
+    /* Make text bold */
+    margin: 0;
+    /* Remove margin for tighter alignment with the logo */
+    text-align: center;
+    /* Center align text */
+}
+
+.title-panel .text-container span {
+    text-decoration: underline;
+    /* Underline text */
+}
+
+.title-panel img.footer-logo {
+    height: 40px;
+    /* Standard size for footer logos */
+    margin-left: 10px;
+    /* Add spacing between the smaller logos */
+}
+
+.title-panel img.UOB-logo {
+    height: 40px;
+    /* Slightly smaller size for the UOB logo */
+    margin-left: 10px;
+    /* Add spacing between logos */
+}
+
+.title-panel img.ea-logo {
+    height: 40px;
+    /* Slightly bigger size for the EA logo */
+    margin-left: 10px;
+    /* Add spacing between logos */
+}
+
+.title-panel img.ST-logo {
+    height: 40px;
+    margin-left: 20px;
+    /* Slightly bigger margin for the ST logo */
+}
+
+.welcome-text {
+    text-align: center;
+    /* Center text within its column */
+    font-size: 1.3vw;
+    /* Font size scales with viewport width */
+    margin: 0;
+    /* Remove margin to ensure it aligns well */
+}
+
+.custom-paragraph {
+    margin: 0;
+    /* Remove default margin */
+    padding: 0;
+    /* Remove default padding */
+    font-size: 1vw;
+    /* Font size scales with viewport width */
+}
+
+.spaced-paragraph {
+    margin-bottom: 5px;
+    /* Reduce space between paragraphs */
+    padding: 0;
+    /* Ensure no extra padding is added */
+    font-size: 1vw;
+    /* Slightly smaller font size for other paragraphs */
+}
+
+.footer-text {
+    position: absolute;
+    right: 10px;
+    font-size: 0.9em;
+    margin-top: 15px;
+}
+
+/* Ensure the img-container is using the full width of its parent */
+.img-container img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+    padding: 0;
+    margin: 0;
+}
+
+/* Ensure project-overview-images takes up full width */
+.project-overview-images {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 equal columns */
+    grid-gap: 20px;
+    /* Space between grid items */
+    width: 100%;
+    /* Ensure grid container takes full width */
+    padding: 0;
+    margin: 0;
+}
+
+/* For iPads (768px to 1024px), switch to 2 columns */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .project-overview-images {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 equal columns */
+        grid-gap: 15px;
+        /* Space between grid items */
+    }
+}
+
+/* For small screens (iPhones), stack images vertically in 1 column */
+@media (max-width: 767px) {
+    .project-overview-images {
+        grid-template-columns: 1fr;
+        /* 1 column */
+    }
+}
+
+/* Responsive images scaling */
+@media (max-width: 1079px) {
+    .title-panel .text-container {
+        display: none;
+        /* Hide text in title panel on tablets */
+    }
+
+    .title-panel img.logo {
+        height: 120px;
+        /* Smaller logo for tablets */
+    }
+
+    .title-panel img.logo {
+        height: 100px;
+        /* Slightly bigger logo for phones */
+    }
+
+    .title-panel img.UOB-logo {
+        height: 30px;
+        /* Adjust size for tablets */
+        margin-left: 0;
+        /* Remove margins for logos on phones */
+        margin-bottom: 5px;
+        /* Add space between stacked logos on phones */
+    }
+
+    .title-panel img.ea-logo {
+        height: 35px;
+        /* Adjust size for tablets */
+        margin-left: 0;
+        /* Remove margins for logos on phones */
+        margin-bottom: 5px;
+        /* Add space between stacked logos on phones */
+
+    }
+
+    .title-panel img.footer-logo {
+        height: 35px;
+        /* Adjust size for tablets */
+        margin-left: 0;
+        /* Remove margins for logos on phones */
+        margin-bottom: 5px;
+        /* Add space between stacked logos on phones */
+    }
+
+    .title-panel img.ST-logo {
+        height: 35px;
+        /* Adjust size for tablets */
+        margin-left: 0;
+        /* Remove margins for logos on phones */
+        margin-bottom: 5px;
+        /* Add space between stacked logos on phones */
+    }
+
+    .welcome-text {
+        font-size: 3vw;
+        /* Adjust font size for tablets */
+    }
+}
+
+@media (max-width: 480px) {
+    .title-panel .text-container {
+        display: none;
+        /* Hide text in title panel on phones */
+    }
+
+    .title-panel img.logo {
+        height: 100px;
+        /* Slightly bigger logo for phones */
+    }
+
+    .title-panel img.UOB-logo {
+        height: 30px;
+        /* Adjust size for tablets */
+        margin-left: 0;
+        /* Remove margins for logos on phones */
+        margin-bottom: 5px;
+        /* Add space between stacked logos on phones */
+    }
+
+    .title-panel img.ea-logo {
+        height: 35px;
+        /* Adjust size for tablets */
+        margin-left: 0;
+        /* Remove margins for logos on phones */
+        margin-bottom: 5px;
+        /* Add space between stacked logos on phones */
+
+    }
+
+    .title-panel img.footer-logo {
+        height: 35px;
+        /* Adjust size for tablets */
+        margin-left: 0;
+        /* Remove margins for logos on phones */
+        margin-bottom: 5px;
+        /* Add space between stacked logos on phones */
+    }
+
+    .title-panel img.ST-logo {
+        height: 35px;
+        /* Adjust size for tablets */
+        margin-left: 0;
+        /* Remove margins for logos on phones */
+        margin-bottom: 5px;
+        /* Add space between stacked logos on phones */
+    }
+
+    .welcome-text {
+        font-size: 4vw;
+        /* Larger font size for phones */
+    }
+
+
+    /* Style for centering the main title - this is used in the information/resources tab panel */
+    #main-title {
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 30px;
+    }
+
+    /* Style for grid layout */
+    #project-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        /* Two equal-width columns for larger screens */
+        grid-gap: 20px;
+        /* Space between columns */
+        width: 100%;
+        /* Full-width grid */
+        align-items: start;
+        /* Align items to the top */
+    }
+
+    /* Style for individual grid items to arrange content horizontally (side by side) */
+    .grid-item {
+        display: flex;
+        align-items: center;
+        /* Vertically center content */
+    }
+
+    /* Image styling with circular border */
+    .grid-item img {
+        border-radius: 50%;
+        /* Circle shape */
+        width: 10vw;
+        /* Scales image width based on viewport width */
+        height: 10vw;
+        /* Maintains a square aspect ratio */
+        max-width: 150px;
+        /* Max width to prevent the image from being too large on big screens */
+        max-height: 150px;
+        /* Max height to match width */
+        object-fit: cover;
+        /* Ensures image fills the container without distortion */
+        margin-right: 20px;
+        /* Space between image and text */
+        border: 3px solid #000;
+        /* Circular border */
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        /* Optional shadow for effect */
+    }
+
+    /* Text container styling for the text next to the image */
+    .grid-item .text-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        /* Ensures text container grows to take up remaining space */
+    }
+
+    .grid-item h2,
+    .grid-item h4,
+    .grid-item h5,
+    .grid-item p {
+        margin: 0;
+        /* Remove default margins */
+    }
+
+    /* Reduce the margin between h2 and h4 */
+    .grid-item h4 {
+        margin-top: 5px;
+        /* Reduce spacing between h2 and h4 */
+    }
+
+    /* Style for the link inside the text */
+    .grid-item a {
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .grid-item a:hover {
+        color: darkblue;
+    }
+
+    /* Media query for smaller screens like iPhones */
+    @media (max-width: 600px) {
+        #project-grid {
+            grid-template-columns: 1fr;
+            /* Stack columns vertically */
+            grid-gap: 20px;
+            /* Adjust spacing between items */
+        }
+
+        .grid-item {
+            display: flex;
+            /* Keep flexbox for side-by-side layout */
+            flex-direction: row;
+            /* Ensure image and text remain side by side */
+            align-items: center;
+            /* Align items to the center */
+            justify-content: flex-start;
+            /* Align to the left */
+        }
+
+        .grid-item img {
+            margin-right: 20px;
+            /* Keep margin between image and text */
+            width: 20vw;
+            /* Adjust image size for smaller screens */
+            height: 20vw;
+            /* Maintain the aspect ratio */
+        }
+
+        .grid-item .text-container {
+            flex-grow: 1;
+            /* Ensure text container takes up available space */
+        }
+
+        /* Make the h2 text smaller on iPhone screens */
+        .grid-item h2 {
+            font-size: 1.3em;
+            /* Adjust font size for smaller screens */
+        }
+
+        /* Make the h4 text smaller on iPhone screens */
+        .grid-item h4 {
+            font-size: 1.1em;
+            /* Adjust font size for smaller screens */
+        }
+
+        /* Make the main title smaller on iPhone screens */
+        #main-title {
+            font-size: 1.8em;
+            /* Adjust font size for the main title */
+        }
+    }
+
+    /* Style for grid layout specific to the newsletters tab */
+    #newsletters-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        /* Only one column */
+        grid-gap: 20px;
+        /* Space between rows */
+        width: 100%;
+        /* Full-width grid */
+        align-items: start;
+        /* Align items to the top */
+    }
+
+    /* Style for individual grid items in newsletters to arrange content horizontally */
+    .news-item {
+        display: flex;
+        align-items: center;
+        /* Vertically center content */
+    }
+
+    /* Image styling with circular border specific to newsletters */
+    .news-item img {
+        border-radius: 50%;
+        width: 10vw;
+        height: 10vw;
+        max-width: 150px;
+        max-height: 150px;
+        object-fit: cover;
+        margin-right: 20px;
+        border: 3px solid #000;
+    }
+
+    /* Text container styling for the text next to the image in newsletters */
+    .news-item .text-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        /* Ensures text container grows to take up remaining space */
+    }
+
+    /* Reduce the margin between text elements */
+    .news-item h2,
+    .news-item h3,
+    .news-item h4 {
+        margin: 5px 0;
+        /* Reduce vertical spacing to 5px */
+    }
+
+    /* Styling for action button */
+    .news-item .btn-view {
+        margin-top: 10px;
+        /* Space between text and button */
+        padding: 8px 15px;
+        /* Padding for the button */
+        background-color: #f0f0f0;
+        /* Light grey background */
+        color: black;
+        /* Black text */
+        border: none;
+        /* No border */
+        border-radius: 5px;
+        /* Rounded corners */
+        cursor: pointer;
+        /* Pointer on hover */
+        text-decoration: none;
+        /* No underline */
+        width: fit-content;
+        /* Ensure button is only as wide as its content */
+    }
+
+    /* Hover effect for the button */
+    .news-item .btn-view:hover {
+        background-color: #d3d3d3;
+        /* Darker grey on hover */
+    }
+
+    /* For iPads (768px to 1024px), switch to 2 columns */
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .news-item img {
+            margin-right: 20px;
+            /* Keep margin between image and text */
+            width: 40vw;
+            /* Adjust image size for smaller screens */
+            height: 40vw;
+            /* Maintain the aspect ratio */
+        }
+    }
+
+    /* For small screens (iPhones), stack images vertically in 1 column */
+    @media (max-width: 767px) {
+        #newsletters-grid {
+            grid-template-columns: 1fr;
+            /* Stack columns vertically */
+            grid-gap: 20px;
+            /* Adjust spacing between items */
+        }
+
+        .news-item {
+            display: flex;
+            /* Keep flexbox for side-by-side layout */
+            flex-direction: row;
+            /* Ensure image and text remain side by side */
+            align-items: center;
+            /* Align items to the center */
+            justify-content: flex-start;
+            /* Align to the left */
+        }
+
+        .news-item img {
+            margin-right: 20px;
+            /* Keep margin between image and text */
+            width: 30vw;
+            /* Adjust image size for smaller screens */
+            height: 30vw;
+            /* Maintain the aspect ratio */
+        }
+
+        .news-item .text-container {
+            flex-grow: 1;
+            /* Ensure text container takes up available space */
+        }
+
+        /* Make the h2 text smaller on iPhone screens */
+        .news-item h2 {
+            font-size: 1.3em;
+            /* Adjust font size for smaller screens */
+        }
+
+        /* Make the h4 text smaller on iPhone screens */
+        .news-item h4 {
+            font-size: 1.1em;
+            /* Adjust font size for smaller screens */
+        }
+    }
+
+    /* Styles for the Leaflet map */
+    .leaflet-map-container {
+        width: 100% !important;
+        /* Ensure the map takes full width on all screens */
+    }
+
+    @media (max-width: 480px) {
+        .ggplot-container {
+            width: 25px !important;
+            /* Adjust width for phones */
+            margin: 0 auto !important;
+            /* Center the plot */
+        }
+    }
+
+    /* Responsive plot container for ggplot outputs */
+    .ggplot-container {
+        width: 100%;
+        /* Ensure full width for larger screens */
+
+    }
+
+    @media (max-width: 480px) {
+        .ggplot-container {
+            width: 60% !important;
+            /* Adjust width for phones */
+            margin: 0 auto !important;
+            /* Center the plot */
+        }
+    }
+
+    /* Styles for the leaflet popup close button */
+    #map .leaflet-popup-close-button {
+        position: absolute;
+        top: 2px;
+        /* Adjust the distance from the top */
+        right: 2px;
+        /* Adjust the distance from the right */
+        background: transparent;
+        border-radius: 25%;
+        /* Make the button circular */
+        width: 25px;
+        /* Adjust width */
+        height: 25px;
+        /* Adjust height */
+        z-index: 1000;
+        /* Ensure it is above other content */
+        border: none;
+        /* Remove any border */
+        color: black;
+        /* Change the X symbol to black */
+        font-size: 18px;
+        /* Adjust font size */
+        line-height: 25px;
+        /* Center the X vertically */
+        text-align: center;
+        /* Center the X horizontally */
+    }
+
+    /* Hover effect for the close button */
+    #map .leaflet-popup-close-button:hover {
+        cursor: pointer;
+        background-color: lightgray;
+        /* Optional: change background color on hover */
+        color: black;
+        /* Ensure the X stays black */
+    }
+
+    /* Default: Full width for smaller devices (iPads, iPhones) */
+    #armi-legend {
+        width: 100%;
+        display: block;
+        /* Ensures it's treated as a block element */
+        margin: 0 auto;
+        /* Center the image horizontally */
+    }
+
+    /* For larger screens like laptops, set width to 80% */
+    @media (min-width: 992px) {
+        #armi-legend {
+            width: 80%;
+            margin: 0 auto;
+            /* Center the image horizontally */
+        }
+    }
+
+    /* Default: Full width for smaller devices (iPads, iPhones) */
+    #species-legend {
+        width: 70%;
+        display: block;
+        /* Ensures it's treated as a block element */
+        margin: 0 auto;
+        /* Center the image horizontally */
+    }
+
+    /* For larger screens like laptops, set width to 40% */
+    @media (min-width: 992px) {
+        #species-legend {
+            width: 40%;
+            margin-top: 2px;
+            /* Adjust this value */
+            margin: 0 auto;
+            /* Center the image horizontally */
+        }
+    }
+
+    /* Default: Full width for smaller devices (iPads, iPhones) */
+    #invasive-fauna-legend {
+        width: 80%;
+        display: block;
+        /* Ensures it's treated as a block element */
+        margin: 0 auto;
+        /* Center the image horizontally */
+    }
+
+    /* For larger screens like laptops, set width to 40% */
+    @media (min-width: 992px) {
+        #invasive-fauna-legend {
+            width: 40%;
+            margin-top: 2px;
+            /* Adjust this value */
+            margin: 0 auto;
+            /* Center the image horizontally */
+        }
+    }
+
+    /* Default: Full width for smaller devices (iPads, iPhones) */
+    #invasive-flora-legend {
+        width: 80%;
+        display: block;
+        /* Ensures it's treated as a block element */
+        margin: 0 auto;
+        /* Center the image horizontally */
+    }
+
+    /* For larger screens like laptops, set width to 40% */
+    @media (min-width: 992px) {
+        #invasive-flora-legend {
+            width: 40%;
+            margin: 0 auto;
+            /* Center the image horizontally */
+        }
+
+        #yourdata-descriptor {
+            text-align: center;
+            /* Centers text content */
+            margin: 0 auto;
+            /* Ensures the content is centered horizontally */
+            width: 100%;
+            /* Set the width to occupy the full available space */
+            font-size: 20px;
+            /* Change this value to increase font size */
+            padding: 10px;
+            /* Optional: Add some padding */
+        }
+
+        /* Hide resultsHtml for iPhones */
+        @media only screen and (max-device-width: 767px) and (-webkit-min-device-pixel-ratio: 2) {
+            #yourdata-descriptor {
+                display: none !important;
+            }
+
+            .map-container {
+                margin-top: 50px;
+                /* Adjust as necessary */
+                position: relative;
+                /* Ensure this is set to relative */
+                z-index: 1;
+                /* Higher than the banner */
+            }
+
+            .banner {
+                position: relative;
+                /* or absolute based on your layout */
+                z-index: 0;
+                /* Lower than the map */
+            }
+
+            /* Optional: Add some padding to the banner to separate it from the map */
+            .banner {
+                padding-bottom: 10px;
+                /* Adjust as necessary */
+            }
+        }
+    }
+}
