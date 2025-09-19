@@ -78,12 +78,6 @@ usethis::use_github_action_pr_commands()
 usethis::use_circleci()
 usethis::use_circleci_badge()
 
-# Jenkins
-usethis::use_jenkins()
-
-# GitLab CI
-usethis::use_gitlab_ci()
-
 # You're now set! ----
 # go to dev/03_deploy.R
 rstudioapi::navigateToFile("dev/03_deploy.R")
