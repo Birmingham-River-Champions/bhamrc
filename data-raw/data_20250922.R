@@ -99,7 +99,7 @@ accept_outfall <- acceptable_locs(locations_list$Outfall)
 ####First Urban Riverfly
 BRC_UrbRiverfly <- clean_data(
     input_df = BRC_full_form,
-    col_name_start = "organisation",
+    col_name_start = "data_type",
     col_name_end = "other_bullhead",
     sample_site = "sampling_site_riverfly",
     acceptable_site_orgs = accept_BRC,
@@ -110,26 +110,26 @@ BRC_WQ <- clean_data(
     input_df = BRC_full_form,
     col_name_start = "wq_sampling_site",
     col_name_end = "turbidity_NTU",
-    sampling_site = wq_sampling_site,
-    location_df = accept_BRC,
+    sample_site = "wq_sampling_site",
+    acceptable_site_orgs = accept_BRC,
     data_type = "Water Quality"
 )
 
 BRCUrbOutSaf <- clean_data(
     input_df = BRC_full_form,
-    col_name_start = outfall_survey_date,
-    col_name_end = outfall_aesthetics,
-    sampling_site = outfall_sample_site,
-    location_df = accept_outfall,
+    col_name_start = "outfall_survey_date",
+    col_name_end = "outfall_aesthetics",
+    sample_site = "outfall_sampling_site",
+    acceptable_site_orgs = accept_outfall,
     data_type = "Urban Outfall Safari"
 )
 
 BRCInvSpcs <- clean_data(
     input_df = BRC_full_form,
-    col_name_start = invasive_spp_sampling_date,
-    col_name_end = any_other_invasive_spp,
-    sampling_site = invasive_spp_sampling_date,
-    location_df = accept_BRC,
+    col_name_start = "invasive_spp_sampling_date",
+    col_name_end = "any_other_invasive_spp",
+    sample_site = "invasive_spp_sampling_date",
+    acceptable_site_orgs = accept_BRC,
     data_type = "Invasive Species"
 )
 

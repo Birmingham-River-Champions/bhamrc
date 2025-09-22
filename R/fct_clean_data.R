@@ -25,6 +25,8 @@ clean_data <- function(
     cleaned_df <- input_df |>
         #First select columns from col_name_start -> col_name_end
         dplyr::select(
+            organisation,
+            survey_date,
             !!(col_name_start):!!(col_name_end)
         ) |>
         ###Remove data uploads that included no site identifier
@@ -32,7 +34,10 @@ clean_data <- function(
 
     " Filter out any observations for which the sampling site and organisation don't match what is expected"
     wrong_org <- cleaned_df |>
-        dplyr::mutate(site_orgs = paste(organisation, !!as.name(sample_site)))
+        dplyr::mutate(
+            site_orgs = paste(organisation, !!as.name(sample_site))
+        ) |>
+        dplyr::filter(!(site_orgs %in% acceptable_site_orgs$identifiers))
 
     # If any sampling sites have been associated with the wrong organisation, throw an error
     if (nrow(wrong_org) > 0) {
@@ -42,16 +47,20 @@ clean_data <- function(
             " sampling sites seem incorrectly labelled"
         )
     }
+
     ## Filter out rows where the sampling site and organisation don't match
-    cleaned_df <- cleaned_df[
-        (sample_site) %in% (acceptable_site_orgs)
-    ]
+    cleaned_df <- cleaned_df |>
+        dplyr::mutate(
+            site_orgs = paste(organisation, !!as.name(sample_site))
+        ) |>
+        dplyr::filter(site_orgs %in% acceptable_site_orgs$identifiers) |>
+        dplyr::select(-site_orgs)
 
     #Also check if there are duplicates, each sampling site + timestamp should be unique
     deduped_df <- cleaned_df |>
-        dplyr::distinct(survey_date, sampling_site)
+        dplyr::distinct(survey_date, !!(sample_site), .keep_all = TRUE)
 
-    if (nrows(deduped_df != nrows(cleaned_df))) {
+    if (nrow(deduped_df != nrow(cleaned_df))) {
         # Add a new warning to the list if duplicate combinations exist
         warning_list <- append(
             warning_list,
