@@ -1,8 +1,10 @@
 ## code to prepare `data_20250922` dataset goes here
-full_form_url <- "https://docs.google.com/spreadsheets/d/1458OWr2_x3vdM_LGAQaf0lcOWitO9LtnRm2GsAF_pys/edit?usp=sharing"
 
+# Read in data from Google Sheets
+full_form_url <- "https://docs.google.com/spreadsheets/d/1458OWr2_x3vdM_LGAQaf0lcOWitO9LtnRm2GsAF_pys/edit?usp=sharing"
 BRC_full_form <- as.data.frame(gsheet::gsheet2tbl(full_form_url))
 
+# Get rid of duplicate columns, spaces, and other odd characters in column names
 names(BRC_full_form) <- c(
     "timestamp",
     "email_address",
@@ -78,14 +80,13 @@ names(BRC_full_form) <- c(
     "location_wtw"
 )
 
+# Create location data frames for the two different location tables
 locations_list <- process_locations(
     sampling_locs_url = 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing',
     outfall_locs_url = 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
 )
 
-##Create an empty warning list to check at the bottom of the script
-warning_list <- list()
-
+# Helper function to create acceptable location identifiers
 acceptable_locs <- function(df) {
     df |>
         dplyr::mutate(identifiers = paste(Organisation, ID)) |>
@@ -96,7 +97,7 @@ accept_BRC <- acceptable_locs(locations_list$BRC)
 accept_outfall <- acceptable_locs(locations_list$Outfall)
 
 #################Now separate into the different data uploads##############################
-####First Urban Riverfly
+####First Urban Riverfly data
 BRC_UrbRiverfly <- clean_data(
     input_df = BRC_full_form,
     col_name_start = "data_type",
@@ -106,6 +107,7 @@ BRC_UrbRiverfly <- clean_data(
     data_type = "Urban Riverfly"
 )
 
+# Water Quality data
 BRC_WQ <- clean_data(
     input_df = BRC_full_form,
     col_name_start = "wq_sampling_site",
@@ -115,6 +117,7 @@ BRC_WQ <- clean_data(
     data_type = "Water Quality"
 )
 
+# Urban Outfall Safari data
 BRCUrbOutSaf <- clean_data(
     input_df = BRC_full_form,
     col_name_start = "outfall_survey_date",
@@ -124,6 +127,7 @@ BRCUrbOutSaf <- clean_data(
     data_type = "Urban Outfall Safari"
 )
 
+# Invasive Species data
 BRCInvSpcs <- clean_data(
     input_df = BRC_full_form,
     col_name_start = "invasive_spp_sampling_date",
@@ -133,5 +137,16 @@ BRCInvSpcs <- clean_data(
     data_type = "Invasive Species"
 )
 
+names(BRC_UrbRiverfly)[3] <- "sampling_site"
+# Create SQLite tables for riverfly, water quality, and associated location identifiers
+# Invasive species and outfall safari data not currently being added to the database because they are empty
+db_create("riverfly")
+db_create("water_quality")
+db_create("riverfly_locs")
+
+# Populate the database tables with the cleaned data
+populate_db(BRC_UrbRiverfly, "riverfly")
+populate_db(BRC_WQ, "water_quality")
+populate_db(locations_list$BRC, "riverfly_locs")
 
 usethis::use_data(data_20250922, overwrite = TRUE)

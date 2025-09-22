@@ -13,6 +13,7 @@
 #' @param data_type A string indicating the type of data being processed (e.g
 #' "Urban Riverfly", "Water Quality", etc.) for warning messages.
 #' @return A cleaned data frame ready for analysis.
+#' @importFrom dplyr select filter mutate distinct
 #' @noRd
 clean_data <- function(
     input_df,
@@ -58,7 +59,8 @@ clean_data <- function(
 
     #Also check if there are duplicates, each sampling site + timestamp should be unique
     deduped_df <- cleaned_df |>
-        dplyr::distinct(survey_date, !!(sample_site), .keep_all = TRUE)
+        dplyr::distinct(survey_date, !!(sample_site), .keep_all = TRUE) |>
+        dlyr::select(-!!(sample_site))
 
     if (nrow(deduped_df != nrow(cleaned_df))) {
         # Add a new warning to the list if duplicate combinations exist

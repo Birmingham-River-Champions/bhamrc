@@ -26,6 +26,7 @@ golem::add_module(name = "mod_02_data_input", with_test = TRUE) # Name of the mo
 ## Add helper functions ----
 ## Creates fct_* and utils_*
 golem::add_fct("populate_db", with_test = TRUE)
+golem::add_fct("clean_data", with_test = TRUE)
 golem::add_utils("helpers", with_test = TRUE)
 
 ## External resources
@@ -40,11 +41,13 @@ golem::add_any_file("file.json")
 ## If you have data in your package
 usethis::use_data_raw(name = "data_20250922", open = FALSE)
 
+
 ## Tests ----
 ## Add one line by test you want to create
 usethis::use_test("app")
 
 # Documentation
+devtools::document()
 
 ## Vignette ----
 usethis::use_vignette("bhamrc")

@@ -3,7 +3,8 @@
 #' @description A function to create a SQLite database with specified tables for storing Riverfly and Water Quality data.
 #' @param table_name Name of the SQLite table file to create.
 #' @return The return value, if any, from executing the function.
-#'
+#' @importFrom DBI dbConnect dbDisconnect dbExecute dbExistsTable
+#' @importFrom RSQLite SQLite
 #' @noRd
 db_create <- function(table_name = "riverfly") {
     # Create a unique table for each data type
@@ -28,7 +29,7 @@ db_create <- function(table_name = "riverfly") {
             "CREATE TABLE",
             table_name,
             "(id INTEGER PRIMARY KEY, site_id TEXT, location_name TEXT, latitude REAL, longitude REAL)"
-        )
+        ),
         stop("Unknown table name")
     )
 
