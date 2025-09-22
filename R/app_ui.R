@@ -88,17 +88,7 @@ app_ui <- function(request) {
         ),
         tabPanel(
           "Submission Form",
-          sidebarLayout(
-            sidebarPanel(
-              textInput("name", "Name"),
-              textInput("email", "Email"),
-              textAreaInput("comment", "Comment"),
-              actionButton("submit", "Submit", class = "btn-primary")
-            ),
-            mainPanel(
-              h3("Submit your entry using the form.")
-            )
-          )
+          mod_02_data_input_ui("02_data_input_1")
         )
       )
     )
