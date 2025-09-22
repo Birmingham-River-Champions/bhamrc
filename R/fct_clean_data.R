@@ -1,4 +1,3 @@
-#' populate_db
 #' clean_data
 #'
 #' #' Function to clean and process data from Google Sheets for the River Champions project
@@ -9,7 +8,8 @@
 #' @param col_name_start The starting column name for selecting relevant data.
 #' @param col_name_end The ending column name for selecting relevant data.
 #' @param sample_site Column in input_df that is used to filter out data uploads for this specific data type.
-#' @param acceptable_site_orgs Data frame containing valid sampling site locations and their associated organizations, used to filter out wrong organizations.
+#' @param acceptable_site_orgs Data frame containing valid sampling site locations and their associated organizations,
+#' used to filter out a row if the sampling site and organization don't match.
 #' @param data_type A string indicating the type of data being processed (e.g
 #' "Urban Riverfly", "Water Quality", etc.) for warning messages.
 #' @return A cleaned data frame ready for analysis.
@@ -41,7 +41,7 @@ clean_data <- function(
 
     # If any sampling sites have been associated with the wrong organisation, throw an error
     if (nrow(wrong_org) > 0) {
-        warning_list <- list(
+        warning(
             "Warning: Some ",
             data_type,
             " sampling sites seem incorrectly labelled"
@@ -62,7 +62,7 @@ clean_data <- function(
 
     if (nrow(deduped_df != nrow(cleaned_df))) {
         # Add a new warning to the list if duplicate combinations exist
-        warning_list <- append(
+        warning(
             warning_list,
             paste(
                 "Warning: Duplicated",
