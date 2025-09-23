@@ -137,7 +137,9 @@ BRCInvSpcs <- clean_data(
     data_type = "Invasive Species"
 )
 
-names(BRC_UrbRiverfly)[3] <- "sampling_site"
+names(BRC_UrbRiverfly)[4] <- names(BRC_WQ)[3] <- names(locations_list$BRC)[
+    2
+] <- "sampling_site"
 # Create SQLite tables for riverfly, water quality, and associated location identifiers
 # Invasive species and outfall safari data not currently being added to the database because they are empty
 db_create("riverfly")
@@ -149,4 +151,4 @@ populate_db(BRC_UrbRiverfly, "riverfly")
 populate_db(BRC_WQ, "water_quality")
 populate_db(locations_list$BRC, "riverfly_locs")
 
-usethis::use_data(data_20250922, overwrite = TRUE)
+# usethis::use_data(data_20250922, overwrite = TRUE)

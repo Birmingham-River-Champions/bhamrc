@@ -13,10 +13,16 @@ db_create <- function(table_name = "riverfly") {
         "riverfly" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, sampling_site TEXT, 
-            caddis_larvae TEXT, mayfly_larvae INTEGER, stonefly_larvae INTEGER, gammarus INTEGER, 
-            freshwater_shrimp INTEGER, flatworm INTEGER, leech INTEGER, oligochaete_worms INTEGER, 
-            chironomid_larvae INTEGER, other_benthic_inverts INTEGER, other_bullhead INTEGER)"
+            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT,
+            sampling_site TEXT, cased_caddisfly INTEGER, caseless_caddisfly INTEGER,
+            olive_mayfly INTEGER, blue_winged_olive_mayfly INTEGER,
+            freshwater_shrimp INTEGER, freshwater_hoglouse INTEGER, blackfly_larvae INTEGER, 
+            freshwater_worm INTEGER, freshwater_leech INTEGER, freshwater_snail INTEGER, 
+            freshwater_beetle INTEGER, green_drake_mayfly INTEGER, flat_bodied_stone_clinger_mayfly INTEGER,
+            stonefly_plecoptera INTEGER, other_chironomidae INTEGER, other_dicranota INTEGER,
+            other_tipulidae INTEGER, other_hydracarina INTEGER, other_hydropsychidae INTEGER,
+            other_rhyacophilidae INTEGER, other_planorbidae INTEGER, other_sphaeriidae INTEGER,
+            other_acroloxidae_ancylidae INTEGER, other_bullhead INTEGER)"
         ),
         "water_quality" = paste(
             "CREATE TABLE",
@@ -28,7 +34,8 @@ db_create <- function(table_name = "riverfly") {
         "riverfly_locs" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, site_id TEXT, location_name TEXT, latitude REAL, longitude REAL)"
+            "(id INTEGER PRIMARY KEY, sampling_site TEXT, Organisation TEXT, Easting INTEGER, Northing INTEGER,
+            LAT REAL, LONG REAL)"
         ),
         stop("Unknown table name")
     )
@@ -37,6 +44,14 @@ db_create <- function(table_name = "riverfly") {
     # Create a new table if it doesn't already exist
     con <- dbConnect(RSQLite::SQLite(), "data.sqlite")
     if (!dbExistsTable(con, table_name)) {
+        dbExecute(con, sql_string)
+    } else {
+        message(paste(
+            "Table",
+            table_name,
+            "already exists. Deleting and recreating."
+        ))
+        dbRemoveTable(con, table_name)
         dbExecute(con, sql_string)
     }
 

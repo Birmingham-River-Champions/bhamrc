@@ -60,12 +60,11 @@ clean_data <- function(
     #Also check if there are duplicates, each sampling site + timestamp should be unique
     deduped_df <- cleaned_df |>
         dplyr::distinct(survey_date, !!(sample_site), .keep_all = TRUE) |>
-        dlyr::select(-!!(sample_site))
+        dplyr::select(-(last_col()))
 
     if (nrow(deduped_df != nrow(cleaned_df))) {
         # Add a new warning to the list if duplicate combinations exist
         warning(
-            warning_list,
             paste(
                 "Warning: Duplicated",
                 data_type,
