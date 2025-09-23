@@ -3,6 +3,8 @@
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @importFrom DBI dbConnect dbDisconnect dbExecute dbExistsTable dbGetQuery
+#' @import RSQLite
 #' @noRd
 app_server <- function(input, output, session) {
   # Application server logic
