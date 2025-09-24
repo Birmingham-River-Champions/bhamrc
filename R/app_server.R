@@ -7,17 +7,8 @@
 #' @import RSQLite
 #' @noRd
 app_server <- function(input, output, session) {
+  callModule(mod_02_data_input_server, "02_data_input_1")
   # Application server logic
-  observeEvent(input$submit, {
-    req(input$name, input$email, input$comment)
-    dbExecute(
-      con,
-      "INSERT INTO submissions (name, email, comment) VALUES (?, ?, ?)",
-      params = list(input$name, input$email, input$comment)
-    )
-    showNotification("Submission successful!", type = "message")
-  })
-
   # Database setup
   con <- dbConnect(RSQLite::SQLite(), "data.sqlite")
   if (!dbExistsTable(con, "submissions")) {
@@ -34,7 +25,7 @@ app_server <- function(input, output, session) {
   output$entries <- DT::renderDT({
     dbGetQuery(
       con,
-      "SELECT name, email, comment FROM submissions ORDER BY id DESC"
+      "SELECT * FROM riverfly ORDER BY id DESC"
     )
   })
 }

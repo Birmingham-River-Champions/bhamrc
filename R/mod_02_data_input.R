@@ -30,6 +30,15 @@ mod_02_data_input_ui <- function(id) {
 mod_02_data_input_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    observeEvent(input$submit, {
+      req(input$name, input$email, input$comment)
+      dbExecute(
+        con,
+        "INSERT INTO submissions (name, email, comment) VALUES (?, ?, ?)",
+        params = list(input$name, input$email, input$comment)
+      )
+      showNotification("Submission successful!", type = "message")
+    })
   })
 }
 
