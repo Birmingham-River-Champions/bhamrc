@@ -72,17 +72,20 @@ app_ui <- function(request) {
           )
         ),
         tabPanel(
-          "Information",
-          h3("Information"),
+          "Information / resources",
+          h3("Key information"),
           p("Add information and resources here.")
         ),
         tabPanel(
-          "Newsletters",
-          h3("Newsletters"),
+          "Newsletters / reports",
           p("Share newsletters and updates here.")
         ),
         tabPanel(
           "Your Data",
+          mod_03_plot_data_ui("03_plot_data_1")
+        ),
+        tabPanel(
+          "Submitted Data",
           h3("Submitted Entries"),
           DT::DTOutput("entries")
         ),

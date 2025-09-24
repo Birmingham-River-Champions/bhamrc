@@ -86,6 +86,9 @@ locations_list <- process_locations(
     outfall_locs_url = 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
 )
 
+BRC_locs <- locations_list$BRC
+Outfall_locs <- locations_list$Outfall
+
 # Helper function to create acceptable location identifiers
 acceptable_locs <- function(df) {
     df |>
@@ -93,8 +96,8 @@ acceptable_locs <- function(df) {
         dplyr::select(identifiers)
 }
 
-accept_BRC <- acceptable_locs(locations_list$BRC)
-accept_outfall <- acceptable_locs(locations_list$Outfall)
+accept_BRC <- acceptable_locs(BRC_locs)
+accept_outfall <- acceptable_locs(Outfall_locs)
 
 #################Now separate into the different data uploads##############################
 ####First Urban Riverfly data
@@ -137,18 +140,28 @@ BRCInvSpcs <- clean_data(
     data_type = "Invasive Species"
 )
 
-names(BRC_UrbRiverfly)[4] <- names(BRC_WQ)[3] <- names(locations_list$BRC)[
+names(BRC_UrbRiverfly)[4] <- names(BRC_WQ)[3] <- names(BRC_locs)[
     2
-] <- "sampling_site"
+] <- names(BRCInvSpcs)[4] <- "sampling_site"
+
+# Add cleaned and processed data to package
+usethis::use_data(BRC_UrbRiverfly)
+usethis::use_data(BRC_WQ)
+usethis::use_data(BRC_locs)
+usethis::use_data(BRCInvSpcs)
+
+
 # Create SQLite tables for riverfly, water quality, and associated location identifiers
 # Invasive species and outfall safari data not currently being added to the database because they are empty
 db_create("riverfly")
 db_create("water_quality")
 db_create("riverfly_locs")
+db_create("invasive_species")
 
 # Populate the database tables with the cleaned data
 populate_db(BRC_UrbRiverfly, "riverfly")
 populate_db(BRC_WQ, "water_quality")
-populate_db(locations_list$BRC, "riverfly_locs")
+populate_db(BRCInvSpcs, "invasive_species")
+populate_db(BRC_locs, "riverfly_locs")
 
 # usethis::use_data(data_20250922, overwrite = TRUE)

@@ -1,0 +1,250 @@
+#' 03_plot_data UI Function
+#'
+#' @description A shiny Module.
+#'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#'
+#' @noRd
+#'
+#' @importFrom shiny NS tagList
+mod_03_plot_data_ui <- function(id) {
+  ns <- NS(id)
+
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(
+        "metric",
+        "Select survey:",
+        choices = c(
+          " ",
+          "Urban Riverfly",
+          "Invasive Species"
+        )
+      ),
+      conditionalPanel(
+        condition = "input.metric == 'Urban Riverfly'",
+        selectInput(
+          "riverfly",
+          "Choose:",
+          choices = c(
+            " ",
+            "ARMI",
+            "Urban Riverfly species",
+            "Other species"
+          )
+        ),
+        conditionalPanel(
+          condition = "input.riverfly == 'ARMI'",
+          includeMarkdown(app_sys("app/www/text/ARMI_description.md"))
+        )
+      ),
+      conditionalPanel(
+        condition = "input.riverfly == 'Urban Riverfly species'",
+        radioButtons(
+          "riverflySpecies",
+          "Urban Riverfly species",
+          choices = c(
+            "Cased caddisfly (Trichoptera)",
+            "Caseless caddisfly (Trichoptera)",
+            "Olive mayfly (Baetidae)",
+            "Blue-winged olive mayfly (Ephemerellidae)",
+            "Freshwater shrimp (Gammaridae)",
+            "Freshwater hoglouse (Asellidae)",
+            "Blackfly larvae (Simuliidae)",
+            "Freshwater worm (Oligochaeta)",
+            "Freshwater leech (Hirudinea)",
+            "Freshwater snail (Gastropoda)",
+            "Freshwater beetle (Coleoptera)",
+            "Green drake mayfly (Ephemeridae)",
+            "Flat-bodied stone clinger mayfly (Heptageniidae)",
+            "Stonefly larvae (Plecoptera)"
+          )
+        )
+      ),
+      conditionalPanel(
+        condition = "input.riverfly == 'Other species'",
+        radioButtons(
+          "otherSpecies",
+          "Other species",
+          choices = c(
+            "Non-biting midge larvae (Chironomidae)",
+            "Cranefly larvae (Dicranota sp.)",
+            "Other cranefly larvae (Tipulidae)",
+            "Water mite (Hydracarina)",
+            "Net spinning (caseless) caddisfly (Hydropsychidae)",
+            "Green sedge (caseless) caddisfly (Rhyacophilidae)",
+            "Ramshorn snail (Planorbidae)",
+            "Freshwater mollusc (Sphaeriidae)",
+            "Freshwater limpet (Acroloxidae/Ancylidae)",
+            "Bullhead (fish - Cottus gobio)"
+          )
+        )
+      ),
+      conditionalPanel(
+        condition = "input.metric == 'Water Quality'",
+        radioButtons(
+          "readingType",
+          "Choose water quality reading type:",
+          choices = stringr::str_to_sentence(unlist(lapply(
+            strsplit(names(BRC_WQ)[4:9], "_"),
+            function(x) x[1]
+          )))
+        )
+      ),
+      conditionalPanel(
+        condition = "input.metric == 'Invasive Species'",
+        radioButtons(
+          "invasiveType",
+          "Choose invasive species:",
+          choices = stringr::str_to_sentence(unlist(lapply(
+            strsplit(names(BRCInvSpcs)[6:10], "_"),
+            paste,
+            collapse = " "
+          )))
+        )
+      ),
+    ),
+    mainPanel(
+      div(
+        id = "yourdata-descriptor",
+        HTML(
+          "<b>Select the survey from the drop down menus and click on each point to view extra details</b>"
+        )
+      ), # Add this wrapper
+      # Conditional panel for Urban Riverfly species
+      conditionalPanel(
+        condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'Urban Riverfly species'",
+        img(
+          src = "www/images/Species_legend.png",
+          id = "species-legend"
+        )
+      ),
+
+      # Conditional panel for Other species
+      conditionalPanel(
+        condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'Other species'",
+        img(
+          src = "www/images/Species_legend.png",
+          id = "species-legend"
+        )
+      ),
+
+      # Conditional panel for ARMI
+      conditionalPanel(
+        condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'ARMI'",
+        img(src = "www/images/ARMI_legend.png", id = "armi-legend")
+      ),
+
+      conditionalPanel(
+        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'Signal crayfish' || input.invasiveType == 'Killer or demon shrimp')",
+        img(
+          src = "www/images/Invasive_fauna_legend.png",
+          id = "invasive-fauna-legend"
+        )
+      ),
+
+      # Conditional panel for invasive species - flora legend
+      conditionalPanel(
+        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'Himalayan balsam' || input.invasiveType == 'Giant hogweed' || input.invasiveType == 'Japanese knotweed')",
+        img(
+          src = "www/images/Invasive_flora_legend.png",
+          id = "invasive-flora-legend"
+        )
+      )
+    )
+  )
+}
+
+#' 03_plot_data Server Functions
+#'
+#' @noRd
+mod_03_plot_data_server <- function(id) {
+  moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
+    output$map <- renderLeaflet({
+      leaflet(
+        options = leafletOptions(
+          zoomControl = FALSE,
+          attributionControl = FALSE
+        )
+      ) |>
+        htmlwidgets::onRender(
+          "function(el, x) {
+          L.control.zoom({ position: 'bottomright' }).addTo(this)
+      }"
+        ) |>
+        addProviderTiles(providers$OpenStreetMap) |>
+        setView(lng = -1.83, lat = 52.45, zoom = 10)
+    })
+
+    # Update the map with appropriate data
+    updateMap <- function(input, output, session) {
+      mapProxy <- leafletProxy("map")
+      zoomLevel <- input$map_zoom
+      clearMapLayers(mapProxy)
+      addPolygonsAndLines(mapProxy, zoomLevel)
+
+      mapProxy |> clearControls()
+      if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
+        riverflyARMIData <- Riverfly_ARMI_Plot_SiteAv
+        addARMIMarkers(mapProxy, riverflyARMIData, Riverfly_ARMI_Plot)
+      } else if (
+        input$metric == "Urban Riverfly" &&
+          input$riverfly == "Urban Riverfly species"
+      ) {
+        # Filter by the selected Taxa
+        selectedTaxa <- input$riverflySpecies
+        riverflyspeciesData_Recent_Map <- Riverfly_Species_Plot_Recent |>
+          filter(Taxa == selectedTaxa)
+        addRiverflySpeciesMarkers(
+          mapProxy,
+          riverflyspeciesData_Recent_Map,
+          Riverfly_Species_Plot,
+          selectedTaxa
+        )
+      } else if (
+        input$metric == "Urban Riverfly" &&
+          input$riverfly == "Other species"
+      ) {
+        # Filter data for the selected 'other species' from the radio buttons
+        otherspeciesData_Recent_Map <- Riverfly_Other_Species_Plot_Recent |>
+          filter(Taxa == input$otherSpecies)
+        addOtherSpeciesMarkers(
+          mapProxy,
+          otherspeciesData_Recent_Map,
+          input$otherSpecies
+        )
+      } else if (input$metric == "Invasive Species") {
+        addInvasiveSpeciesMarkers(
+          mapProxy,
+          BRCInvSpcs_Plot_Recent,
+          input$invasiveType
+        )
+      }
+    }
+
+    observeEvent(
+      {
+        input$metric
+        input$tabs
+        input$invasiveType
+        input$readingType
+        input$score
+        input$riverfly
+        input$riverflySpecies
+        input$otherSpecies
+        input$map_zoom
+      },
+      {
+        updateMap(input, output, session)
+      }
+    )
+  })
+}
+
+## To be copied in the UI
+# mod_03_plot_data_ui("03_plot_data_1")
+
+## To be copied in the server
+# mod_03_plot_data_server("03_plot_data_1")
