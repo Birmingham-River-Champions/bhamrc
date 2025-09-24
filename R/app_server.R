@@ -7,7 +7,7 @@
 #' @import RSQLite
 #' @noRd
 app_server <- function(input, output, session) {
-  callModule(mod_02_data_input_server, "02_data_input_1")
+  mod_02_data_input_server("02_data_input_1")
   # Application server logic
   # Database setup
   con <- dbConnect(RSQLite::SQLite(), "data.sqlite")
