@@ -26,7 +26,7 @@ app_ui <- function(request) {
           # Left side: larger logo.png image and text
           div(
             class = "logo-container",
-            img(src = "www/logo.png", class = "logo"),
+            img(src = "www/images/logo.png", class = "logo"),
             div(
               class = "text-container",
               HTML(
@@ -38,10 +38,10 @@ app_ui <- function(request) {
           ),
           # Right side: Smaller footer images, with EA logo slightly bigger
           div(
-            img(src = "www/UoB logo.png", class = "UOB-logo"),
-            img(src = "www/EA logo.png", class = "ea-logo"),
-            img(src = "www/BBCWT logo.png", class = "footer-logo"),
-            img(src = "www/Severn Trent logo.png", class = "ST-logo")
+            img(src = "www/images/UoB logo.png", class = "UOB-logo"),
+            img(src = "www/images/EA logo.png", class = "ea-logo"),
+            img(src = "www/images/BBCWT logo.png", class = "footer-logo"),
+            img(src = "www/images/Severn Trent logo.png", class = "ST-logo")
           )
         )
       ),
@@ -53,21 +53,21 @@ app_ui <- function(request) {
             class = "project-overview-images", # Grid for images
             div(
               class = 'img-container',
-              img(src = 'www/Urban Riverfly group photo 1_6_24.jpg')
+              img(src = 'www/images/Urban Riverfly group photo 1_6_24.jpg')
             ),
             div(
               class = 'img-container',
               img(
-                src = 'www/Urban Riverfly training Rea Birmingham Uni volunteers.jpg'
+                src = 'www/images/Urban Riverfly training Rea Birmingham Uni volunteers.jpg'
               )
             ),
             div(
               class = 'img-container',
-              img(src = 'www/JCW and Friends Trittiford.jpg')
+              img(src = 'www/images/JCW and Friends Trittiford.jpg')
             ),
             div(
               class = 'img-container',
-              img(src = 'www/HGKIC with certificate.png')
+              img(src = 'www/images/HGKIC with certificate.png')
             )
           )
         ),
@@ -113,7 +113,7 @@ golem_add_external_resources <- function() {
     favicon(),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "bhamrc"
+      app_title = "Birmingham River Champions"
     )
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
