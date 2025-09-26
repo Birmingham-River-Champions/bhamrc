@@ -276,6 +276,7 @@
   .grid-item {
     display: flex;
     align-items: center;
+    margin-bottom: 20px;
     /* Vertically center content */
   }
 
