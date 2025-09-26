@@ -26,7 +26,11 @@ app_ui <- function(request) {
           # Left side: larger logo.png image and text
           div(
             class = "logo-container",
-            img(src = "www/images/logo.png", class = "logo"),
+            img(
+              src = "www/images/logo.png",
+              class = "logo",
+              alt = "Birmingham River Champions logo"
+            ),
             div(
               class = "text-container",
               HTML(
@@ -38,10 +42,26 @@ app_ui <- function(request) {
           ),
           # Right side: Smaller footer images, with EA logo slightly bigger
           div(
-            img(src = "www/images/UoB logo.png", class = "UOB-logo"),
-            img(src = "www/images/EA logo.png", class = "ea-logo"),
-            img(src = "www/images/BBCWT logo.png", class = "footer-logo"),
-            img(src = "www/images/Severn Trent logo.png", class = "ST-logo")
+            img(
+              src = "www/images/UoB logo.png",
+              class = "UOB-logo",
+              alt = "University of Birmingham logo"
+            ),
+            img(
+              src = "www/images/EA logo.png",
+              class = "ea-logo",
+              alt = "Environment Agency logo"
+            ),
+            img(
+              src = "www/images/BBCWT logo.png",
+              class = "footer-logo",
+              alt = "Birmingham and Black Country Wildlife Trust logo"
+            ),
+            img(
+              src = "www/images/Severn Trent logo.png",
+              class = "ST-logo",
+              alt = "Severn Trent logo"
+            )
           )
         )
       ),
@@ -53,28 +73,38 @@ app_ui <- function(request) {
             class = "project-overview-images", # Grid for images
             div(
               class = 'img-container',
-              img(src = 'www/images/Urban Riverfly group photo 1_6_24.jpg')
-            ),
-            div(
-              class = 'img-container',
               img(
-                src = 'www/images/Urban Riverfly training Rea Birmingham Uni volunteers.jpg'
+                src = 'www/images/Urban Riverfly group photo 1_6_24.jpg',
+                alt = "Riverfly survey group photo"
               )
             ),
             div(
               class = 'img-container',
-              img(src = 'www/images/JCW and Friends Trittiford.jpg')
+              img(
+                src = 'www/images/Urban Riverfly training Rea Birmingham Uni volunteers.jpg',
+                alt = "Riverfly training session with Birmingham University volunteers"
+              )
             ),
             div(
               class = 'img-container',
-              img(src = 'www/images/HGKIC with certificate.png')
+              img(
+                src = 'www/images/JCW and Friends Trittiford.jpg',
+                alt = "JCW and Friends at Trittiford"
+              )
+            ),
+            div(
+              class = 'img-container',
+              img(
+                src = 'www/images/HGKIC with certificate.png',
+                alt = "Hall Green Keepin' It Clean with certificate"
+              )
             )
           )
         ),
         tabPanel(
           "Information / resources",
           h3("Key information"),
-          p("Add information and resources here.")
+          mod_04_information_ui("04_information_1")
         ),
         tabPanel(
           "Newsletters / reports",

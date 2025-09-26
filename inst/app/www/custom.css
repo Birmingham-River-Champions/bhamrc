@@ -707,3 +707,8 @@
     }
   }
 }
+
+.selectize-dropdown-content .active {
+       background: #2196f3 !important;
+       color: white !important;
+     }

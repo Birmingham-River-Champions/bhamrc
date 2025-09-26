@@ -24,7 +24,8 @@ output: github_document
 You can install the development version of `{bhamrc}` like so:
 
 ```{r}
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+install.packages("remotes")
+remotes::install_github("Birmingham-River-Champions/bhamrc")
 ```
 
 ## Run

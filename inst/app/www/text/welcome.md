@@ -6,5 +6,5 @@
     Urban Riverfly, water chemistry monitoring (Temperature, Conductivity, Ammonia, Nitrate, Phosphate), Urban Outfall Safari 
     and invasive species spotting (see Information / Resources for further details). Urban Riverfly and water quality sampling
     should be repeated at the same site across the year, but Urban Outfall Safari and invasive species spotting can take place ‘out and about’
-    when volunteers see relevant features.   We suggest groups commit about 1-2 hours monthly alongside their normal activities. Please do share this <b> <a href='www/BRC project overview.pdf' target='_blank'>project summary</a> </b> with volunteer groups or individuals
+    when volunteers see relevant features.   We suggest groups commit about 1-2 hours monthly alongside their normal activities. Please do share this <b> <a href='www/forms/BRC project overview.pdf' target='_blank'>project summary</a> </b> with volunteer groups or individuals
     that you think would be interested in getting involved.
