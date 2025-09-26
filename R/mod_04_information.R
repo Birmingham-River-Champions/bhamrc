@@ -12,7 +12,9 @@
 mod_04_information_ui <- function(id) {
   ns <- NS(id)
 
-  information_data <- yaml::read_yaml(app_sys("app/www/text/information.yaml"))
+  information_data <- yaml::read_yaml(
+    app_sys("app/www/text/information.yml")
+  )$information
 
   tagList(
     # Main Title (centered)
@@ -20,17 +22,17 @@ mod_04_information_ui <- function(id) {
 
     # Grid layout for left (summary) and right (news post)
     div(
-      id = "project-grid",
+      id = "projects",
+      class = "project-grid",
       purrr::map(
-        information_data ~
-          information_card(
-            class = "project-card",
-            title = .x$title
-          ),
-        description = .x$description
-      ),
-      url = .x$url,
-      img_src = .x$img_src
+        information_data,
+        ~ information_card(
+          title = .x$title,
+          description = .x$description,
+          url = .x$url,
+          image_src = .x$image_src
+        )
+      )
     )
   )
 }

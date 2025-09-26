@@ -103,7 +103,6 @@ app_ui <- function(request) {
         ),
         tabPanel(
           "Information / resources",
-          h3("Key information"),
           mod_04_information_ui("04_information_1")
         ),
         tabPanel(
