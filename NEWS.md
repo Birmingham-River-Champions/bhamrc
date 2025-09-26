@@ -2,15 +2,16 @@
 
 ## Done
 * Create `golem` package structure
-* Add sqlite DB
+* Add sqlite DB with tables for Riverfly, Water Quality, Invasive Species, and Location tables
 * Add in tabs for each UI component
-* Add in actual data
-* Create actual database structure
+* Write reproducible functions to clean Google Sheets tables and populate DB
+* Get provided css working
+* Get on GitHub
 
 ## Todo
+<emph> Now tracked on GitHub project [board](https://github.com/orgs/Birmingham-River-Champions/projects/1) </emph>
 * Recreate `leaflet` plots
-* Get provided css working
 * Make form accept user inputs in the correct way
 * Check accessibility
-* Get on GitHub
+
 

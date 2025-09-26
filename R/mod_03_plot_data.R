@@ -24,7 +24,7 @@ mod_03_plot_data_ui <- function(id) {
       conditionalPanel(
         condition = "input.metric == 'Urban Riverfly'",
         selectInput(
-          "riverfly",
+          "Choose type of riverfly data to show",
           "Choose:",
           choices = c(
             " ",
@@ -116,7 +116,8 @@ mod_03_plot_data_ui <- function(id) {
         condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'Urban Riverfly species'",
         img(
           src = "www/images/Species_legend.png",
-          id = "species-legend"
+          id = "species-legend",
+          alt = "Legend for Urban Riverfly species. Max abundance in the last three years. Options are >1000, 100-999, 10-99, and 1-9."
         )
       ),
 
@@ -125,21 +126,27 @@ mod_03_plot_data_ui <- function(id) {
         condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'Other species'",
         img(
           src = "www/images/Species_legend.png",
-          id = "species-legend"
+          id = "species-legend",
+          alt = "Legend for Other species. Max abundance in the last three years. Options are >1000, 100-999, 10-99, and 1-9."
         )
       ),
 
       # Conditional panel for ARMI
       conditionalPanel(
         condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'ARMI'",
-        img(src = "www/images/ARMI_legend.png", id = "armi-legend")
+        img(
+          src = "www/images/ARMI_legend.png",
+          id = "armi-legend",
+          alt = "Legend for Anglers Riverfly Monitoring Initiative (ARMI) scores. Options are 0-3 (red), 4-5 (orange), 6-7 (yellow), 8-9 (light green), and 10+ (dark green)."
+        )
       ),
 
       conditionalPanel(
         condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'Signal crayfish' || input.invasiveType == 'Killer or demon shrimp')",
         img(
           src = "www/images/Invasive_fauna_legend.png",
-          id = "invasive-fauna-legend"
+          id = "invasive-fauna-legend",
+          alt = "Legend for Invasive fauna species. Options are Present (red) and Not detected (green)."
         )
       ),
 
@@ -148,7 +155,8 @@ mod_03_plot_data_ui <- function(id) {
         condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'Himalayan balsam' || input.invasiveType == 'Giant hogweed' || input.invasiveType == 'Japanese knotweed')",
         img(
           src = "www/images/Invasive_flora_legend.png",
-          id = "invasive-flora-legend"
+          id = "invasive-flora-legend",
+          alt = "Legend for Invasive flora species. Options are Present (red) and Not detected (green)."
         )
       )
     )
