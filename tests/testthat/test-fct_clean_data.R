@@ -9,11 +9,27 @@ test.df <- data.frame(
     "2023-10-02",
     "2023-10-03",
     "2023-10-04",
-    "2023-10-04"
+    "2023-10-06"
   )),
-  sampling_site = c("SiteA", "SiteA", "SiteB", "SiteC", "SiteC", "SiteD"),
+  sampling_site = c("SiteA", "SiteA", "SiteB", "SiteB", "SiteD", "SiteD"),
   other_col = c(1, 1, 2, 3, 4, 4)
 )
+
+test_that("function executes correctly when db is valid", {
+  testthat::expect_equal(
+    clean_data(
+      input_df = test.df,
+      col_name_start = "sampling_site",
+      col_name_end = "other_col",
+      sample_site = "sampling_site",
+      acceptable_site_orgs = data.frame(
+        identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
+      ),
+      data_type = "TestType"
+    ),
+    test.df
+  )
+})
 
 test_that("function catches an invalid site and organisation combination", {
   testthat::expect_warning(clean_data(
