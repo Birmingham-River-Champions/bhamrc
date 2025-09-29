@@ -12,15 +12,15 @@ mod_05_show_data_ui <- function(id) {
   sidebarLayout(
     sidebarPanel(
       selectInput(
-        "data_type",
+        ns("data_type"),
         "Select survey:",
         choices = c(
-          " ",
           "Urban Riverfly",
           "Water Quality",
           "Invasive Species",
-          "Urban Outfall"
-        )
+          "Urban Outfall Safari"
+        ),
+        selected = "Urban Riverfly"
       ),
       actionButton("submit_dt", "Submit", class = "btn-primary")
     ),
@@ -37,33 +37,33 @@ mod_05_show_data_ui <- function(id) {
 mod_05_show_data_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    observeEvent(input$submit_dt, {
-      req(input$data_type)
+
+    table_name <- reactive({
+      survey <- input$data_type
       switch(
-        input$data_type,
+        survey,
         "Urban Riverfly" = {
-          data_type <- "riverfly"
+          table_name <- "riverfly"
         },
         "Water Quality" = {
-          data_type <- "water_quality"
+          table_name <- "water_quality"
         },
         "Invasive Species" = {
-          data_type <- "invasive_species"
+          table_name <- "invasive_species"
         },
-        "Urban Outfall" = {
-          data_type <- "urban_outfall"
+        "Urban Outfall Safari" = {
+          table_name <- "urban_outfall"
         }
       )
-      dbExecute(
+    })
+    con <- dbConnect(RSQLite::SQLite(), "data/database.sqlite")
+    output$entries <- DT::renderDT({
+      dbGetQuery(
         con,
-        output$entries <- DT::renderDT({
-          dbGetQuery(
-            con,
-            paste("SELECT * FROM ", data_type, " ORDER BY id DESC")
-          )
-        })
+        paste("SELECT * FROM ", table_name, " ORDER BY id DESC")
       )
     })
+    dbDisconnect(con)
   })
 }
 
