@@ -116,7 +116,7 @@ app_ui <- function(request) {
         tabPanel(
           "Submitted Data",
           h3("Submitted Entries"),
-          DT::DTOutput("entries")
+          mod_05_show_data_ui("05_show_data_1"),
         ),
         tabPanel(
           "Submission Form",
