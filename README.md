@@ -1,4 +1,5 @@
 # Birmingham River Champions Shiny App
+`[![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Birmingham-River-Champions/bhamrc/refs/heads/badges/coverage-badge.json)](https://github.com/Birmingham-River-Champions/bhamrc/tree/badges)`
 
 This is an R Shiny app with a lightweight SQLite database and a dynamic input form. Users can submit data, which is stored in the database and displayed in the app.
 
