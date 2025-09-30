@@ -11,58 +11,57 @@ mod_05_show_data_ui <- function(id) {
   ns <- NS(id)
   sidebarLayout(
     sidebarPanel(
-      selectInput(
-        "data_type",
-        "Select survey:",
-        choices = c(
-          " ",
-          "Urban Riverfly",
-          "Water Quality",
-          "Invasive Species",
-          "Urban Outfall"
-        )
-      ),
-      actionButton("submit_dt", "Submit", class = "btn-primary")
+      data_type_input_ui(ns("data_type"))
     ),
     mainPanel(
-      h3("Submit your entry using the form."),
-      DT::DTOutput("entries")
+      textOutput(ns("survey")),
+      textOutput(ns("table_name")),
+      DT::DTOutput(ns("entries"))
     )
   )
 }
 
 #' 05_show_data Server Functions
-#'
+#' @importFrom DBI dbConnect dbDisconnect dbGetQuery
+#' @importFrom RSQLite SQLite
 #' @noRd
 mod_05_show_data_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    observeEvent(input$submit_dt, {
-      req(input$data_type)
+    # Determine table name based on selected survey
+    table_name <- data_type_input_server("data_type")
+
+    survey <- reactive({
       switch(
-        input$data_type,
+        table_name(),
         "Urban Riverfly" = {
-          data_type <- "riverfly"
+          "riverfly"
         },
         "Water Quality" = {
-          data_type <- "water_quality"
+          "water_quality"
         },
         "Invasive Species" = {
-          data_type <- "invasive_species"
-        },
-        "Urban Outfall" = {
-          data_type <- "urban_outfall"
+          "invasive_species"
         }
       )
-      dbExecute(
+    })
+
+    # Display selected table name
+    output$survey <- renderText({
+      paste("Selected survey table:", survey())
+    })
+    output$table_name <- renderText(table_name())
+
+    output$entries <- DT::renderDT({
+      con <- dbConnect(RSQLite::SQLite(), "data.sqlite")
+      dbReadTable(
         con,
-        output$entries <- DT::renderDT({
-          dbGetQuery(
-            con,
-            paste("SELECT * FROM ", data_type, " ORDER BY id DESC")
-          )
-        })
+        survey()
       )
+    })
+
+    onStop(function() {
+      dbDisconnect(con)
     })
   })
 }

@@ -164,7 +164,9 @@ mod_03_plot_data_ui <- function(id) {
 }
 
 #' 03_plot_data Server Functions
-#'
+#' @importFrom leaflet leafletProxy addProviderTiles setView clearMarkers addCircleMarkers addLegend clearControls
+#' @importFrom leaflet providers leafletOptions renderLeaflet
+#' @importFrom dplyr filter mutate rowwise
 #' @noRd
 mod_03_plot_data_server <- function(id) {
   moduleServer(id, function(input, output, session) {
