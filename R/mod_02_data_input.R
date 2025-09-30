@@ -37,6 +37,7 @@ mod_02_data_input_server <- function(id) {
         "INSERT INTO submissions (name, email, comment) VALUES (?, ?, ?)",
         params = list(input$name, input$email, input$comment)
       )
+      dbDisconnect(con)
       showNotification("Submission successful!", type = "message")
     })
   })
