@@ -6,7 +6,7 @@
 #'
 #' @noRd
 # UI
-ui <- function(id) {
+data_type_input_ui <- function(id) {
     ns <- NS(id)
     selectInput(
         ns("data_type"),
@@ -14,15 +14,14 @@ ui <- function(id) {
         choices = c(
             "Urban Riverfly",
             "Water Quality",
-            "Invasive Species",
-            "Urban Outfall Safari"
+            "Invasive Species"
         ),
         selected = "Urban Riverfly"
     )
 }
 
 # Server
-server <- function(id) {
+data_type_input_server <- function(id) {
     moduleServer(id, function(input, output, session) {
         reactive(input$data_type)
     })

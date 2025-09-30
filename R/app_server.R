@@ -8,6 +8,17 @@
 #' @noRd
 app_server <- function(input, output, session) {
   mod_02_data_input_server("02_data_input_1")
+  mod_03_plot_data_server("03_plot_data_1")
+  mod_04_information_server("04_information_1")
+  mod_05_show_data_server("05_show_data_1")
+
+  table_name <- reactive(input$data_type)
+
+  # Display selected table name
+  observeEvent(input$submit_dt, {
+    output$survey <- renderText(table_name())
+  })
+
   # Application server logic
   # Database setup
   con <- dbConnect(RSQLite::SQLite(), "data.sqlite")
@@ -20,12 +31,5 @@ app_server <- function(input, output, session) {
 
   onStop(function() {
     dbDisconnect(con)
-  })
-
-  output$entries <- DT::renderDT({
-    dbGetQuery(
-      con,
-      "SELECT * FROM riverfly ORDER BY id DESC"
-    )
   })
 }
