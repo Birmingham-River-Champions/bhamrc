@@ -19,12 +19,14 @@ newsletter_card <- function(
         img(src = image_src, alt = alt_text), # Image
         div(
             class = "text-container",
-            h2(a(
+            h2(title),
+            h4(HTML(description)),
+            a(
                 href = url,
                 target = "_blank",
-                title
-            )),
-            h4(HTML(description))
+                class = "btn-view",
+                "View"
+            )
         )
     )
 }
