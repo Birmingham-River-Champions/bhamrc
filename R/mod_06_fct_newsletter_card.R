@@ -4,7 +4,7 @@
 #' @param description The description underneath the link
 #' @param alt_text Alternative text for the provided image
 #' @param url The URL that the header link should target
-#' @param img_src The location within the app of the image
+#' @param image_src The location within the app of the image
 newsletter_card <- function(
     title,
     description,

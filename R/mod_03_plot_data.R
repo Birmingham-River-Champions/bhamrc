@@ -85,10 +85,14 @@ mod_03_plot_data_ui <- function(id) {
         radioButtons(
           "readingType",
           "Choose water quality reading type:",
-          choices = stringr::str_to_sentence(unlist(lapply(
-            strsplit(names(BRC_WQ)[4:9], "_"),
-            function(x) x[1]
-          )))
+          choices = c(
+            "Conductivity (mS)",
+            "Temperature (°C)",
+            "Ammonia (ppm)",
+            "Phosphate (ppm)",
+            "Nitrate (ppm)",
+            "Turbidity (NTU)"
+          )
         )
       ),
       conditionalPanel(
@@ -96,11 +100,13 @@ mod_03_plot_data_ui <- function(id) {
         radioButtons(
           "invasiveType",
           "Choose invasive species:",
-          choices = stringr::str_to_sentence(unlist(lapply(
-            strsplit(names(BRCInvSpcs)[6:10], "_"),
-            paste,
-            collapse = " "
-          )))
+          choices = c(
+            "Signal crayfish",
+            "Killer or demon shrimp",
+            "Himalayan balsam",
+            "Giant hogweed",
+            "Japanese knotweed"
+          )
         )
       ),
     ),

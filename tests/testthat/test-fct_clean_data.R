@@ -15,7 +15,7 @@ test.df <- data.frame(
   other_col = c(1, 1, 2, 3, 4, 4)
 )
 
-test_that("function executes correctly when db is valid", {
+test_that("function returns full df when db is valid", {
   testthat::expect_equal(
     clean_data(
       input_df = test.df,
@@ -28,6 +28,21 @@ test_that("function executes correctly when db is valid", {
       data_type = "TestType"
     ),
     test.df
+  )
+})
+
+test_that("function returns no error when db is valid", {
+  testthat::expect_no_error(
+    clean_data(
+      input_df = test.df,
+      col_name_start = "sampling_site",
+      col_name_end = "other_col",
+      sample_site = "sampling_site",
+      acceptable_site_orgs = data.frame(
+        identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
+      ),
+      data_type = "TestType"
+    )
   )
 })
 

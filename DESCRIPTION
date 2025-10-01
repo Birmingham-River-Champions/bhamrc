@@ -24,7 +24,6 @@ Imports:
     RColorBrewer,
     RSQLite,
     shiny,
-    stringr,
     yaml
 Encoding: UTF-8
 LazyData: true

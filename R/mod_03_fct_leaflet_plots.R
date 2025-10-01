@@ -4,7 +4,7 @@
 
 #' This function clears the map layers
 #' @param mapProxy A leaflet map proxy object.
-#' @importFrom leaflet clearMarkers clearControls clearGroup addPolygons addPolylines addCircleMarkers popupGraph addPopups popupOptions pathOptions
+#' @importFrom leaflet clearMarkers clearControls clearGroup addPolygons addPolylines addCircleMarkers addPopups popupOptions pathOptions
 #' @noRd
 clearMapLayers <- function(mapProxy) {
     mapProxy |>
@@ -226,7 +226,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData) {
 #' @param data A data frame containing the Urban Riverfly species data to be plotted.
 #' @param riverflyspeciesData A data frame containing all Urban Riverfly species data for generating the ggplot graphs.
 #' @param taxaType The specific Urban Riverfly species to filter and plot.
-#' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupGraph popupOptions pathOptions
+#' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date scale_y_continuous theme element_text ggtitle
 #' @importFrom stringr str_wrap
@@ -428,7 +428,7 @@ addRiverflySpeciesMarkers <- function(
 #' @param mapProxy A leaflet map proxy object.
 #' @param data A data frame containing the Other species data to be plotted.
 #' @param otherSpecies The specific Other species to filter and plot.
-#' @importFrom leaflet clearGroup addCircleMarkers popupGraph popupOptions pathOptions
+#' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions
 #' @importFrom RColorBrewer brewer.pal
 #' @noRd
 addOtherSpeciesMarkers <- function(mapProxy, data, otherSpecies) {
