@@ -89,7 +89,7 @@ app_ui <- function(request) {
               class = 'img-container',
               img(
                 src = 'www/images/JCW and Friends Trittiford.jpg',
-                alt = "A photograph of volunteers holding their Urban Riverfly certification after receiving training"
+                alt = "A group of Birmingham River Champions volunteers collecting Urban Riverfly samples"
               )
             ),
             div(
@@ -107,7 +107,7 @@ app_ui <- function(request) {
         ),
         tabPanel(
           "Newsletters / reports",
-          p("Share newsletters and updates here.")
+          mod_06_newsletters_ui("06_newsletters_1")
         ),
         tabPanel(
           "Your Data",
