@@ -29,7 +29,7 @@ app_ui <- function(request) {
             img(
               src = "www/images/logo.png",
               class = "logo",
-              alt = "Birmingham River Champions logo"
+              alt = "The logo of the Birmingham River Champions citizen science initiative"
             ),
             div(
               class = "text-container",
@@ -45,22 +45,22 @@ app_ui <- function(request) {
             img(
               src = "www/images/UoB logo.png",
               class = "UOB-logo",
-              alt = "University of Birmingham logo"
+              alt = "The logo of the University of Birmingham"
             ),
             img(
               src = "www/images/EA logo.png",
               class = "ea-logo",
-              alt = "Environment Agency logo"
+              alt = "The logo of the Environment Agency"
             ),
             img(
               src = "www/images/BBCWT logo.png",
               class = "footer-logo",
-              alt = "Birmingham and Black Country Wildlife Trust logo"
+              alt = "The logo of the Birmingham and Black Country Wildlife Trust"
             ),
             img(
               src = "www/images/Severn Trent logo.png",
               class = "ST-logo",
-              alt = "Severn Trent logo"
+              alt = "The logo of Severn Trent Water"
             )
           )
         )
@@ -75,28 +75,28 @@ app_ui <- function(request) {
               class = 'img-container',
               img(
                 src = 'www/images/Urban Riverfly group photo 1_6_24.jpg',
-                alt = "Riverfly survey group photo"
+                alt = "A photograph of volunteers at an Urban Riverfly training course"
               )
             ),
             div(
               class = 'img-container',
               img(
                 src = 'www/images/Urban Riverfly training Rea Birmingham Uni volunteers.jpg',
-                alt = "Riverfly training session with Birmingham University volunteers"
+                alt = "A photograph of an Urban Riverfly trainer demonstrating techniques to volunteers"
               )
             ),
             div(
               class = 'img-container',
               img(
                 src = 'www/images/JCW and Friends Trittiford.jpg',
-                alt = "JCW and Friends at Trittiford"
+                alt = "A photograph of volunteers holding their Urban Riverfly certification after receiving training"
               )
             ),
             div(
               class = 'img-container',
               img(
                 src = 'www/images/HGKIC with certificate.png',
-                alt = "Hall Green Keepin' It Clean with certificate"
+                alt = "A photograph of volunteers holding their Urban Riverfly certification after receiving training"
               )
             )
           )
