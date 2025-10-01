@@ -89,13 +89,6 @@ locations_list <- process_locations(
 BRC_locs <- locations_list$BRC
 Outfall_locs <- locations_list$Outfall
 
-# Helper function to create acceptable location identifiers
-acceptable_locs <- function(df) {
-    df |>
-        dplyr::mutate(identifiers = paste(Organisation, ID)) |>
-        dplyr::select(identifiers)
-}
-
 accept_BRC <- acceptable_locs(BRC_locs)
 accept_outfall <- acceptable_locs(Outfall_locs)
 
