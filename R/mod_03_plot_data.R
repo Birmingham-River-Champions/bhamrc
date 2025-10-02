@@ -90,12 +90,12 @@ mod_03_plot_data_ui <- function(id) {
           ns("readingType"),
           "Choose water quality reading type:",
           choices = c(
-            "Conductivity (mS)",
-            "Temperature (°C)",
-            "Ammonia (ppm)",
-            "Phosphate (ppm)",
-            "Nitrate (ppm)",
-            "Turbidity (NTU)"
+            "Conductivity (mS)" = "conductivity_mS",
+            "Temperature (°C)" = "temperature_C",
+            "Ammonia (ppm)" = "ammonia_ppm",
+            "Phosphate (ppm)" = "phosphate_ppm",
+            "Nitrate (ppm)" = "nitrate_ppm",
+            "Turbidity (NTU)" = "turbidity_NTU"
           )
         ),
         ns = ns
@@ -106,11 +106,11 @@ mod_03_plot_data_ui <- function(id) {
           ns("invasiveType"),
           "Choose invasive species:",
           choices = c(
-            "Signal crayfish",
-            "Killer or demon shrimp",
-            "Himalayan balsam",
-            "Giant hogweed",
-            "Japanese knotweed"
+            "Signal crayfish" = "signal_crayfish",
+            "Killer or demon shrimp" = "killer_demon_shrimp",
+            "Himalayan balsam" = "himalayan_balsam",
+            "Giant hogweed" = "giant_hogweed",
+            "Japanese knotweed" = "japanese_knotweed"
           )
         ),
         ns = ns
@@ -130,7 +130,8 @@ mod_03_plot_data_ui <- function(id) {
           src = "www/images/Species_legend.png",
           id = "species-legend",
           alt = "Legend for Urban Riverfly species. Max abundance in the last three years. Options are >1000, 100-999, 10-99, and 1-9."
-        )
+        ),
+        ns = ns
       ),
 
       # Conditional panel for Other species
@@ -140,7 +141,8 @@ mod_03_plot_data_ui <- function(id) {
           src = "www/images/Species_legend.png",
           id = "species-legend",
           alt = "Legend for Other species. Max abundance in the last three years. Options are >1000, 100-999, 10-99, and 1-9."
-        )
+        ),
+        ns = ns
       ),
 
       # Conditional panel for ARMI
@@ -150,26 +152,29 @@ mod_03_plot_data_ui <- function(id) {
           src = "www/images/ARMI_legend.png",
           id = "armi-legend",
           alt = "Legend for Anglers Riverfly Monitoring Initiative (ARMI) scores. Options are 0-3 (red), 4-5 (orange), 6-7 (yellow), 8-9 (light green), and 10+ (dark green)."
-        )
+        ),
+        ns = ns
       ),
 
       conditionalPanel(
-        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'Signal crayfish' || input.invasiveType == 'Killer or demon shrimp')",
+        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'signal_crayfish' || input.invasiveType == 'killer_demon_shrimp')",
         img(
           src = "www/images/Invasive_fauna_legend.png",
           id = "invasive-fauna-legend",
           alt = "Legend for Invasive fauna species. Options are Present (red) and Not detected (green)."
-        )
+        ),
+        ns = ns
       ),
 
       # Conditional panel for invasive species - flora legend
       conditionalPanel(
-        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'Himalayan balsam' || input.invasiveType == 'Giant hogweed' || input.invasiveType == 'Japanese knotweed')",
+        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'himalayan_balsam' || input.invasiveType == 'giant_hogweed' || input.invasiveType == 'japanese_knotweed')",
         img(
           src = "www/images/Invasive_flora_legend.png",
           id = "invasive-flora-legend",
           alt = "Legend for Invasive flora species. Options are Present (red) and Not detected (green)."
-        )
+        ),
+        ns = ns
       ),
       # Map: Use a separate class for the Leaflet map
       div(
@@ -217,7 +222,6 @@ mod_03_plot_data_server <- function(id) {
       zoomLevel <- input$map_zoom
       clearMapLayers(mapProxy)
       addPolygonsAndLines(mapProxy, zoomLevel)
-
       mapProxy |> clearControls()
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
         riverflyARMIData <- Riverfly_ARMI_Plot_SiteAv
