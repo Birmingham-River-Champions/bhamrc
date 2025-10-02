@@ -100,7 +100,7 @@ BRC_UrbRiverfly <- clean_data(
     col_name_end = "other_bullhead",
     sample_site = "sampling_site_riverfly",
     acceptable_site_orgs = accept_BRC,
-    data_type = "Urban Riverfly"
+    data_type_name = "Urban Riverfly"
 )
 
 # Water Quality data
@@ -110,7 +110,7 @@ BRC_WQ <- clean_data(
     col_name_end = "turbidity_NTU",
     sample_site = "wq_sampling_site",
     acceptable_site_orgs = accept_BRC,
-    data_type = "Water Quality"
+    data_type_name = "Water Quality"
 )
 
 # Urban Outfall Safari data
@@ -120,7 +120,7 @@ BRCUrbOutSaf <- clean_data(
     col_name_end = "outfall_aesthetics",
     sample_site = "outfall_sampling_site",
     acceptable_site_orgs = accept_outfall,
-    data_type = "Urban Outfall Safari"
+    data_type_name = "Urban Outfall Safari"
 )
 
 # Invasive Species data
@@ -130,7 +130,7 @@ BRCInvSpcs <- clean_data(
     col_name_end = "any_other_invasive_spp",
     sample_site = "invasive_spp_sampling_site",
     acceptable_site_orgs = accept_BRC,
-    data_type = "Invasive Species"
+    data_type_name = "Invasive Species"
 )
 
 names(BRC_UrbRiverfly)[4] <- names(BRC_WQ)[3] <- names(BRC_locs)[

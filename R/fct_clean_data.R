@@ -28,6 +28,7 @@ clean_data <- function(
         dplyr::select(
             organisation,
             survey_date,
+            data_type,
             !!(col_name_start):!!(col_name_end)
         ) |>
         ###Remove data uploads that included no site identifier
@@ -62,7 +63,7 @@ clean_data <- function(
     #Also check if there are duplicates, each sampling site + timestamp should be unique
     deduped_df <- correct_org_df |>
         dplyr::distinct(survey_date, !!(sample_site), .keep_all = TRUE) |>
-        dplyr::select(-(last_col()))
+        dplyr::select(-last_col())
 
     if (nrow(deduped_df != nrow(cleaned_df))) {
         # Add a new warning to the list if duplicate combinations exist

@@ -39,7 +39,7 @@ process_locations <- function(
     ###Same for Outfall locs
     BRC_Outfall_Locs_sf <-
         sf::st_as_sf(
-            BRC_Outfall_Locs,
+            BRC_Outfall_Locs_raw,
             coords = c("Easting", "Northing"),
             crs = 27700
         ) |>
