@@ -6,7 +6,7 @@
 #'
 #' @noRd
 #'
-#' @importFrom shiny NS tagList
+#' @importFrom shiny NS tagList leafletOutput
 mod_03_plot_data_ui <- function(id) {
   ns <- NS(id)
 
@@ -164,6 +164,17 @@ mod_03_plot_data_ui <- function(id) {
           id = "invasive-flora-legend",
           alt = "Legend for Invasive flora species. Options are Present (red) and Not detected (green)."
         )
+      ),
+      # Map: Use a separate class for the Leaflet map
+      div(
+        class = "leaflet-map-container",
+        leaflet::leafletOutput(ns("map"))
+      ),
+
+      # ggplot output: Use a separate class for the ggplot popups
+      div(
+        class = "ggplot-container",
+        plotOutput(ns("ggplot"))
       )
     )
   )
@@ -171,7 +182,7 @@ mod_03_plot_data_ui <- function(id) {
 
 #' 03_plot_data Server Functions
 #' @importFrom leaflet leafletProxy addProviderTiles setView clearMarkers addCircleMarkers addLegend clearControls
-#' @importFrom leaflet providers leafletOptions renderLeaflet
+#' @importFrom leaflet providers leafletOptions renderLeaflet leaflet
 #' @importFrom dplyr filter mutate rowwise
 #' @noRd
 mod_03_plot_data_server <- function(id) {

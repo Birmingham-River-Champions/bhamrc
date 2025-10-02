@@ -19,8 +19,19 @@ clearMapLayers <- function(mapProxy) {
 #' @param mapProxy A leaflet map proxy object.
 #' @param zoomLevel The current zoom level of the map.
 #' @importFrom leaflet clearGroup addPolygons addPolylines pathOptions highlightOptions labelOptions
+#' @importFrom sf st_read st_transform st_zm
 #' @noRd
 addPolygonsAndLines <- function(mapProxy, zoomLevel) {
+    Tame_shapefile <- sf::st_read(
+        "./inst/extdata/Upper_Tame_Wbs_Complete_SubCtchmnts_Dsslvd.shp"
+    ) %>%
+        sf::st_transform(crs = 4326)
+    Tame_river_shapefile <- sf::st_read(
+        "./inst/extdata/Tame_OS_WatercourseLink.shp"
+    ) %>%
+        sf::st_zm(Tame_river_shapefile) %>%
+        sf::st_transform(crs = 4326)
+
     mapProxy |> clearGroup("polygons") |> clearGroup("lines")
     if (!is.null(zoomLevel)) {
         if (zoomLevel <= 13) {
