@@ -128,7 +128,7 @@ BRCInvSpcs <- clean_data(
     input_df = BRC_full_form,
     col_name_start = "invasive_spp_sampling_date",
     col_name_end = "any_other_invasive_spp",
-    sample_site = "invasive_spp_sampling_date",
+    sample_site = "invasive_spp_sampling_site",
     acceptable_site_orgs = accept_BRC,
     data_type = "Invasive Species"
 )
@@ -138,10 +138,10 @@ names(BRC_UrbRiverfly)[4] <- names(BRC_WQ)[3] <- names(BRC_locs)[
 ] <- names(BRCInvSpcs)[4] <- "sampling_site"
 
 # Add cleaned and processed data to package
-usethis::use_data(BRC_UrbRiverfly)
-usethis::use_data(BRC_WQ)
-usethis::use_data(BRC_locs)
-usethis::use_data(BRCInvSpcs)
+usethis::use_data(BRC_UrbRiverfly, overwrite = TRUE)
+usethis::use_data(BRC_WQ, overwrite = TRUE)
+usethis::use_data(BRC_locs, overwrite = TRUE)
+usethis::use_data(BRCInvSpcs, overwrite = TRUE)
 
 
 # Create SQLite tables for riverfly, water quality, and associated location identifiers
