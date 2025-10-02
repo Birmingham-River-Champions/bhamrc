@@ -4,8 +4,8 @@
 #' @param description The description underneath the link
 #' @param alt_text Alternative text for the provided image
 #' @param url The URL that the header link should target
-#' @param img_src The location within the app of the image
-information_card <- function(
+#' @param image_src The location within the app of the image
+newsletter_card <- function(
     title,
     description,
     alt_text = NULL,
@@ -19,12 +19,14 @@ information_card <- function(
         img(src = image_src, alt = alt_text), # Image
         div(
             class = "text-container",
-            h2(a(
+            h2(title),
+            h4(HTML(description)),
+            a(
                 href = url,
                 target = "_blank",
-                title
-            )),
-            h4(HTML(description))
+                class = "btn-view",
+                "View"
+            )
         )
     )
 }

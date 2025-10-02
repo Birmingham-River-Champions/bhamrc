@@ -1,6 +1,6 @@
 make_riverfly_ARMI <- function() {
   con <- dbi::dbConnect(RSQLite::SQLite(), "data.sqlite")
-  riverfly_data <- DBI::dbReadTable(con, "finance")
+  riverfly_data <- DBI::dbReadTable(con, "riverfly")
   dbDisconnect(con)
 
   Riverfly_ARMI <-

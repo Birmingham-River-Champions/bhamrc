@@ -438,7 +438,7 @@
 }
 
 /* Styling for action button */
-.news-item .btn-view {
+.grid-item .btn-view {
   margin-top: 10px;
   /* Space between text and button */
   padding: 8px 15px;
@@ -460,7 +460,7 @@
 }
 
 /* Hover effect for the button */
-.news-item .btn-view:hover {
+.grid-item .btn-view:hover {
   background-color: #d3d3d3;
   /* Darker grey on hover */
 }

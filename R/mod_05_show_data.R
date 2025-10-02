@@ -24,6 +24,7 @@ mod_05_show_data_ui <- function(id) {
 #' 05_show_data Server Functions
 #' @importFrom DBI dbConnect dbDisconnect dbGetQuery
 #' @importFrom RSQLite SQLite
+#' @importFrom DT renderDT DTOutput
 #' @noRd
 mod_05_show_data_server <- function(id) {
   moduleServer(id, function(input, output, session) {
