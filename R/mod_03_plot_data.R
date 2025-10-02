@@ -6,14 +6,14 @@
 #'
 #' @noRd
 #'
-#' @importFrom shiny NS tagList
+#' @importFrom shiny NS tagList leafletOutput
 mod_03_plot_data_ui <- function(id) {
   ns <- NS(id)
 
   sidebarLayout(
     sidebarPanel(
       selectInput(
-        "metric",
+        ns("metric"),
         "Select survey:",
         choices = c(
           " ",
@@ -24,7 +24,7 @@ mod_03_plot_data_ui <- function(id) {
       conditionalPanel(
         condition = "input.metric == 'Urban Riverfly'",
         selectInput(
-          "Choose type of riverfly data to show",
+          ns("riverfly"),
           "Choose:",
           choices = c(
             " ",
@@ -35,13 +35,15 @@ mod_03_plot_data_ui <- function(id) {
         ),
         conditionalPanel(
           condition = "input.riverfly == 'ARMI'",
-          includeMarkdown(app_sys("app/www/text/ARMI_description.md"))
-        )
+          includeMarkdown(app_sys("app/www/text/ARMI_description.md")),
+          ns = ns
+        ),
+        ns = ns
       ),
       conditionalPanel(
         condition = "input.riverfly == 'Urban Riverfly species'",
         radioButtons(
-          "riverflySpecies",
+          ns("riverflySpecies"),
           "Urban Riverfly species",
           choices = c(
             "Cased caddisfly (Trichoptera)",
@@ -59,12 +61,13 @@ mod_03_plot_data_ui <- function(id) {
             "Flat-bodied stone clinger mayfly (Heptageniidae)",
             "Stonefly larvae (Plecoptera)"
           )
-        )
+        ),
+        ns = ns
       ),
       conditionalPanel(
         condition = "input.riverfly == 'Other species'",
         radioButtons(
-          "otherSpecies",
+          ns("otherSpecies"),
           "Other species",
           choices = c(
             "Non-biting midge larvae (Chironomidae)",
@@ -78,36 +81,39 @@ mod_03_plot_data_ui <- function(id) {
             "Freshwater limpet (Acroloxidae/Ancylidae)",
             "Bullhead (fish - Cottus gobio)"
           )
-        )
+        ),
+        ns = ns
       ),
       conditionalPanel(
         condition = "input.metric == 'Water Quality'",
         radioButtons(
-          "readingType",
+          ns("readingType"),
           "Choose water quality reading type:",
           choices = c(
-            "Conductivity (mS)",
-            "Temperature (°C)",
-            "Ammonia (ppm)",
-            "Phosphate (ppm)",
-            "Nitrate (ppm)",
-            "Turbidity (NTU)"
+            "Conductivity (mS)" = "conductivity_mS",
+            "Temperature (°C)" = "temperature_C",
+            "Ammonia (ppm)" = "ammonia_ppm",
+            "Phosphate (ppm)" = "phosphate_ppm",
+            "Nitrate (ppm)" = "nitrate_ppm",
+            "Turbidity (NTU)" = "turbidity_NTU"
           )
-        )
+        ),
+        ns = ns
       ),
       conditionalPanel(
         condition = "input.metric == 'Invasive Species'",
         radioButtons(
-          "invasiveType",
+          ns("invasiveType"),
           "Choose invasive species:",
           choices = c(
-            "Signal crayfish",
-            "Killer or demon shrimp",
-            "Himalayan balsam",
-            "Giant hogweed",
-            "Japanese knotweed"
+            "Signal crayfish" = "signal_crayfish",
+            "Killer or demon shrimp" = "killer_demon_shrimp",
+            "Himalayan balsam" = "himalayan_balsam",
+            "Giant hogweed" = "giant_hogweed",
+            "Japanese knotweed" = "japanese_knotweed"
           )
-        )
+        ),
+        ns = ns
       ),
     ),
     mainPanel(
@@ -124,7 +130,8 @@ mod_03_plot_data_ui <- function(id) {
           src = "www/images/Species_legend.png",
           id = "species-legend",
           alt = "Legend for Urban Riverfly species. Max abundance in the last three years. Options are >1000, 100-999, 10-99, and 1-9."
-        )
+        ),
+        ns = ns
       ),
 
       # Conditional panel for Other species
@@ -134,7 +141,8 @@ mod_03_plot_data_ui <- function(id) {
           src = "www/images/Species_legend.png",
           id = "species-legend",
           alt = "Legend for Other species. Max abundance in the last three years. Options are >1000, 100-999, 10-99, and 1-9."
-        )
+        ),
+        ns = ns
       ),
 
       # Conditional panel for ARMI
@@ -144,26 +152,40 @@ mod_03_plot_data_ui <- function(id) {
           src = "www/images/ARMI_legend.png",
           id = "armi-legend",
           alt = "Legend for Anglers Riverfly Monitoring Initiative (ARMI) scores. Options are 0-3 (red), 4-5 (orange), 6-7 (yellow), 8-9 (light green), and 10+ (dark green)."
-        )
+        ),
+        ns = ns
       ),
 
       conditionalPanel(
-        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'Signal crayfish' || input.invasiveType == 'Killer or demon shrimp')",
+        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'signal_crayfish' || input.invasiveType == 'killer_demon_shrimp')",
         img(
           src = "www/images/Invasive_fauna_legend.png",
           id = "invasive-fauna-legend",
           alt = "Legend for Invasive fauna species. Options are Present (red) and Not detected (green)."
-        )
+        ),
+        ns = ns
       ),
 
       # Conditional panel for invasive species - flora legend
       conditionalPanel(
-        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'Himalayan balsam' || input.invasiveType == 'Giant hogweed' || input.invasiveType == 'Japanese knotweed')",
+        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'himalayan_balsam' || input.invasiveType == 'giant_hogweed' || input.invasiveType == 'japanese_knotweed')",
         img(
           src = "www/images/Invasive_flora_legend.png",
           id = "invasive-flora-legend",
           alt = "Legend for Invasive flora species. Options are Present (red) and Not detected (green)."
-        )
+        ),
+        ns = ns
+      ),
+      # Map: Use a separate class for the Leaflet map
+      div(
+        class = "leaflet-map-container",
+        leaflet::leafletOutput(ns("map"))
+      ),
+
+      # ggplot output: Use a separate class for the ggplot popups
+      div(
+        class = "ggplot-container",
+        plotOutput(ns("ggplot"))
       )
     )
   )
@@ -171,7 +193,7 @@ mod_03_plot_data_ui <- function(id) {
 
 #' 03_plot_data Server Functions
 #' @importFrom leaflet leafletProxy addProviderTiles setView clearMarkers addCircleMarkers addLegend clearControls
-#' @importFrom leaflet providers leafletOptions renderLeaflet
+#' @importFrom leaflet providers leafletOptions renderLeaflet leaflet
 #' @importFrom dplyr filter mutate rowwise
 #' @noRd
 mod_03_plot_data_server <- function(id) {
@@ -200,7 +222,6 @@ mod_03_plot_data_server <- function(id) {
       zoomLevel <- input$map_zoom
       clearMapLayers(mapProxy)
       addPolygonsAndLines(mapProxy, zoomLevel)
-
       mapProxy |> clearControls()
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
         riverflyARMIData <- Riverfly_ARMI_Plot_SiteAv
@@ -232,10 +253,18 @@ mod_03_plot_data_server <- function(id) {
           input$otherSpecies
         )
       } else if (input$metric == "Invasive Species") {
+        plot_palette <- brewer.pal(n = 9, name = "RdBu")
+        BRCInvSpcs_Plot_Recent <- make_recent_inv_spp(
+          BRCInvSpcs,
+          BRC_locs,
+          plot_palette
+        )
+
         addInvasiveSpeciesMarkers(
           mapProxy,
           BRCInvSpcs_Plot_Recent,
-          input$invasiveType
+          input$invasiveType,
+          plot_palette
         )
       }
     }
