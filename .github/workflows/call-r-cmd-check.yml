@@ -2,8 +2,11 @@
 name: call-r-cmd-check
 # on specifies the build triggers. See more info at https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
 on:
+  workflow_dispatch:
   push:
-    branches: [main]
+  pull_request:
+    branches:
+    - main
 
 # no permissions are needed by the default github token for this workflow to 
 # run, so don't pass any.

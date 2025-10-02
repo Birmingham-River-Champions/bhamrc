@@ -13,11 +13,18 @@ License: MIT + file LICENSE
 Imports: 
     config,
     DBI,
+    dplyr,
+    DT,
+    ggplot2,
     golem,
+    htmlwidgets,
+    leaflet,
     markdown,
     purrr,
+    RColorBrewer,
     RSQLite,
     shiny,
+    stringr,
     yaml
 Encoding: UTF-8
 LazyData: true

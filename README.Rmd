@@ -17,6 +17,7 @@ output: github_document
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/nmfs-ost/ghactions4r/refs/heads/badges/coverage-badge.json)](https://github.com/Birmingham-River-Champions/bhamrc/tree/badges)
 <!-- badges: end -->
 
 ## Installation
