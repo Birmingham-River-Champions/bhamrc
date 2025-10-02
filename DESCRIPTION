@@ -19,12 +19,15 @@ Imports:
     golem,
     htmlwidgets,
     leaflet,
+    lubridate,
     markdown,
     purrr,
     RColorBrewer,
     RSQLite,
+    sf,
     shiny,
     stringr,
+    tidyr,
     yaml
 Encoding: UTF-8
 LazyData: true
