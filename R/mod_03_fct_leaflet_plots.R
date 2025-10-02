@@ -19,8 +19,19 @@ clearMapLayers <- function(mapProxy) {
 #' @param mapProxy A leaflet map proxy object.
 #' @param zoomLevel The current zoom level of the map.
 #' @importFrom leaflet clearGroup addPolygons addPolylines pathOptions highlightOptions labelOptions
+#' @importFrom sf st_read st_transform st_zm
 #' @noRd
 addPolygonsAndLines <- function(mapProxy, zoomLevel) {
+    Tame_shapefile <- sf::st_read(
+        "./inst/extdata/Upper_Tame_Wbs_Complete_SubCtchmnts_Dsslvd.shp"
+    ) %>%
+        sf::st_transform(crs = 4326)
+    Tame_river_shapefile <- sf::st_read(
+        "./inst/extdata/Tame_OS_WatercourseLink.shp"
+    ) %>%
+        sf::st_zm(Tame_river_shapefile) %>%
+        sf::st_transform(crs = 4326)
+
     mapProxy |> clearGroup("polygons") |> clearGroup("lines")
     if (!is.null(zoomLevel)) {
         if (zoomLevel <= 13) {
@@ -66,7 +77,7 @@ addPolygonsAndLines <- function(mapProxy, zoomLevel) {
 #' @param mapProxy A leaflet map proxy object.
 #' @param data A data frame containing the ARMI data to be plotted.
 #' @param riverflyARMIData A data frame containing all ARMI data for generating the ggplot graphs.
-#' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions
+#' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
@@ -226,7 +237,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData) {
 #' @param data A data frame containing the Urban Riverfly species data to be plotted.
 #' @param riverflyspeciesData A data frame containing all Urban Riverfly species data for generating the ggplot graphs.
 #' @param taxaType The specific Urban Riverfly species to filter and plot.
-#' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions
+#' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date scale_y_continuous theme element_text ggtitle
 #' @importFrom stringr str_wrap
@@ -428,7 +439,7 @@ addRiverflySpeciesMarkers <- function(
 #' @param mapProxy A leaflet map proxy object.
 #' @param data A data frame containing the Other species data to be plotted.
 #' @param otherSpecies The specific Other species to filter and plot.
-#' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions
+#' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
 #' @noRd
 addOtherSpeciesMarkers <- function(mapProxy, data, otherSpecies) {
@@ -490,30 +501,28 @@ addOtherSpeciesMarkers <- function(mapProxy, data, otherSpecies) {
 #' @param mapProxy A leaflet map proxy object.
 #' @param data A data frame containing the Invasive species data to be plotted.
 #' @param invasiveType The specific Invasive species to filter and plot.
-#' @importFrom leaflet clearPopups clearGroup addCircleMarkers addPopups popupOptions pathOptions
+#' @importFrom leaflet clearPopups clearGroup addCircleMarkers addPopups popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
 #' @noRd
-addInvasiveSpeciesMarkers <- function(mapProxy, data, invasiveType) {
+addInvasiveSpeciesMarkers <- function(
+    mapProxy,
+    data,
+    invasiveType,
+    plot_palette
+) {
     mapProxy |> clearPopups() |> clearGroup("points")
 
     # Define the color palette and domain
     invasivePalette <- c(
-        brewer.pal(n = 9, name = "RdBu")[1],
-        brewer.pal(n = 9, name = "RdBu")[2],
-        brewer.pal(n = 9, name = "RdBu")[3],
-        brewer.pal(n = 9, name = "RdBu")[4],
-        brewer.pal(n = 9, name = "RdBu")[1],
-        brewer.pal(n = 9, name = "RdBu")[3]
+        plot_palette[1],
+        plot_palette[2],
+        plot_palette[3],
+        plot_palette[4],
+        plot_palette[1],
+        plot_palette[3]
     )
 
-    invasiveDomain <- c(
-        ">1000",
-        "100-999",
-        "10-99",
-        "1-9",
-        "Abundant (>33%)",
-        "Present (1-33%)"
-    )
+    invasiveDomain <- levels(data$abundance)
 
     pal <- colorFactor(
         palette = invasivePalette,
@@ -522,22 +531,22 @@ addInvasiveSpeciesMarkers <- function(mapProxy, data, invasiveType) {
     )
 
     # Filter data based on invasive species type
-    if (invasiveType %in% c("Signal crayfish", "Killer or demon shrimp")) {
+    if (invasiveType %in% c("signal_crayfish", "killer_demon_shrimp")) {
         data_filtered <- data |>
             filter(
-                `Invasive species` %in%
+                measurement %in%
                     invasiveType &
-                    Abundance %in% c(">1000", "100-999", "10-99", "1-9")
+                    abundance %in% c(">1000", "100-999", "10-99", "1-9")
             )
     } else if (
         invasiveType %in%
-            c("Himalayan balsam", "Japanese knotweed", "Giant hogweed")
+            c("himalayan_balsam", "japanese_knotweed", "giant_hogweed")
     ) {
         data_filtered <- data |>
             filter(
-                `Invasive species` %in%
+                measurement %in%
                     invasiveType &
-                    Abundance %in%
+                    abundance %in%
                         c("Abundant (>33%)", "Present (1-33%)")
             )
     } else {
@@ -560,19 +569,19 @@ addInvasiveSpeciesMarkers <- function(mapProxy, data, invasiveType) {
                         "<strong style='font-size:16px;'>Highest value in the last 3 years</strong>",
                         "<table style='width:100%; white-space: nowrap; margin-top: 10px;'>",
                         "<tr><td><strong>Organisation:</strong></td><td>",
-                        data_filtered$Organisation[i],
+                        data_filtered$organisation[i],
                         "</td></tr>",
                         "<tr><td><strong>BRC site ID:</strong></td><td>",
-                        data_filtered$`BRC site ID`[i],
+                        data_filtered$sampling_site[i],
                         "</td></tr>",
                         "<tr><td><strong>Survey date:</strong></td><td>",
-                        data_filtered$`Survey date`[i],
+                        data_filtered$date_time[i],
                         "</td></tr>",
                         "<tr><td><strong>Invasive species:</strong></td><td>",
-                        data_filtered$`Invasive species`[i],
+                        data_filtered$measurement[i],
                         "</td></tr>",
                         "<tr><td><strong>Abundance:</strong></td><td>",
-                        data_filtered$Abundance[i],
+                        data_filtered$abundance[i],
                         "</td></tr>",
                         "</table>",
                         "</div>"
@@ -581,7 +590,7 @@ addInvasiveSpeciesMarkers <- function(mapProxy, data, invasiveType) {
                 }),
                 radius = 6,
                 weight = 2,
-                fillColor = ~ pal(Abundance),
+                fillColor = ~ pal(abundance),
                 color = "black",
                 stroke = TRUE,
                 opacity = 0.5,

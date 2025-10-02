@@ -89,13 +89,6 @@ locations_list <- process_locations(
 BRC_locs <- locations_list$BRC
 Outfall_locs <- locations_list$Outfall
 
-# Helper function to create acceptable location identifiers
-acceptable_locs <- function(df) {
-    df |>
-        dplyr::mutate(identifiers = paste(Organisation, ID)) |>
-        dplyr::select(identifiers)
-}
-
 accept_BRC <- acceptable_locs(BRC_locs)
 accept_outfall <- acceptable_locs(Outfall_locs)
 
@@ -107,7 +100,7 @@ BRC_UrbRiverfly <- clean_data(
     col_name_end = "other_bullhead",
     sample_site = "sampling_site_riverfly",
     acceptable_site_orgs = accept_BRC,
-    data_type = "Urban Riverfly"
+    data_type_name = "Urban Riverfly"
 )
 
 # Water Quality data
@@ -117,7 +110,7 @@ BRC_WQ <- clean_data(
     col_name_end = "turbidity_NTU",
     sample_site = "wq_sampling_site",
     acceptable_site_orgs = accept_BRC,
-    data_type = "Water Quality"
+    data_type_name = "Water Quality"
 )
 
 # Urban Outfall Safari data
@@ -127,7 +120,7 @@ BRCUrbOutSaf <- clean_data(
     col_name_end = "outfall_aesthetics",
     sample_site = "outfall_sampling_site",
     acceptable_site_orgs = accept_outfall,
-    data_type = "Urban Outfall Safari"
+    data_type_name = "Urban Outfall Safari"
 )
 
 # Invasive Species data
@@ -135,9 +128,9 @@ BRCInvSpcs <- clean_data(
     input_df = BRC_full_form,
     col_name_start = "invasive_spp_sampling_date",
     col_name_end = "any_other_invasive_spp",
-    sample_site = "invasive_spp_sampling_date",
+    sample_site = "invasive_spp_sampling_site",
     acceptable_site_orgs = accept_BRC,
-    data_type = "Invasive Species"
+    data_type_name = "Invasive Species"
 )
 
 names(BRC_UrbRiverfly)[4] <- names(BRC_WQ)[3] <- names(BRC_locs)[
@@ -145,10 +138,10 @@ names(BRC_UrbRiverfly)[4] <- names(BRC_WQ)[3] <- names(BRC_locs)[
 ] <- names(BRCInvSpcs)[4] <- "sampling_site"
 
 # Add cleaned and processed data to package
-usethis::use_data(BRC_UrbRiverfly)
-usethis::use_data(BRC_WQ)
-usethis::use_data(BRC_locs)
-usethis::use_data(BRCInvSpcs)
+usethis::use_data(BRC_UrbRiverfly, overwrite = TRUE)
+usethis::use_data(BRC_WQ, overwrite = TRUE)
+usethis::use_data(BRC_locs, overwrite = TRUE)
+usethis::use_data(BRCInvSpcs, overwrite = TRUE)
 
 
 # Create SQLite tables for riverfly, water quality, and associated location identifiers
