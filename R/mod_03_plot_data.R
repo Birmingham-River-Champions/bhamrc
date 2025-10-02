@@ -13,7 +13,7 @@ mod_03_plot_data_ui <- function(id) {
   sidebarLayout(
     sidebarPanel(
       selectInput(
-        "metric",
+        ns("metric"),
         "Select survey:",
         choices = c(
           " ",
@@ -24,7 +24,7 @@ mod_03_plot_data_ui <- function(id) {
       conditionalPanel(
         condition = "input.metric == 'Urban Riverfly'",
         selectInput(
-          "Choose type of riverfly data to show",
+          ns("riverfly"),
           "Choose:",
           choices = c(
             " ",
@@ -35,13 +35,15 @@ mod_03_plot_data_ui <- function(id) {
         ),
         conditionalPanel(
           condition = "input.riverfly == 'ARMI'",
-          includeMarkdown(app_sys("app/www/text/ARMI_description.md"))
-        )
+          includeMarkdown(app_sys("app/www/text/ARMI_description.md")),
+          ns = ns
+        ),
+        ns = ns
       ),
       conditionalPanel(
         condition = "input.riverfly == 'Urban Riverfly species'",
         radioButtons(
-          "riverflySpecies",
+          ns("riverflySpecies"),
           "Urban Riverfly species",
           choices = c(
             "Cased caddisfly (Trichoptera)",
@@ -59,12 +61,13 @@ mod_03_plot_data_ui <- function(id) {
             "Flat-bodied stone clinger mayfly (Heptageniidae)",
             "Stonefly larvae (Plecoptera)"
           )
-        )
+        ),
+        ns = ns
       ),
       conditionalPanel(
         condition = "input.riverfly == 'Other species'",
         radioButtons(
-          "otherSpecies",
+          ns("otherSpecies"),
           "Other species",
           choices = c(
             "Non-biting midge larvae (Chironomidae)",
@@ -78,12 +81,13 @@ mod_03_plot_data_ui <- function(id) {
             "Freshwater limpet (Acroloxidae/Ancylidae)",
             "Bullhead (fish - Cottus gobio)"
           )
-        )
+        ),
+        ns = ns
       ),
       conditionalPanel(
         condition = "input.metric == 'Water Quality'",
         radioButtons(
-          "readingType",
+          ns("readingType"),
           "Choose water quality reading type:",
           choices = c(
             "Conductivity (mS)",
@@ -93,12 +97,13 @@ mod_03_plot_data_ui <- function(id) {
             "Nitrate (ppm)",
             "Turbidity (NTU)"
           )
-        )
+        ),
+        ns = ns
       ),
       conditionalPanel(
         condition = "input.metric == 'Invasive Species'",
         radioButtons(
-          "invasiveType",
+          ns("invasiveType"),
           "Choose invasive species:",
           choices = c(
             "Signal crayfish",
@@ -107,7 +112,8 @@ mod_03_plot_data_ui <- function(id) {
             "Giant hogweed",
             "Japanese knotweed"
           )
-        )
+        ),
+        ns = ns
       ),
     ),
     mainPanel(
@@ -243,10 +249,18 @@ mod_03_plot_data_server <- function(id) {
           input$otherSpecies
         )
       } else if (input$metric == "Invasive Species") {
+        plot_palette <- brewer.pal(n = 9, name = "RdBu")
+        BRCInvSpcs_Plot_Recent <- make_recent_inv_spp(
+          BRCInvSpcs,
+          BRC_locs,
+          plot_palette
+        )
+
         addInvasiveSpeciesMarkers(
           mapProxy,
           BRCInvSpcs_Plot_Recent,
-          input$invasiveType
+          input$invasiveType,
+          plot_palette
         )
       }
     }
