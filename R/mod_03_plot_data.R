@@ -224,7 +224,11 @@ mod_03_plot_data_server <- function(id) {
       addPolygonsAndLines(mapProxy, zoomLevel)
       mapProxy |> clearControls()
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
-        riverflyARMIData <- Riverfly_ARMI_Plot_SiteAv
+        ARMI_data <- make_riverfly_ARMI()
+        riverflyARMIData <- make_ARMI_plot_data(
+          ARMI_data,
+          Unique_BRC_Sampling_Locs
+        )
         addARMIMarkers(mapProxy, riverflyARMIData, Riverfly_ARMI_Plot)
       } else if (
         input$metric == "Urban Riverfly" &&

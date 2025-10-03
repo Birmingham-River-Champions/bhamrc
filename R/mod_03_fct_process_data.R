@@ -72,3 +72,78 @@ make_riverfly_ARMI <- function() {
         dplyr::select(-contains("Number of"))
     )
 }
+
+make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
+  ##Now bring this in
+  Riverfly_ARMI_Plot <-
+    left_join(
+      Riverfly_ARMI_Calc,
+      Unique_BRC_Sampling_Locs,
+      by = c("BRC sampling site ID...5" = "BRC sampling site ID")
+    )
+  ##And colour code the point according to the ARMI score
+  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot %>%
+    mutate(
+      ARMI_Plot_Colour = cut(
+        ARMI,
+        breaks = c(-Inf, 5:14, Inf),
+        labels = brewer.pal(n = 11, name = "RdBu")
+      )
+    ) %>% #11=max no. colours, xtreme red to xtreme blue- Blue rather than green so its colorblind friendly
+    dplyr::select(Organisation, everything())
+
+  #######Remove the parenthsised organisation from the site ID
+  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot %>%
+    dplyr::rename(`BRC site ID` = "BRC sampling site ID...5")
+  Riverfly_ARMI_Plot$`BRC site ID` <- gsub(
+    "\\s*\\(.*\\)$",
+    "",
+    Riverfly_ARMI_Plot$`BRC site ID`
+  )
+  ##Now also flip the names around so the RIVER comes after the Site
+  flip_site_names <- function(site_name) {
+    # Use regex to capture the two parts of the string
+    gsub("^(\\w+(?: \\w+)*),\\s*(.*)$", "\\2, \\1", site_name)
+  }
+  # Code was from ChatGPT initially designed for multiple columns, but works fine.
+  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot %>%
+    mutate(across(c("BRC site ID"), flip_site_names))
+
+  #dropping unwanted columns and arrange by date
+  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot %>%
+    dplyr::select(-c(Easting, Northing)) %>%
+    mutate(`Survey date` = dmy(`Survey date`)) %>%
+    arrange(`BRC site ID`, `Survey date`)
+
+  ###Anonymise those that want to be based on the sign up sheet
+  Riverfly_ARMI_Plot$Organisation <- ifelse(
+    Riverfly_ARMI_Plot$Organisation == "Friends of Lifford Reservoir",
+    "Anonymous",
+    Riverfly_ARMI_Plot$Organisation
+  )
+
+  ##Now get average value for plotting purposes - in time I want to only select the last 12 months
+  Riverfly_ARMI_Plot_SiteAv <- Riverfly_ARMI_Plot[, c(
+    "BRC site ID",
+    "ARMI",
+    "Organisation"
+  )] %>%
+    group_by(`BRC site ID`, Organisation) %>%
+    summarise_all(mean) %>%
+    mutate(
+      ARMI_Plot_Colour = cut(
+        ARMI,
+        breaks = c(-Inf, c(5:14), Inf),
+        labels = c(brewer.pal(n = 11, name = "RdBu"))
+      )
+    ) %>%
+    ungroup() #11=max no. colours, xtreme red to xtreme blue
+  ##
+  Riverfly_ARMI_Plot_SiteAv <- left_join(
+    Riverfly_ARMI_Plot_SiteAv,
+    unique(Riverfly_ARMI_Plot[, c("BRC site ID", "LAT", "LONG")]),
+    by = "BRC site ID"
+  )
+
+  return(Riverfly_ARMI_Plot_SiteAv)
+}
