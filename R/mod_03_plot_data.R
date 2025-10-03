@@ -241,6 +241,10 @@ mod_03_plot_data_server <- function(id) {
       ) {
         # Filter by the selected Taxa
         selectedTaxa <- input$riverflySpecies
+
+        # need to rename sampling_site across datasets
+        Riverfly_Species_Plot_Recent <- species_plots()
+
         riverflyspeciesData_Recent_Map <- Riverfly_Species_Plot_Recent |>
           filter(Taxa == selectedTaxa)
         addRiverflySpeciesMarkers(

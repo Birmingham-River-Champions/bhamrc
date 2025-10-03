@@ -99,72 +99,65 @@ flip_site_names <- function(site_name) {
     gsub("^(\\w+(?: \\w+)*),\\s*(.*)$", "\\2, \\1", site_name)
 }
 
-species_plots <- function() {
-    Riverfly_Species_Plot <- left_join(
-        Riverfly_data,
-        Unique_BRC_Sampling_Locs,
-        by = c("BRC sampling site ID...5" = "BRC sampling site ID")
-    ) %>%
-        dplyr::select(-c(Easting, Northing)) %>%
-        dplyr::select(Organisation, everything())
-    ###Anonymise those that want to be based on the sign up sheet
-    Riverfly_Species_Plot$Organisation <- ifelse(
-        Riverfly_Species_Plot$Organisation == "Friends of Lifford Reservoir",
-        "Anonymous",
-        Riverfly_Species_Plot$Organisation
-    )
+#' species_plots
+#'
+#' Function to create the data for the Riverfly plots
+#' @param sampling_locs The sampling locations for Riverfly data
+#' @return a list with four elements: Riverfly_Species_Plot which
+#' has all Riverfly species, Riverfly_Species_Plot_Recent which has
+#' all observations of Riverfly species for the past year,
+#' Other_Species_Plot which has all observations of other species, and
+#' Other_Species_Plot_Recent
+#' @importFrom dplyr select rename group_by mutate ungroup
+#' @importFrom tidyr pivot_longer
+species_plots <- function(sampling_locs) {
+    con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite")
+    riverfly_data <- DBI::dbReadTable(con, "riverfly")
+    dbDisconnect(con)
 
+    Riverfly_Species_Plot <- left_join(
+        riverfly_data,
+        sampling_locs
+    ) |>
+        dplyr::select(-c(Easting, Northing)) |>
+        dplyr::select(organisation, everything())
+    ###Anonymise those that want to be based on the sign up sheet
+    Riverfly_Species_Plot$organisation <- ifelse(
+        Riverfly_Species_Plot$organisation == "Friends of Lifford Reservoir",
+        "Anonymous",
+        Riverfly_Species_Plot$organisation
+    )
     #######Rename site ID, remove the parenthsised organisation from the site ID and flip
-    Riverfly_Species_Plot <- Riverfly_Species_Plot %>%
-        dplyr::rename(`BRC site ID` = "BRC sampling site ID...5")
-    Riverfly_Species_Plot$`BRC site ID` <- gsub(
+    Riverfly_Species_Plot$sampling_site <- gsub(
         "\\s*\\(.*\\)$",
         "",
-        Riverfly_Species_Plot$`BRC site ID`
+        Riverfly_Species_Plot$sampling_site
     )
-    Riverfly_Species_Plot <- Riverfly_Species_Plot %>%
-        mutate(across(c("BRC site ID"), flip_site_names))
-
+    Riverfly_Species_Plot <- Riverfly_Species_Plot |>
+        mutate(across(sampling_site, flip_site_names))
+    browser()
     #########Create 2 separate sets - One of other species and a table (like invasive species) - do this first for now
-    Riverfly_Other_Species_Plot <- Riverfly_Species_Plot %>%
-        dplyr::select(-contains("Number of"))
+    Riverfly_Other_Species_Plot <- Riverfly_Species_Plot |>
+        dplyr::select(cased_caddifly:stonefly_plecoptera)
     ########Then the other set for Urban Riverfly taxa and a ggplot (like ARMI) - did this second here so I can overwrite df name
-    Riverfly_Species_Plot <- Riverfly_Species_Plot %>%
-        dplyr::select(-contains("Additional taxa"))
-
-    # Identify the columns that match the pattern "^Number of"
-    # Replace the column names for those that match the pattern
-    names(Riverfly_Species_Plot)[grepl(
-        "^Number of",
-        names(Riverfly_Species_Plot)
-    )] <-
-        c(
-            "Cased caddisfly (Trichoptera)",
-            "Caseless caddisfly (Trichoptera)",
-            "Olive mayfly (Baetidae)",
-            "Blue-winged olive mayfly (Ephemerellidae)",
-            "Freshwater shrimp (Gammaridae)",
-            "Freshwater hoglouse (Asellidae)",
-            "Blackfly larvae (Simuliidae)",
-            "Freshwater worm (Oligochaeta)",
-            "Freshwater leech (Hirudinea)",
-            "Freshwater snail (Gastropoda)",
-            "Freshwater beetle (Coleoptera)",
-            "Green drake mayfly (Ephemeridae)",
-            "Flat-bodied stone clinger mayfly (Heptageniidae)",
-            "Stonefly larvae (Plecoptera)"
-        )
+    Riverfly_Species_Plot <- Riverfly_Species_Plot |>
+        dplyr::select(-contains("other_"))
 
     ###Melt - good to go for ggplot, converted to numeric as it represents y-axis (labels edited in ggplot code in server below)
-    Riverfly_Species_Plot <- Riverfly_Species_Plot %>%
-        melt(
-            .,
-            id = c("Organisation", "BRC site ID", "Survey date", "LONG", "LAT")
-        ) %>%
-        dplyr::rename(Taxa = "variable", Abundance = "value") %>%
-        group_by(`BRC site ID`, Taxa) %>%
-        filter(!all(Abundance == "0")) %>%
-        ungroup() %>%
+    Riverfly_Species_Plot <- Riverfly_Species_Plot |>
+        pivot_longer(
+            -c(
+                organisation,
+                survey_date,
+                sampling_site,
+                LONG,
+                LAT
+            )
+        ) |>
+        dplyr::rename(taxa = "variable", abundance = "value") |>
+        group_by(sampling_site, taxa) |>
+        filter(!all(abundance == "0")) |>
+        ungroup() |>
         mutate(
             Abundance = as.numeric(case_when(
                 Abundance == "0" ~ 0,
@@ -173,16 +166,16 @@ species_plots <- function() {
                 Abundance == "100-999" ~ 3,
                 Abundance == ">1000" ~ 4
             ))
-        ) %>%
-        mutate(`Survey date` = dmy(`Survey date`))
+        ) |>
+        mutate(survey_date = dmy(survey_date))
 
     ###Then find the highest/most recent - factor fine for the purpose of the leaflet marker
-    Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot %>%
-        filter(`Survey date` >= Sys.Date() - years(3)) %>%
-        arrange(`BRC site ID`, Taxa, desc(Abundance), desc(`Survey date`)) %>%
-        group_by(`BRC site ID`, Taxa) %>%
-        slice_head(n = 1) %>%
-        ungroup() %>%
+    Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot |>
+        filter(survey_date >= Sys.Date() - years(3)) |>
+        arrange(sampling_site, taxa, desc(abundance), desc(survey_date)) |>
+        group_by(sampling_site, taxa) |>
+        slice_head(n = 1) |>
+        ungroup() |>
         mutate(
             Riverfly_Species_Colour = factor(
                 case_when(
@@ -195,47 +188,37 @@ species_plots <- function() {
                 levels = brewer.pal(n = 5, name = "Greys")
             )
         )
-    ################Now go back to the 'other species'############################
-    names(Riverfly_Other_Species_Plot)[grepl(
-        "^Additional taxa",
-        names(Riverfly_Other_Species_Plot)
-    )] <-
-        c(
-            "Non-biting midge larvae (Chironomidae)",
-            "Cranefly larvae (Dicranota sp.)",
-            "Other cranefly larvae (Tipulidae)",
-            "Water mite (Hydracarina)",
-            "Net spinning (caseless) caddisfly (Hydropsychidae)",
-            "Green sedge (caseless) caddisfly (Rhyacophilidae)",
-            "Ramshorn snail (Planorbidae)",
-            "Freshwater mollusc (Sphaeriidae)",
-            "Freshwater limpet (Acroloxidae/Ancylidae)",
-            "Bullhead (fish - Cottus gobio)"
-        )
 
     ##Organise - this plot df not used in the end. Seemed off trying to plot inconsistently ID'd taxa. So did a pop up table of the most recent instead (like invasive)
-    Riverfly_Other_Species_Plot <- Riverfly_Other_Species_Plot %>%
+    Riverfly_Other_Species_Plot <- Riverfly_Other_Species_Plot |>
         melt(
             .,
-            id = c("Organisation", "BRC site ID", "Survey date", "LONG", "LAT")
-        ) %>%
-        dplyr::rename(Taxa = "variable", Abundance = "value") %>%
-        group_by(`BRC site ID`, Taxa) %>%
-        filter(!all(Abundance == "0")) %>%
-        ungroup() %>%
+            id = c(organisation, sampling_site, survey_date, LONG, LAT)
+        ) |>
+        dplyr::rename(taxa = "variable", abundance = "value") |>
+        group_by(sampling_site, Taxa) |>
+        filter(!all(abundance == "0")) |>
+        ungroup() |>
         mutate(
-            Abundance = factor(
-                Abundance,
+            abundance = factor(
+                abundance,
                 levels = c(">1000", "100-999", "10-99", "1-9")
             )
-        ) %>%
-        mutate(`Survey date` = dmy(`Survey date`))
+        ) |>
+        mutate(survey_date = dmy(survey_date))
 
     ###Then find the highest/most recent
-    Riverfly_Other_Species_Plot_Recent <- Riverfly_Other_Species_Plot %>%
-        filter(`Survey date` >= Sys.Date() - years(3)) %>%
-        arrange(`BRC site ID`, Taxa, Abundance, desc(`Survey date`)) %>%
-        group_by(`BRC site ID`, Taxa) %>%
-        slice_head(n = 1) %>%
+    Riverfly_Other_Species_Plot_Recent <- Riverfly_Other_Species_Plot |>
+        filter(survey_date >= Sys.Date() - years(3)) |>
+        arrange(sampling_site, taxa, abundance, desc(survey_date)) |>
+        group_by(sampling_site, taxa) |>
+        slice_head(n = 1) |>
         ungroup()
+
+    return(list(
+        Riverfly_Species_Plot,
+        Riverfly_Species_Plot_Recent,
+        Riverfly_Other_Species_Plot,
+        Riverfly_Other_Species_Plot_Recent
+    ))
 }

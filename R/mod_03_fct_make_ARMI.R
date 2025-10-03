@@ -119,12 +119,7 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
       sampling_site
     ))
   ##Now also flip the names around so the RIVER comes after the Site
-  # I think this is the same as the other flip_site_names function but leaving
-  # commented for now in case it is different for ARMI than invasive species
-  # flip_site_names <- function(site_name) {
-  #   # Use regex to capture the two parts of the string
-  #   gsub("^(\\w+(?: \\w+)*),\\s*(.*)$", "\\2, \\1", site_name)
-  # }
+
   # Code was from ChatGPT initially designed for multiple columns, but works fine.
   Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
     mutate(across(c(sampling_site), flip_site_names)) |>
