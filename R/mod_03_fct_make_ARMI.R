@@ -1,5 +1,12 @@
+#' make_riverfly_ARMI
+#'
+#' @description A function to add the ARMI values to the riverfly data
+#' @return The data frame with riverfly data and an appended ARMI column.
+#' @importFrom DBI dbReadTable dbConnect dbDisconnect
+#' @importFrom dplyr mutate mutate_at left_join select vars c_across
+#' @importFrom dplyr summarise group_by join_by
 make_riverfly_ARMI <- function() {
-  con <- dbi::dbConnect(RSQLite::SQLite(), "data.sqlite")
+  con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite")
   riverfly_data <- DBI::dbReadTable(con, "riverfly")
   dbDisconnect(con)
 
@@ -54,8 +61,9 @@ make_riverfly_ARMI <- function() {
       .cols = matches("worms"),
       .fns = ~ ifelse(. == '>1000', '-3', .)
     )) |>
-    mutate_at(vars(matches("Number of")), as.numeric)
+    dplyr::mutate(across(cased_caddisfly:other_bullhead, as.numeric))
 
+  # Sum ARMI observations across taxa and remove individual species observations
   Riverfly_ARMI_Calc <-
     as.data.frame(
       Riverfly_ARMI |>
@@ -63,87 +71,94 @@ make_riverfly_ARMI <- function() {
         mutate(
           ARMI = sum(
             c_across(
-              matches("Number of")
+              cased_caddisfly:other_bullhead
             ),
             na.rm = TRUE
           )
         ) |> #,
         ##Ntaxa = sum(c_across(matches("Number of")) > 0, na.rm = TRUE))|> THOUGHT IT WAS CALCULATED LIKE ASPT, BUT IS ACTUALLY LIKE BMWP
-        dplyr::select(-contains("Number of"))
+        dplyr::select(!(cased_caddisfly:other_bullhead))
     )
+  return(Riverfly_ARMI_Calc)
 }
 
+#' make_ARMI_plot_data
+#'
+#' @description A function to make the plot object for the ARMI map and tooltip graphs
+#' @param Riverfly_ARMI_Calc A dataframe output from make_riverfly_ARMI that contains
+#' riverfly data and the ARMI column
+#' @param Unique_BRC_Sampling_Locs a data frame that contains the geographic coordinates
+#' for the sampling sites.
+#' @return averaged site ARMI calculations to plot on the riverfly figure
+#' @importFrom dplyr left_join mutate summarise_all
 make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
   ##Now bring this in
   Riverfly_ARMI_Plot <-
     left_join(
       Riverfly_ARMI_Calc,
       Unique_BRC_Sampling_Locs,
-      by = c("BRC sampling site ID...5" = "BRC sampling site ID")
+      by = c("sampling_site" = "ID")
     )
+
   ##And colour code the point according to the ARMI score
-  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot %>%
+  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
     mutate(
       ARMI_Plot_Colour = cut(
         ARMI,
         breaks = c(-Inf, 5:14, Inf),
         labels = brewer.pal(n = 11, name = "RdBu")
       )
-    ) %>% #11=max no. colours, xtreme red to xtreme blue- Blue rather than green so its colorblind friendly
-    dplyr::select(Organisation, everything())
+    ) |> #11=max no. colours, xtreme red to xtreme blue- Blue rather than green so its colorblind friendly
+    dplyr::select(organisation, everything())
 
   #######Remove the parenthsised organisation from the site ID
-  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot %>%
-    dplyr::rename(`BRC site ID` = "BRC sampling site ID...5")
-  Riverfly_ARMI_Plot$`BRC site ID` <- gsub(
-    "\\s*\\(.*\\)$",
-    "",
-    Riverfly_ARMI_Plot$`BRC site ID`
-  )
+  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
+    mutate(gsub(
+      "\\s*\\(.*\\)$",
+      "",
+      sampling_site
+    ))
   ##Now also flip the names around so the RIVER comes after the Site
-  flip_site_names <- function(site_name) {
-    # Use regex to capture the two parts of the string
-    gsub("^(\\w+(?: \\w+)*),\\s*(.*)$", "\\2, \\1", site_name)
-  }
+  # I think this is the same as the other flip_site_names function but leaving
+  # commented for now in case it is different for ARMI than invasive species
+  # flip_site_names <- function(site_name) {
+  #   # Use regex to capture the two parts of the string
+  #   gsub("^(\\w+(?: \\w+)*),\\s*(.*)$", "\\2, \\1", site_name)
+  # }
   # Code was from ChatGPT initially designed for multiple columns, but works fine.
-  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot %>%
-    mutate(across(c("BRC site ID"), flip_site_names))
+  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
+    mutate(across(c(sampling_site), flip_site_names)) |>
+    dplyr::select(-c(Easting, Northing)) |>
+    mutate(survey_date = dmy(survey_date)) |>
+    arrange(sampling_site, survey_date)
 
-  #dropping unwanted columns and arrange by date
-  Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot %>%
-    dplyr::select(-c(Easting, Northing)) %>%
-    mutate(`Survey date` = dmy(`Survey date`)) %>%
-    arrange(`BRC site ID`, `Survey date`)
-
-  ###Anonymise those that want to be based on the sign up sheet
-  Riverfly_ARMI_Plot$Organisation <- ifelse(
-    Riverfly_ARMI_Plot$Organisation == "Friends of Lifford Reservoir",
+  # Make organisation anonymous if desired
+  Riverfly_ARMI_Plot$organisation <- ifelse(
+    Riverfly_ARMI_Plot$organisation == "Friends of Lifford Reservoir",
     "Anonymous",
-    Riverfly_ARMI_Plot$Organisation
+    Riverfly_ARMI_Plot$organisation
   )
 
   ##Now get average value for plotting purposes - in time I want to only select the last 12 months
-  Riverfly_ARMI_Plot_SiteAv <- Riverfly_ARMI_Plot[, c(
-    "BRC site ID",
-    "ARMI",
-    "Organisation"
-  )] %>%
-    group_by(`BRC site ID`, Organisation) %>%
-    summarise_all(mean) %>%
+  Riverfly_ARMI_Plot_SiteAv <- Riverfly_ARMI_Plot |>
+    select(sampling_site, ARMI, organisation) |>
+    group_by(sampling_site, organisation) |>
+    summarise_all(mean) |>
     mutate(
       ARMI_Plot_Colour = cut(
         ARMI,
         breaks = c(-Inf, c(5:14), Inf),
         labels = c(brewer.pal(n = 11, name = "RdBu"))
       )
-    ) %>%
+    ) |>
     ungroup() #11=max no. colours, xtreme red to xtreme blue
   ##
+
   Riverfly_ARMI_Plot_SiteAv <- left_join(
     Riverfly_ARMI_Plot_SiteAv,
-    unique(Riverfly_ARMI_Plot[, c("BRC site ID", "LAT", "LONG")]),
-    by = "BRC site ID"
+    unique(Riverfly_ARMI_Plot[, c("sampling_site", "LAT", "LONG")]),
+    multiple = "first"
   )
 
-  return(Riverfly_ARMI_Plot_SiteAv)
+  return(list(Riverfly_ARMI_Plot, Riverfly_ARMI_Plot_SiteAv))
 }

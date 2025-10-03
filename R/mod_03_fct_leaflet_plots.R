@@ -82,7 +82,7 @@ addPolygonsAndLines <- function(mapProxy, zoomLevel) {
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
 #' @noRd
-addARMIMarkers <- function(mapProxy, data, riverflyARMIData) {
+addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
     pal <- colorFactor(
         palette = levels(data$ARMI_Plot_Colour),
         domain = data$ARMI_Plot_Colour
@@ -92,12 +92,12 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData) {
 
     if (!is.null(data) && nrow(data) > 0) {
         plotPopups <- function(i, popup_width) {
-            site_id <- data$`BRC site ID`[i]
-            organisation <- data$Organisation[i]
+            site_id <- data$sampling_site[i]
+            organisation <- data$organisation[i]
 
             riverflyARMIData_SiteID <- filter(
                 riverflyARMIData,
-                `BRC site ID` == site_id
+                sampling_site == site_id
             )
             ##Some organisations don't sound right with "the" in front
             organisation <- if (
@@ -111,7 +111,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData) {
 
             # Calculate date range buffer if there's only one sample
             date_range <- range(
-                riverflyARMIData_SiteID$`Survey date`,
+                riverflyARMIData_SiteID$survey_date,
                 na.rm = TRUE
             )
             if (diff(date_range) == 0) {
@@ -135,7 +135,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData) {
             p <- ggplot(
                 riverflyARMIData_SiteID,
                 aes(
-                    x = as.Date(`Survey date`),
+                    x = as.Date(survey_date),
                     y = ARMI,
                     fill = cut(
                         ARMI,
