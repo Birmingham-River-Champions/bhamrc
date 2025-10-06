@@ -318,6 +318,7 @@ addRiverflySpeciesMarkers <- function(
                 organisation <- organisation # This line is optional, just for clarity
             }
             # Custom shortening for "Flat bodied stone clinger mayfly"
+
             taxaType_CommonName <- gsub(
                 "\\s*\\([^\\)]+\\)",
                 "",
