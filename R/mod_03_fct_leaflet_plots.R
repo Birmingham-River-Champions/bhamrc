@@ -81,6 +81,7 @@ addPolygonsAndLines <- function(mapProxy, zoomLevel) {
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
+#' @importFrom leafpop popupGraph
 #' @noRd
 addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
     pal <- colorFactor(
@@ -202,6 +203,9 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                     popup_width <- 600
                     popup_height <- 350
                 }
+            } else {
+                popup_width <- 600
+                popup_height <- 350
             }
 
             plots <- lapply(1:nrow(data), function(i) {
@@ -241,6 +245,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date scale_y_continuous theme element_text ggtitle
 #' @importFrom stringr str_wrap
+#' @importFrom leafpop popupGraph
 #' @noRd
 addRiverflySpeciesMarkers <- function(
     mapProxy,

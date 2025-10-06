@@ -225,6 +225,9 @@ mod_03_plot_data_server <- function(id) {
       mapProxy |> clearControls()
 
       # need to rename sampling_site across datasets
+      Unique_BRC_Sampling_Locs <- read.csv(app_sys(
+        "extdata/Unique_BRC_Sampling_Locs.csv"
+      ))
       Riverfly_Species_Plot_All <- species_plots(Unique_BRC_Sampling_Locs)
       Riverfly_Species_Plot <- Riverfly_Species_Plot_All[[1]]
       Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot_All[[2]]
@@ -234,15 +237,12 @@ mod_03_plot_data_server <- function(id) {
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
         # Get the right data for ARMI
         ARMI_data <- make_riverfly_ARMI()
-        Unique_BRC_Sampling_Locs <- read.csv(app_sys(
-          "extdata/Unique_BRC_Sampling_Locs.csv"
-        ))
         riverflyARMIDataList <- make_ARMI_plot_data(
           ARMI_data,
           Unique_BRC_Sampling_Locs
         )
-        riverflyARMIData <- riverflyARMIDataList$riverflyARMIData
-        Riverfly_ARMI_Plot <- riverflyARMIDataList$Riverfly_ARMI_Plot
+        riverflyARMIData <- riverflyARMIDataList[[2]]
+        Riverfly_ARMI_Plot <- riverflyARMIDataList[[1]]
         addARMIMarkers(mapProxy, riverflyARMIData, Riverfly_ARMI_Plot, input)
       } else if (
         input$metric == "Urban Riverfly" &&
