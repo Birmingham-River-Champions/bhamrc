@@ -12,7 +12,7 @@ riverfly_spp_bw <- list(
     "freshwater_beetle" = "Freshwater beetle (Coleoptera)",
     "green_drake_mayfly" = "Green drake mayfly (Ephemeridae)",
     "flat_bodied_stone_clinger_mayfly" = "Flat-bodied stone clinger mayfly (Heptageniidae)",
-    "stonefly_plectoptera" = "Stonefly larvae (Plecoptera)"
+    "stonefly_plecoptera" = "Stonefly larvae (Plecoptera)"
 )
 
 other_spp_bw <- list(
@@ -22,7 +22,7 @@ other_spp_bw <- list(
     "other_hydracarina" = "Water mite (Hydracarina)",
     "other_hydropsychidae" = "Net spinning (caseless) caddisfly (Hydropsychidae)",
     "other_rhyacophilidae" = "Green sedge (caseless) caddisfly (Rhyacophilidae)",
-    "other_planobidae" = "Ramshorn snail (Planorbidae)",
+    "other_planorbidae" = "Ramshorn snail (Planorbidae)",
     "other_sphaeriidae" = "Freshwater mollusc (Sphaeriidae)",
     "other_acroloxidae_ancylidae" = "Freshwater limpet (Acroloxidae/Ancylidae)",
     "other_bullhead" = "Bullhead (fish - Cottus gobio)"

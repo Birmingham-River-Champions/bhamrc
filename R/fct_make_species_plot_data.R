@@ -6,7 +6,7 @@
 #' @importFrom dplyr left_join select rename arrange filter mutate across group_by slice_head ungroup
 #' @importFrom tidyr pivot_longer drop_na
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom lubridate dmy
+#' @importFrom lubridate dmy years
 #' @noRd
 make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
     BRCInvSpcs_Plot <- ##Needed to make a dataframe and not a tibble for melt to work
@@ -108,19 +108,27 @@ flip_site_names <- function(site_name) {
 #' all observations of Riverfly species for the past year,
 #' Other_Species_Plot which has all observations of other species, and
 #' Other_Species_Plot_Recent
-#' @importFrom dplyr select rename group_by mutate ungroup
+#' @importFrom dplyr select rename group_by mutate ungroup case_when
 #' @importFrom tidyr pivot_longer
 species_plots <- function(sampling_locs) {
+    # Connect to the DB to pull riverfly data
     con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite")
     riverfly_data <- DBI::dbReadTable(con, "riverfly")
     dbDisconnect(con)
 
+    # Join the riverfly data with the locations data to get lat and long
     Riverfly_Species_Plot <- left_join(
         riverfly_data,
-        sampling_locs
+        sampling_locs[, c(
+            "ID",
+            "LAT",
+            "LONG"
+        )],
+        by = c("sampling_site" = "ID"),
+        multiple = "first"
     ) |>
-        dplyr::select(-c(Easting, Northing)) |>
         dplyr::select(organisation, everything())
+
     ###Anonymise those that want to be based on the sign up sheet
     Riverfly_Species_Plot$organisation <- ifelse(
         Riverfly_Species_Plot$organisation == "Friends of Lifford Reservoir",
@@ -135,13 +143,25 @@ species_plots <- function(sampling_locs) {
     )
     Riverfly_Species_Plot <- Riverfly_Species_Plot |>
         mutate(across(sampling_site, flip_site_names))
-    browser()
+
     #########Create 2 separate sets - One of other species and a table (like invasive species) - do this first for now
     Riverfly_Other_Species_Plot <- Riverfly_Species_Plot |>
-        dplyr::select(cased_caddifly:stonefly_plecoptera)
+        dplyr::select(
+            survey_date:sampling_site,
+            organisation,
+            LAT,
+            LONG,
+            one_of(names(other_spp_bw))
+        )
     ########Then the other set for Urban Riverfly taxa and a ggplot (like ARMI) - did this second here so I can overwrite df name
     Riverfly_Species_Plot <- Riverfly_Species_Plot |>
-        dplyr::select(-contains("other_"))
+        dplyr::select(
+            survey_date:sampling_site,
+            organisation,
+            LAT,
+            LONG,
+            one_of(names(riverfly_spp_bw))
+        )
 
     ###Melt - good to go for ggplot, converted to numeric as it represents y-axis (labels edited in ggplot code in server below)
     Riverfly_Species_Plot <- Riverfly_Species_Plot |>
@@ -154,17 +174,17 @@ species_plots <- function(sampling_locs) {
                 LAT
             )
         ) |>
-        dplyr::rename(taxa = "variable", abundance = "value") |>
+        dplyr::rename(taxa = "name", abundance = "value") |>
         group_by(sampling_site, taxa) |>
         filter(!all(abundance == "0")) |>
         ungroup() |>
         mutate(
-            Abundance = as.numeric(case_when(
-                Abundance == "0" ~ 0,
-                Abundance == "1-9" ~ 1,
-                Abundance == "10-99" ~ 2,
-                Abundance == "100-999" ~ 3,
-                Abundance == ">1000" ~ 4
+            abundance = as.numeric(case_when(
+                abundance == "0" ~ 0,
+                abundance == "1-9" ~ 1,
+                abundance == "10-99" ~ 2,
+                abundance == "100-999" ~ 3,
+                abundance == ">1000" ~ 4
             ))
         ) |>
         mutate(survey_date = dmy(survey_date))
@@ -179,11 +199,11 @@ species_plots <- function(sampling_locs) {
         mutate(
             Riverfly_Species_Colour = factor(
                 case_when(
-                    Abundance == 0 ~ brewer.pal(n = 5, name = "Greys")[1],
-                    Abundance == 1 ~ brewer.pal(n = 5, name = "Greys")[2],
-                    Abundance == 2 ~ brewer.pal(n = 5, name = "Greys")[3],
-                    Abundance == 3 ~ brewer.pal(n = 5, name = "Greys")[4],
-                    Abundance == 4 ~ brewer.pal(n = 5, name = "Greys")[5]
+                    abundance == 0 ~ brewer.pal(n = 5, name = "Greys")[1],
+                    abundance == 1 ~ brewer.pal(n = 5, name = "Greys")[2],
+                    abundance == 2 ~ brewer.pal(n = 5, name = "Greys")[3],
+                    abundance == 3 ~ brewer.pal(n = 5, name = "Greys")[4],
+                    abundance == 4 ~ brewer.pal(n = 5, name = "Greys")[5]
                 ),
                 levels = brewer.pal(n = 5, name = "Greys")
             )
@@ -191,12 +211,11 @@ species_plots <- function(sampling_locs) {
 
     ##Organise - this plot df not used in the end. Seemed off trying to plot inconsistently ID'd taxa. So did a pop up table of the most recent instead (like invasive)
     Riverfly_Other_Species_Plot <- Riverfly_Other_Species_Plot |>
-        melt(
-            .,
-            id = c(organisation, sampling_site, survey_date, LONG, LAT)
+        pivot_longer(
+            -c(organisation, sampling_site, survey_date, LONG, LAT)
         ) |>
-        dplyr::rename(taxa = "variable", abundance = "value") |>
-        group_by(sampling_site, Taxa) |>
+        dplyr::rename(taxa = "name", abundance = "value") |>
+        group_by(sampling_site, taxa) |>
         filter(!all(abundance == "0")) |>
         ungroup() |>
         mutate(

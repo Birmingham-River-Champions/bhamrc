@@ -250,7 +250,7 @@ addRiverflySpeciesMarkers <- function(
 ) {
     mapProxy |> clearPopups() |> clearGroup("points")
 
-    riverflyspeciesData_Recent_Map <- data |> filter(Taxa == taxaType)
+    riverflyspeciesData_Recent_Map <- data |> filter(taxa == taxaType)
     pal <- colorFactor(
         palette = levels(
             riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
@@ -285,14 +285,14 @@ addRiverflySpeciesMarkers <- function(
     } else {
         # Proceed if riverflyspeciesData_Recent_Map data is available
         plotPopups <- function(i, popup_width) {
-            site_id <- riverflyspeciesData_Recent_Map$`BRC site ID`[i]
-            organisation <- riverflyspeciesData_Recent_Map$Organisation[
+            site_id <- riverflyspeciesData_Recent_Map$sampling_site[i]
+            organisation <- riverflyspeciesData_Recent_Map$organisation[
                 i
             ]
 
             riverflyspeciesData_All_ggplot <- filter(
                 riverflyspeciesData,
-                `BRC site ID` == site_id & Taxa == taxaType
+                sampling_site == site_id & taxa == taxaType
             )
             # Custom changing of some organisations (those ) for "Flat bodied stone clinger mayfly"
             organisation <- if (
@@ -304,6 +304,7 @@ addRiverflySpeciesMarkers <- function(
                 organisation <- organisation # This line is optional, just for clarity
             }
             # Custom shortening for "Flat bodied stone clinger mayfly"
+
             taxaType_CommonName <- gsub(
                 "\\s*\\([^\\)]+\\)",
                 "",
@@ -315,7 +316,7 @@ addRiverflySpeciesMarkers <- function(
 
             # Calculate date range buffer if there's only one sample
             date_range <- range(
-                riverflyspeciesData_All_ggplot$`Survey date`,
+                riverflyspeciesData_All_ggplot$survey_date,
                 na.rm = TRUE
             )
             if (diff(date_range) == 0) {
@@ -339,10 +340,10 @@ addRiverflySpeciesMarkers <- function(
             p <- ggplot(
                 riverflyspeciesData_All_ggplot,
                 aes(
-                    x = as.Date(`Survey date`),
-                    y = Abundance,
+                    x = as.Date(survey_date),
+                    y = abundance,
                     fill = cut(
-                        Abundance,
+                        abundance,
                         breaks = c(-Inf, 0:4),
                         labels = c(
                             "0",
@@ -445,12 +446,12 @@ addRiverflySpeciesMarkers <- function(
 addOtherSpeciesMarkers <- function(mapProxy, data, otherSpecies) {
     pal <- colorFactor(
         palette = brewer.pal(n = 5, name = "Greys")[5:2],
-        domain = levels(data$Abundance),
+        domain = levels(data$abundance),
         ordered = TRUE
     ) ##Abundance levels in opposite order here
     mapProxy |> clearGroup("points") ##Did it this way originally for the legend so higher abundances were on top, but scrapped the legend as it covered plots for other input
 
-    data$Taxa <- gsub("\\s*\\([^\\)]+\\)", "", data$Taxa)
+    data$taxa <- gsub("\\s*\\([^\\)]+\\)", "", data$taxa)
 
     if (!is.null(data) && nrow(data) > 0) {
         mapProxy |>
@@ -464,19 +465,19 @@ addOtherSpeciesMarkers <- function(mapProxy, data, otherSpecies) {
                         "<strong style='font-size:16px;'>Highest value in the last 3 years</strong>",
                         "<table style='width:100%; white-space: nowrap; margin-top: 10px;'>",
                         "<tr><td><strong>Organisation:</strong></td><td>",
-                        data$Organisation[i],
+                        data$organisation[i],
                         "</td></tr>",
                         "<tr><td><strong>BRC site ID:</strong></td><td>",
-                        data$`BRC site ID`[i],
+                        data$sampling_site[i],
                         "</td></tr>",
                         "<tr><td><strong>Survey date:</strong></td><td>",
-                        data$`Survey date`[i],
+                        data$survey_date[i],
                         "</td></tr>",
                         "<tr><td><strong>Species:</strong></td><td>",
-                        data$Taxa[i],
+                        data$taxa[i],
                         "</td></tr>",
                         "<tr><td><strong>Abundance:</strong></td><td>",
-                        data$Abundance[i],
+                        data$abundance[i],
                         "</td></tr>",
                         "</table>",
                         "</div>"
@@ -485,7 +486,7 @@ addOtherSpeciesMarkers <- function(mapProxy, data, otherSpecies) {
                 }),
                 radius = 6,
                 weight = 2,
-                fillColor = ~ pal(Abundance),
+                fillColor = ~ pal(abundance),
                 color = "black",
                 stroke = TRUE,
                 opacity = 0.5,

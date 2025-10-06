@@ -223,7 +223,16 @@ mod_03_plot_data_server <- function(id) {
       clearMapLayers(mapProxy)
       addPolygonsAndLines(mapProxy, zoomLevel)
       mapProxy |> clearControls()
+
+      # need to rename sampling_site across datasets
+      Riverfly_Species_Plot_All <- species_plots(Unique_BRC_Sampling_Locs)
+      Riverfly_Species_Plot <- Riverfly_Species_Plot_All[[1]]
+      Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot_All[[2]]
+      Riverfly_Other_Species_Plot <- Riverfly_Species_Plot_All[[3]]
+      Riverfly_Other_Species_Plot_Recent <- Riverfly_Species_Plot_All[[4]]
+
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
+        # Get the right data for ARMI
         ARMI_data <- make_riverfly_ARMI()
         Unique_BRC_Sampling_Locs <- read.csv(app_sys(
           "extdata/Unique_BRC_Sampling_Locs.csv"
@@ -242,11 +251,8 @@ mod_03_plot_data_server <- function(id) {
         # Filter by the selected Taxa
         selectedTaxa <- input$riverflySpecies
 
-        # need to rename sampling_site across datasets
-        Riverfly_Species_Plot_Recent <- species_plots()
-
         riverflyspeciesData_Recent_Map <- Riverfly_Species_Plot_Recent |>
-          filter(Taxa == selectedTaxa)
+          filter(taxa == selectedTaxa)
         addRiverflySpeciesMarkers(
           mapProxy,
           riverflyspeciesData_Recent_Map,
@@ -259,7 +265,7 @@ mod_03_plot_data_server <- function(id) {
       ) {
         # Filter data for the selected 'other species' from the radio buttons
         otherspeciesData_Recent_Map <- Riverfly_Other_Species_Plot_Recent |>
-          filter(Taxa == input$otherSpecies)
+          filter(taxa == input$otherSpecies)
         addOtherSpeciesMarkers(
           mapProxy,
           otherspeciesData_Recent_Map,
