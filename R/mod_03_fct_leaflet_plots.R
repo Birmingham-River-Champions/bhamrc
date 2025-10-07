@@ -251,7 +251,8 @@ addRiverflySpeciesMarkers <- function(
     mapProxy,
     data,
     riverflyspeciesData,
-    taxaType
+    taxaType,
+    input
 ) {
     mapProxy |> clearPopups() |> clearGroup("points")
 
@@ -406,6 +407,9 @@ addRiverflySpeciesMarkers <- function(
                     popup_width <- 600
                     popup_height <- 350
                 }
+            } else {
+                popup_width <- 600
+                popup_height <- 350
             }
 
             # Generate a plot for each marker based on the filtered data
