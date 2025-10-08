@@ -256,7 +256,10 @@ addRiverflySpeciesMarkers <- function(
 ) {
     mapProxy |> clearPopups() |> clearGroup("points")
 
-    riverflyspeciesData_Recent_Map <- data |> filter(taxa == taxaType)
+    riverflyspeciesData_Recent_Map <- data |>
+        filter(taxa == taxaType) |>
+        drop_na()
+
     pal <- colorFactor(
         palette = levels(
             riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
@@ -299,7 +302,9 @@ addRiverflySpeciesMarkers <- function(
             riverflyspeciesData_All_ggplot <- filter(
                 riverflyspeciesData,
                 sampling_site == site_id & taxa == taxaType
-            )
+            ) |>
+                drop_na()
+
             # Custom changing of some organisations (those ) for "Flat bodied stone clinger mayfly"
             organisation <- if (
                 organisation != "Hall Green's Keepin' It Clean" &
@@ -310,11 +315,10 @@ addRiverflySpeciesMarkers <- function(
                 organisation <- organisation # This line is optional, just for clarity
             }
             # Custom shortening for "Flat bodied stone clinger mayfly"
-
             taxaType_CommonName <- gsub(
                 "\\s*\\([^\\)]+\\)",
                 "",
-                taxaType
+                riverfly_spp_bw[[taxaType]]
             )
             if (taxaType_CommonName == "Flat-bodied stone clinger mayfly") {
                 taxaType_CommonName <- "Stone clinger mayfly"
