@@ -202,7 +202,10 @@ mod_03_plot_data_server <- function(id) {
       Unique_BRC_Sampling_Locs <- read.csv(app_sys(
         "extdata/Unique_BRC_Sampling_Locs.csv"
       ))
-      Riverfly_Species_Plot_All <- species_plots(Unique_BRC_Sampling_Locs)
+      Riverfly_Species_Plot_All <- species_plots(
+        "riverfly",
+        Unique_BRC_Sampling_Locs
+      )
       Riverfly_Species_Plot <- Riverfly_Species_Plot_All[[1]]
       Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot_All[[2]]
       Riverfly_Other_Species_Plot <- Riverfly_Species_Plot_All[[3]]
@@ -210,7 +213,7 @@ mod_03_plot_data_server <- function(id) {
 
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
         # Get the right data for ARMI
-        ARMI_data <- make_riverfly_ARMI()
+        ARMI_data <- make_riverfly_ARMI("riverfly")
         riverflyARMIDataList <- make_ARMI_plot_data(
           ARMI_data,
           Unique_BRC_Sampling_Locs

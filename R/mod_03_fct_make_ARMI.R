@@ -1,13 +1,14 @@
 #' make_riverfly_ARMI
 #'
 #' @description A function to add the ARMI values to the riverfly data
+#' @param table_name - name of the table to extract the riverfly data from
 #' @return The data frame with riverfly data and an appended ARMI column.
 #' @importFrom DBI dbReadTable dbConnect dbDisconnect
 #' @importFrom dplyr mutate mutate_at left_join select vars c_across
 #' @importFrom dplyr summarise group_by join_by
-make_riverfly_ARMI <- function() {
+make_riverfly_ARMI <- function(table_name) {
   con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite")
-  riverfly_data <- DBI::dbReadTable(con, "riverfly")
+  riverfly_data <- DBI::dbReadTable(con, table_name)
   dbDisconnect(con)
 
   Riverfly_ARMI <-

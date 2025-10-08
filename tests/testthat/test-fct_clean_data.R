@@ -1,43 +1,29 @@
-library(testthat)
-library(bhamrc)
-
-test.df <- data.frame(
-  organisation = c("Org1", "Org1", "Org2", "Org2", "Org3", "Org3"),
-  data_type = rep("TestType", 6),
-  survey_date = as.Date(c(
-    "2023-10-01",
-    "2023-10-05",
-    "2023-10-02",
-    "2023-10-03",
-    "2023-10-04",
-    "2023-10-06"
-  )),
-  sampling_site = c("SiteA", "SiteA", "SiteB", "SiteB", "SiteD", "SiteD"),
-  other_col = c(1, 1, 2, 3, 4, 4)
-)
-
 test_that("function returns full df when db is valid", {
+  test_df <- test_fixture_riverfly()[[1]]
+
   testthat::expect_equal(
     clean_data(
-      input_df = test.df,
+      input_df = test_df,
       col_name_start = "organisation",
-      col_name_end = "other_col",
+      col_name_end = "leeches",
       sample_site = "sampling_site",
       acceptable_site_orgs = data.frame(
         identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
       ),
       data_type_name = "TestType"
     ),
-    test.df[, c(1, 3, 2, 4, 5)]
+    test_df[, c(1, 3, 2, 4, 5, 6)]
   )
 })
 
 test_that("function returns no error when db is valid", {
+  test_df <- test_fixture_riverfly()[[1]]
+
   testthat::expect_no_error(
     clean_data(
-      input_df = test.df,
+      input_df = test_df,
       col_name_start = "organisation",
-      col_name_end = "other_col",
+      col_name_end = "leeches",
       sample_site = "sampling_site",
       acceptable_site_orgs = data.frame(
         identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
@@ -48,10 +34,12 @@ test_that("function returns no error when db is valid", {
 })
 
 test_that("function catches an invalid site and organisation combination", {
+  test_df <- test_fixture_riverfly()[[1]]
+
   testthat::expect_warning(clean_data(
-    input_df = test.df,
+    input_df = test_df,
     col_name_start = "organisation",
-    col_name_end = "other_col",
+    col_name_end = "leeches",
     sample_site = "sampling_site",
     acceptable_site_orgs = data.frame(
       identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
@@ -61,11 +49,13 @@ test_that("function catches an invalid site and organisation combination", {
 })
 
 test_that("function catches an entry with a blank site", {
-  test.df$sampling_site[1] <- ""
+  test_df <- test_fixture_riverfly()[[1]]
+  test_df$sampling_site[1] <- ""
+
   testthat::expect_warning(clean_data(
-    input_df = test.df,
+    input_df = test_df,
     col_name_start = "organisation",
-    col_name_end = "other_col",
+    col_name_end = "leeches",
     sample_site = "sampling_site",
     acceptable_site_orgs = data.frame(
       identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
@@ -75,11 +65,13 @@ test_that("function catches an entry with a blank site", {
 })
 
 test_that("function catches an entry with a duplicate site and timestamp", {
-  test.df$survey_date[2] <- as.Date("2023-10-01")
+  test_df <- test_fixture_riverfly()[[1]]
+  test_df$survey_date[2] <- as.Date("2023-10-01")
+
   testthat::expect_warning(clean_data(
-    input_df = test.df,
+    input_df = test_df,
     col_name_start = "organisation",
-    col_name_end = "other_col",
+    col_name_end = "leeches",
     sample_site = "sampling_site",
     acceptable_site_orgs = data.frame(
       identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")

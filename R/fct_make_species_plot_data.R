@@ -110,10 +110,10 @@ flip_site_names <- function(site_name) {
 #' Other_Species_Plot_Recent
 #' @importFrom dplyr select rename group_by mutate ungroup case_when
 #' @importFrom tidyr pivot_longer
-species_plots <- function(sampling_locs) {
+species_plots <- function(table_name, sampling_locs) {
     # Connect to the DB to pull riverfly data
     con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite")
-    riverfly_data <- DBI::dbReadTable(con, "riverfly")
+    riverfly_data <- DBI::dbReadTable(con, table_name)
     dbDisconnect(con)
 
     # Join the riverfly data with the locations data to get lat and long
