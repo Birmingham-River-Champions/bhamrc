@@ -303,7 +303,12 @@ addRiverflySpeciesMarkers <- function(
                 riverflyspeciesData,
                 sampling_site == site_id & taxa == taxaType
             ) |>
-                drop_na()
+                mutate(
+                    abundance = case_when(
+                        is.na(abundance) ~ 0,
+                        .default = abundance
+                    )
+                )
 
             # Custom changing of some organisations (those ) for "Flat bodied stone clinger mayfly"
             organisation <- if (
@@ -456,23 +461,25 @@ addRiverflySpeciesMarkers <- function(
 #' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
 #' @noRd
-addOtherSpeciesMarkers <- function(mapProxy, data, otherSpecies) {
+addOtherSpeciesMarkers <- function(mapProxy, fullData, otherSpecies) {
     pal <- colorFactor(
         palette = brewer.pal(n = 5, name = "Greys")[5:2],
-        domain = levels(data$abundance),
+        domain = levels(fullData$abundance),
         ordered = TRUE
     ) ##Abundance levels in opposite order here
     mapProxy |> clearGroup("points") ##Did it this way originally for the legend so higher abundances were on top, but scrapped the legend as it covered plots for other input
-
-    data$taxa <- gsub("\\s*\\([^\\)]+\\)", "", data$taxa)
-
-    if (!is.null(data) && nrow(data) > 0) {
+    data <- fullData |>
+        filter(!is.na(abundance))
+    if (!(is.null(data)) && (nrow(data) > 0)) {
         mapProxy |>
             addCircleMarkers(
                 data = data,
                 lng = ~LONG,
                 lat = ~LAT,
                 popup = lapply(1:nrow(data), function(i) {
+                    selectedTaxa <- other_spp_bw[[data$taxa[i]]]
+                    selectedTaxa <- gsub("\\s*\\([^\\)]+\\)", "", selectedTaxa)
+
                     content <- paste0(
                         "<div style='overflow: auto; width: auto; max-width: 300px;'>",
                         "<strong style='font-size:16px;'>Highest value in the last 3 years</strong>",
@@ -487,7 +494,7 @@ addOtherSpeciesMarkers <- function(mapProxy, data, otherSpecies) {
                         data$survey_date[i],
                         "</td></tr>",
                         "<tr><td><strong>Species:</strong></td><td>",
-                        data$taxa[i],
+                        selectedTaxa,
                         "</td></tr>",
                         "<tr><td><strong>Abundance:</strong></td><td>",
                         data$abundance[i],
