@@ -61,7 +61,7 @@ make_riverfly_ARMI <- function() {
       .cols = matches("worms"),
       .fns = ~ ifelse(. == '>1000', '-3', .)
     )) |>
-    dplyr::mutate(across(cased_caddisfly:other_bullhead, as.numeric))
+    dplyr::mutate(across(cased_caddisfly:stonefly_plecoptera, as.numeric))
 
   # Sum ARMI observations across taxa and remove individual species observations
   Riverfly_ARMI_Calc <-
@@ -71,13 +71,13 @@ make_riverfly_ARMI <- function() {
         mutate(
           ARMI = sum(
             c_across(
-              cased_caddisfly:other_bullhead
+              cased_caddisfly:stonefly_plecoptera
             ),
             na.rm = TRUE
           )
         ) |> #,
         ##Ntaxa = sum(c_across(matches("Number of")) > 0, na.rm = TRUE))|> THOUGHT IT WAS CALCULATED LIKE ASPT, BUT IS ACTUALLY LIKE BMWP
-        dplyr::select(!(cased_caddisfly:other_bullhead))
+        dplyr::select(!(cased_caddisfly:stonefly_plecoptera)) # Should replace this with name constant eventually
     )
   return(Riverfly_ARMI_Calc)
 }
