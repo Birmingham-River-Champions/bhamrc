@@ -39,6 +39,7 @@ test_that("function returns full df when db is valid", {
       .keep_all = TRUE
     )
 
+test_that("function returns full df when db is valid", {
   testthat::expect_equal(
     nrow(clean_data(
       input_df = test_df,
@@ -53,8 +54,6 @@ test_that("function returns full df when db is valid", {
 })
 
 test_that("function returns no error when db is valid", {
-  test_df <- test_fixture_riverfly()[[1]]
-
   testthat::expect_no_error(
     clean_data(
       input_df = test_df,
