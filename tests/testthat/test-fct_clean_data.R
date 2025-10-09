@@ -12,7 +12,7 @@ test_that("function returns full df when db is valid", {
       ),
       data_type_name = "TestType"
     ),
-    test_df[, c(1, 3, 2, 4, 5, 6)]
+    test_df[, c(1, 3, 2, 4:18)]
   )
 })
 

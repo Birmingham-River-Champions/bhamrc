@@ -14,28 +14,79 @@ test_fixture_riverfly <- function() {
         )),
         sampling_site = c("SiteA", "SiteA", "SiteB", "SiteB", "SiteD", "SiteD"),
         cased_caddisfly = c("10-99", "100-999", "1-9", "", ">1000", "10-99"),
-        stonefly_plecoptera = c(
+        caseless_caddisfly = c("1-9", "10-99", "100-999", "10-99", "", ">1000"),
+        olive_mayfly = c("10-99", "100-999", "1-9", "100-999", "10-99", ""),
+        blue_winged_olive_mayfly = c(
+            "100-999",
+            "10-99",
+            "",
+            "1-9",
+            "10-99",
+            ">1000"
+        ),
+        freshwater_shrimp = c(
+            "10-99",
+            "",
+            "10-99",
+            "1-9",
+            "100-999",
+            "100-999"
+        ),
+        freshwater_hoglouse = c(
+            "1-9",
+            "100-999",
             "10-99",
             "100-999",
-            "100-999",
             "",
-            ">1000",
             "10-99"
+        ),
+        blackfly_larvae = c("10-99", "1-9", "100-999", "10-99", "100-999", ""),
+        freshwater_worm = c("100-999", "10-99", "1-9", "100-999", "", "10-99"),
+        freshwater_leech = c("10-99", "100-999", "10-99", "1-9", "100-999", ""),
+        freshwater_snail = c("1-9", "10-99", "100-999", "", "10-99", ">1000"),
+        freshwater_beetle = c(
+            "100-999",
+            "1-9",
+            "10-99",
+            "100-999",
+            "10-99",
+            ""
+        ),
+        green_drake_mayfly = c(
+            "10-99",
+            "100-999",
+            "1-9",
+            "",
+            "100-999",
+            "10-99"
+        ),
+        flat_bodied_stone_clinger_mayfly = c(
+            "1-9",
+            "10-99",
+            "100-999",
+            "10-99",
+            ">1000",
+            ""
+        ),
+        stonefly_plecoptera = c(
+            "1-9",
+            "10-99",
+            "100-999",
+            "10-99",
+            ">1000",
+            ""
         )
     )
 
-    sql_string <- "CREATE TABLE riverflytest (id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT,
-            sampling_site TEXT, cased_caddisfly INTEGER, stonefly_plecoptera INTEGER)"
-
     con <- dbConnect(RSQLite::SQLite(), "data.sqlite")
     if (!dbExistsTable(con, "riverflytest")) {
-        dbExecute(con, sql_string)
+        dbWriteTable(con, "riverflytest", test_df)
     } else {
         message(paste(
             "Table riverflytest already exists. Deleting and recreating."
         ))
         dbRemoveTable(con, "riverflytest")
-        dbExecute(con, sql_string)
+        dbWriteTable(con, "riverflytest", test_df)
     }
 
     dbDisconnect(con)
