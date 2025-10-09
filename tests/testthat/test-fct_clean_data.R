@@ -1,11 +1,11 @@
-test_that("function returns full df when db is valid", {
-  test_df <- test_fixture_riverfly()[[1]]
+test_df <- test_fixture_riverfly()[[1]]
 
+test_that("function returns full df when db is valid", {
   testthat::expect_equal(
     clean_data(
       input_df = test_df,
       col_name_start = "organisation",
-      col_name_end = "leeches",
+      col_name_end = "stonefly_plecoptera",
       sample_site = "sampling_site",
       acceptable_site_orgs = data.frame(
         identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
@@ -17,13 +17,11 @@ test_that("function returns full df when db is valid", {
 })
 
 test_that("function returns no error when db is valid", {
-  test_df <- test_fixture_riverfly()[[1]]
-
   testthat::expect_no_error(
     clean_data(
       input_df = test_df,
       col_name_start = "organisation",
-      col_name_end = "leeches",
+      col_name_end = "stonefly_plecoptera",
       sample_site = "sampling_site",
       acceptable_site_orgs = data.frame(
         identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
@@ -34,12 +32,12 @@ test_that("function returns no error when db is valid", {
 })
 
 test_that("function catches an invalid site and organisation combination", {
-  test_df <- test_fixture_riverfly()[[1]]
-
+  wrong_org_df <- test_df
+  wrong_org_df$sampling_site[1] <- "SiteB"
   testthat::expect_warning(clean_data(
-    input_df = test_df,
+    input_df = wrong_org_df,
     col_name_start = "organisation",
-    col_name_end = "leeches",
+    col_name_end = "stonefly_plecoptera",
     sample_site = "sampling_site",
     acceptable_site_orgs = data.frame(
       identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
@@ -49,13 +47,13 @@ test_that("function catches an invalid site and organisation combination", {
 })
 
 test_that("function catches an entry with a blank site", {
-  test_df <- test_fixture_riverfly()[[1]]
-  test_df$sampling_site[1] <- ""
+  blank_df <- test_df
+  blank_df$sampling_site[1] <- ""
 
   testthat::expect_warning(clean_data(
-    input_df = test_df,
+    input_df = blank_df,
     col_name_start = "organisation",
-    col_name_end = "leeches",
+    col_name_end = "stonefly_plecoptera",
     sample_site = "sampling_site",
     acceptable_site_orgs = data.frame(
       identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")
@@ -65,13 +63,13 @@ test_that("function catches an entry with a blank site", {
 })
 
 test_that("function catches an entry with a duplicate site and timestamp", {
-  test_df <- test_fixture_riverfly()[[1]]
-  test_df$survey_date[2] <- as.Date("2023-10-01")
+  dupe_df <- test_df
+  dupe_df$survey_date[2] <- as.Date("2023-10-01")
 
   testthat::expect_warning(clean_data(
-    input_df = test_df,
+    input_df = dupe_df,
     col_name_start = "organisation",
-    col_name_end = "leeches",
+    col_name_end = "stonefly_plecoptera",
     sample_site = "sampling_site",
     acceptable_site_orgs = data.frame(
       identifiers = c("Org1 SiteA", "Org2 SiteB", "Org3 SiteD")

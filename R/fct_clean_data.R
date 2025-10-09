@@ -65,7 +65,7 @@ clean_data <- function(
         dplyr::distinct(survey_date, !!(sample_site), .keep_all = TRUE) |>
         dplyr::select(-last_col())
 
-    if (nrow(deduped_df != nrow(cleaned_df))) {
+    if (nrow(deduped_df) != nrow(cleaned_df)) {
         # Add a new warning to the list if duplicate combinations exist
         warning(
             paste(

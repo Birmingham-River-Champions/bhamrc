@@ -51,5 +51,5 @@ test_fixture_riverfly <- function() {
         LONG = c(-1.87, -1.87, -1.97, -1.97, -2.007, -2.007)
     )
 
-    return(list(test_df, test_locs_df))
+    return(list("test_data" = test_df, "sampling_locs" = test_locs_df))
 }
