@@ -213,7 +213,8 @@ mod_03_plot_data_server <- function(id) {
 
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
         # Get the right data for ARMI
-        ARMI_data <- make_riverfly_ARMI("riverfly")
+        ARMI_assignment <- make_riverfly_ARMI("riverfly")
+        ARMI_data <- sum_up_ARMI(ARMI_assignment)
         riverflyARMIDataList <- make_ARMI_plot_data(
           ARMI_data,
           Unique_BRC_Sampling_Locs

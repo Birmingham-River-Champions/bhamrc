@@ -91,9 +91,6 @@ test_fixture_riverfly <- function() {
 
     dbDisconnect(con)
 
-    #Use the test fixture to populate a test DB
-    populate_db(test_df, "riverflytest")
-
     test_locs_df <- data.frame(
         organisation = c("Org1", "Org1", "Org2", "Org2", "Org3", "Org3"),
 
