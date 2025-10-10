@@ -11,23 +11,24 @@ make_riverfly_ARMI <- function(table_name) {
   riverfly_data <- DBI::dbReadTable(con, table_name)
   dbDisconnect(con)
 
-  Riverfly_ARMI <-
+  riverfly_data <-
     as.data.frame(sapply(riverfly_data, function(x) {
       x <- gsub("1-9", "1", x)
     }))
+
   #10-99 different between certain tolerant taxa and the rest
   Riverfly_ARMI <-
-    Riverfly_ARMI |>
+    riverfly_data |>
     dplyr::mutate(across(
-      .cols = -matches("snails|leeches|worms|hoglouse"),
+      .cols = -matches("snail|leech|worm|hoglouse"),
       .fns = ~ ifelse(. == '10-99', '2', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("snails|leeches|worms|hoglouse"),
+      .cols = matches("snail|leech|worm|hoglouse"),
       .fns = ~ ifelse(. == '10-99', '1', .)
     )) |>
     dplyr::mutate(across(
-      .cols = -matches("snails|leeches|worms|hoglouse|blackfly"),
+      .cols = -matches("snail|leech|worm|hoglouse|blackfly"),
       .fns = ~ ifelse(. == '100-999', '3', .)
     )) |>
     dplyr::mutate(across(
@@ -35,15 +36,15 @@ make_riverfly_ARMI <- function(table_name) {
       .fns = ~ ifelse(. == '100-999', '2', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("snails"),
+      .cols = matches("snail"),
       .fns = ~ ifelse(. == '100-999', '1', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("leeches|worms|hoglouse"),
+      .cols = matches("leech|worm|hoglouse"),
       .fns = ~ ifelse(. == '100-999', '0', .)
     )) |>
     dplyr::mutate(across(
-      .cols = -matches("snails|leeches|worms|hoglouse|blackfly|shrimp"),
+      .cols = -matches("snail|leech|worm|hoglouse|blackfly|shrimp"),
       .fns = ~ ifelse(. == '>1000', '4', .)
     )) |>
     dplyr::mutate(across(
@@ -51,18 +52,18 @@ make_riverfly_ARMI <- function(table_name) {
       .fns = ~ ifelse(. == '>1000', '2', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("blackfly|snails"),
+      .cols = matches("blackfly|snail"),
       .fns = ~ ifelse(. == '>1000', '0', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("leeches|hoglouse"),
+      .cols = matches("leech|hoglouse"),
       .fns = ~ ifelse(. == '>1000', '-2', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("worms"),
+      .cols = matches("worm"),
       .fns = ~ ifelse(. == '>1000', '-3', .)
     )) |>
-    dplyr::mutate(across(cased_caddisfly:stonefly_plecoptera, as.numeric))
+    mutate(across(all_of(names(riverfly_spp_bw)), as.numeric))
 
   return(Riverfly_ARMI)
 }
