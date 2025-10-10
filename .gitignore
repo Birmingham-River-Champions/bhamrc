@@ -18,3 +18,4 @@
 *.xml
 *.sr.lock
 *.vscode
+.radian_profile

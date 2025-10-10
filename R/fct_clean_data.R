@@ -42,16 +42,6 @@ clean_data <- function(
         dplyr::filter(grepl(!!(data_type_name), data_type)) |>
         dplyr::filter(!(site_orgs %in% acceptable_site_orgs$identifiers))
 
-    # If any sampling sites have been associated with the wrong organisation, throw an error
-    if (nrow(wrong_org) > 0) {
-        warning(
-            "Warning: Some ",
-            data_type_name,
-            " sampling sites seem incorrectly labelled: ",
-            wrong_org$site_orgs
-        )
-    }
-
     ## Filter out rows where the sampling site and organisation don't match
     correct_org_df <- cleaned_df |>
         dplyr::mutate(
@@ -66,16 +56,26 @@ clean_data <- function(
         dplyr::select(-last_col())
 
     if (nrow(deduped_df) != nrow(cleaned_df)) {
-        # Add a new warning to the list if duplicate combinations exist
-        warning(
-            paste(
-                "Warning: Duplicated",
+        # If any sampling sites have been associated with the wrong organisation, throw an error
+        if (nrow(wrong_org) > 0) {
+            warning(
+                "Warning: Some ",
                 data_type_name,
-                "sample locations / date - check",
-                data_type_name,
-                "_deduped."
+                " sampling sites seem incorrectly labelled: ",
+                wrong_org$site_orgs
             )
-        )
+        } else {
+            # Add a new warning to the list if duplicate combinations exist
+            warning(
+                paste(
+                    "Warning: Duplicated",
+                    data_type_name,
+                    "sample locations / date - check",
+                    data_type_name,
+                    "_deduped."
+                )
+            )
+        }
     }
 
     return(correct_org_df)
