@@ -4,14 +4,14 @@ test_fixture_riverfly <- function() {
     test_df <- data.frame(
         organisation = c("Org1", "Org1", "Org2", "Org2", "Org3", "Org3"),
         data_type = rep("TestType", 6),
-        survey_date = as.Date(c(
-            "2023-10-01",
-            "2023-10-05",
-            "2023-10-02",
-            "2023-10-03",
-            "2023-10-04",
-            "2023-10-06"
-        )),
+        survey_date = c(
+            "01/10/2023",
+            "05/10/2023",
+            "02/10/2023",
+            "03/10/2023",
+            "04/10/2023",
+            "06/10/2023"
+        ),
         sampling_site = c("SiteA", "SiteA", "SiteB", "SiteB", "SiteD", "SiteD"),
         cased_caddisfly = c("10-99", "100-999", "1-9", "", ">1000", "10-99"),
         caseless_caddisfly = c("1-9", "10-99", "100-999", "10-99", "", ">1000"),
@@ -139,22 +139,22 @@ test_fixture_riverfly <- function() {
 
     inv_spp_test <- data.frame(
         organisation = c("Org1", "Org1", "Org2", "Org2", "Org3", "Org3"),
-        survey_date = as.Date(c(
-            "2023-10-01",
-            "2023-10-05",
-            "2023-10-02",
-            "2023-10-03",
-            "2023-10-04",
-            "2023-10-06"
-        )),
-        invasive_spp_sampling_date = as.Date(c(
-            "2023-10-01",
-            "2023-10-05",
-            "2023-10-02",
-            "2023-10-03",
-            "2023-10-04",
-            "2023-10-06"
-        )),
+        survey_date = c(
+            "01/10/2023",
+            "05/10/2023",
+            "02/10/2023",
+            "03/10/2023",
+            "04/10/2023",
+            "06/10/2023"
+        ),
+        invasive_spp_sampling_date = c(
+            "01/10/2023",
+            "05/10/2023",
+            "02/10/2023",
+            "03/10/2023",
+            "04/10/2023",
+            "06/10/2023"
+        ),
         invasive_spp_what_three_words = rep("", 6),
         any_other_invasive_spp = rep("", 6),
         sampling_site = c("SiteA", "SiteA", "SiteB", "SiteB", "SiteD", "SiteD"),

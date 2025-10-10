@@ -126,7 +126,6 @@ test_that("make_recent_other_spp works", {
 
 test_that("make_recent_inv_spp works", {
   plot_palette <- brewer.pal(n = 9, name = "RdBu")
-  browser()
   inv_spp_test <- left_join(
     test_values[[3]],
     test_locs[, c(
