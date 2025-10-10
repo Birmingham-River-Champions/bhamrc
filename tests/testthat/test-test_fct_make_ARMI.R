@@ -105,7 +105,7 @@ test_df[, names(riverfly_spp_bw)] <- apply(
   2,
   as.double
 )
-browser()
+
 test_output <- make_riverfly_ARMI("riverflytest")
 
 
