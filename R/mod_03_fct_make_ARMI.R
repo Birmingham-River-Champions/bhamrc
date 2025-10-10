@@ -7,7 +7,7 @@
 #' @importFrom dplyr mutate mutate_at left_join select vars c_across
 #' @importFrom dplyr summarise group_by join_by
 make_riverfly_ARMI <- function(table_name) {
-  con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite")
+  con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
   riverfly_data <- DBI::dbReadTable(con, table_name)
   dbDisconnect(con)
 

@@ -51,7 +51,7 @@ db_create <- function(table_name = "riverfly") {
 
     # Connect to the SQLite database (or create it if it doesn't exist)
     # Create a new table if it doesn't already exist
-    con <- dbConnect(RSQLite::SQLite(), "data.sqlite")
+    con <- dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
     if (!dbExistsTable(con, table_name)) {
         dbExecute(con, sql_string)
     } else {

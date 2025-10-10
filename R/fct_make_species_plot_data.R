@@ -112,7 +112,11 @@ flip_site_names <- function(site_name) {
 #' @importFrom tidyr pivot_longer
 species_plots <- function(table_name, sampling_locs) {
     # Connect to the DB to pull riverfly data
-    con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite")
+    con <- DBI::dbConnect(
+        RSQLite::SQLite(),
+        "data.sqlite",
+        extended_types = TRUE
+    )
     riverfly_data <- DBI::dbReadTable(con, table_name)
     dbDisconnect(con)
 

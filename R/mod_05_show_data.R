@@ -54,7 +54,7 @@ mod_05_show_data_server <- function(id) {
     output$table_name <- renderText(table_name())
 
     output$entries <- DT::renderDT({
-      con <- dbConnect(RSQLite::SQLite(), "data.sqlite")
+      con <- dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
       dbReadTable(
         con,
         survey()
