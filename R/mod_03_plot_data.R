@@ -45,22 +45,7 @@ mod_03_plot_data_ui <- function(id) {
         radioButtons(
           ns("riverflySpecies"),
           "Urban Riverfly species",
-          choices = c(
-            "Cased caddisfly (Trichoptera)",
-            "Caseless caddisfly (Trichoptera)",
-            "Olive mayfly (Baetidae)",
-            "Blue-winged olive mayfly (Ephemerellidae)",
-            "Freshwater shrimp (Gammaridae)",
-            "Freshwater hoglouse (Asellidae)",
-            "Blackfly larvae (Simuliidae)",
-            "Freshwater worm (Oligochaeta)",
-            "Freshwater leech (Hirudinea)",
-            "Freshwater snail (Gastropoda)",
-            "Freshwater beetle (Coleoptera)",
-            "Green drake mayfly (Ephemeridae)",
-            "Flat-bodied stone clinger mayfly (Heptageniidae)",
-            "Stonefly larvae (Plecoptera)"
-          )
+          choices = unname(unlist(riverfly_spp_bw))
         ),
         ns = ns
       ),
@@ -69,18 +54,7 @@ mod_03_plot_data_ui <- function(id) {
         radioButtons(
           ns("otherSpecies"),
           "Other species",
-          choices = c(
-            "Non-biting midge larvae (Chironomidae)",
-            "Cranefly larvae (Dicranota sp.)",
-            "Other cranefly larvae (Tipulidae)",
-            "Water mite (Hydracarina)",
-            "Net spinning (caseless) caddisfly (Hydropsychidae)",
-            "Green sedge (caseless) caddisfly (Rhyacophilidae)",
-            "Ramshorn snail (Planorbidae)",
-            "Freshwater mollusc (Sphaeriidae)",
-            "Freshwater limpet (Acroloxidae/Ancylidae)",
-            "Bullhead (fish - Cottus gobio)"
-          )
+          choices = unname(unlist(other_spp_bw))
         ),
         ns = ns
       ),
@@ -223,34 +197,55 @@ mod_03_plot_data_server <- function(id) {
       clearMapLayers(mapProxy)
       addPolygonsAndLines(mapProxy, zoomLevel)
       mapProxy |> clearControls()
+
+      # need to rename sampling_site across datasets
+      Unique_BRC_Sampling_Locs <- read.csv(app_sys(
+        "extdata/Unique_BRC_Sampling_Locs.csv"
+      ))
+      Riverfly_Species_Plot_All <- species_plots(Unique_BRC_Sampling_Locs)
+      Riverfly_Species_Plot <- Riverfly_Species_Plot_All[[1]]
+      Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot_All[[2]]
+      Riverfly_Other_Species_Plot <- Riverfly_Species_Plot_All[[3]]
+      Riverfly_Other_Species_Plot_Recent <- Riverfly_Species_Plot_All[[4]]
+
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
-        riverflyARMIData <- Riverfly_ARMI_Plot_SiteAv
-        addARMIMarkers(mapProxy, riverflyARMIData, Riverfly_ARMI_Plot)
+        # Get the right data for ARMI
+        ARMI_data <- make_riverfly_ARMI()
+        riverflyARMIDataList <- make_ARMI_plot_data(
+          ARMI_data,
+          Unique_BRC_Sampling_Locs
+        )
+        riverflyARMIData <- riverflyARMIDataList[[2]]
+        Riverfly_ARMI_Plot <- riverflyARMIDataList[[1]]
+        addARMIMarkers(mapProxy, riverflyARMIData, Riverfly_ARMI_Plot, input)
       } else if (
         input$metric == "Urban Riverfly" &&
           input$riverfly == "Urban Riverfly species"
       ) {
         # Filter by the selected Taxa
-        selectedTaxa <- input$riverflySpecies
+        selectedTaxa <- names(which(riverfly_spp_bw == input$riverflySpecies))
+
         riverflyspeciesData_Recent_Map <- Riverfly_Species_Plot_Recent |>
-          filter(Taxa == selectedTaxa)
+          filter(taxa == selectedTaxa)
         addRiverflySpeciesMarkers(
           mapProxy,
           riverflyspeciesData_Recent_Map,
           Riverfly_Species_Plot,
-          selectedTaxa
+          selectedTaxa,
+          input
         )
       } else if (
         input$metric == "Urban Riverfly" &&
           input$riverfly == "Other species"
       ) {
         # Filter data for the selected 'other species' from the radio buttons
+        selectedTaxa <- names(which(other_spp_bw == input$otherSpecies))
         otherspeciesData_Recent_Map <- Riverfly_Other_Species_Plot_Recent |>
-          filter(Taxa == input$otherSpecies)
+          filter(taxa == selectedTaxa)
         addOtherSpeciesMarkers(
           mapProxy,
           otherspeciesData_Recent_Map,
-          input$otherSpecies
+          selectedTaxa
         )
       } else if (input$metric == "Invasive Species") {
         plot_palette <- brewer.pal(n = 9, name = "RdBu")
