@@ -19,6 +19,7 @@ Imports:
     golem,
     htmlwidgets,
     leaflet,
+    leafpop,
     lubridate,
     markdown,
     purrr,
