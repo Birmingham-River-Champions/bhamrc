@@ -14,20 +14,20 @@ db_create <- function(table_name = "riverfly") {
             "CREATE TABLE",
             table_name,
             "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT,
-            sampling_site TEXT, cased_caddisfly INTEGER, caseless_caddisfly INTEGER,
-            olive_mayfly INTEGER, blue_winged_olive_mayfly INTEGER,
-            freshwater_shrimp INTEGER, freshwater_hoglouse INTEGER, blackfly_larvae INTEGER, 
-            freshwater_worm INTEGER, freshwater_leech INTEGER, freshwater_snail INTEGER, 
-            freshwater_beetle INTEGER, green_drake_mayfly INTEGER, flat_bodied_stone_clinger_mayfly INTEGER,
-            stonefly_plecoptera INTEGER, other_chironomidae INTEGER, other_dicranota INTEGER,
-            other_tipulidae INTEGER, other_hydracarina INTEGER, other_hydropsychidae INTEGER,
-            other_rhyacophilidae INTEGER, other_planorbidae INTEGER, other_sphaeriidae INTEGER,
-            other_acroloxidae_ancylidae INTEGER, other_bullhead INTEGER)"
+            sampling_site TEXT, cased_caddisfly TEXT, caseless_caddisfly TEXT,
+            olive_mayfly TEXT, blue_winged_olive_mayfly TEXT,
+            freshwater_shrimp TEXT, freshwater_hoglouse TEXT, blackfly_larvae TEXT, 
+            freshwater_worm TEXT, freshwater_leech TEXT, freshwater_snail TEXT, 
+            freshwater_beetle TEXT, green_drake_mayfly TEXT, flat_bodied_stone_clinger_mayfly TEXT,
+            stonefly_plecoptera TEXT, other_chironomidae TEXT, other_dicranota TEXT,
+            other_tipulidae TEXT, other_hydracarina TEXT, other_hydropsychidae TEXT,
+            other_rhyacophilidae TEXT, other_planorbidae TEXT, other_sphaeriidae TEXT,
+            other_acroloxidae_ancylidae TEXT, other_bullhead TEXT)"
         ),
         "water_quality" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, sampling_site TEXT, 
+            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, sampling_site TEXT, 
             conductivity_mS REAL, temperature_C REAL, ammonia_ppm REAL, phosphate_ppm REAL, 
             nitrate_ppm REAL, turbidity_NTU REAL, other_water_quality TEXT)"
         ),
@@ -40,9 +40,9 @@ db_create <- function(table_name = "riverfly") {
         "invasive_species" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, invasive_spp_sampling_date TEXT, sampling_site TEXT,
-            invasive_spp_what_three_words TEXT, signal_crayfish INTEGER, killer_demon_shrimp INTEGER,
-            himalayan_balsam INTEGER, japanese_knotweed INTEGER, giant_hogweed INTEGER,
+            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, sampling_site TEXT, invasive_spp_sampling_site TEXT,
+            invasive_spp_what_three_words TEXT, signal_crayfish TEXT, killer_demon_shrimp TEXT,
+            himalayan_balsam TEXT, japanese_knotweed TEXT, giant_hogweed TEXT,
             any_other_invasive_spp TEXT)"
         ),
         # Default case if no match is found

@@ -52,8 +52,11 @@ clean_data <- function(
 
     #Also check if there are duplicates, each sampling site + timestamp should be unique
     deduped_df <- correct_org_df |>
-        dplyr::distinct(survey_date, !!(sample_site), .keep_all = TRUE) |>
-        dplyr::select(-last_col())
+        dplyr::distinct(
+            survey_date,
+            !!(as.name(sample_site)),
+            .keep_all = TRUE
+        )
 
     if (nrow(deduped_df) != nrow(cleaned_df)) {
         # If any sampling sites have been associated with the wrong organisation, throw an error
@@ -78,5 +81,5 @@ clean_data <- function(
         }
     }
 
-    return(correct_org_df)
+    return(deduped_df)
 }

@@ -212,11 +212,11 @@ species_plots <- function(table_name, sampling_locs) {
                 levels = brewer.pal(n = 5, name = "Greys")
             )
         )
-
+    browser()
     ##Organise - this plot df not used in the end. Seemed off trying to plot inconsistently ID'd taxa. So did a pop up table of the most recent instead (like invasive)
     Riverfly_Other_Species_Plot <- Riverfly_Other_Species_Plot |>
         pivot_longer(
-            -c(organisation, sampling_site, survey_date, LONG, LAT)
+            -c(organisation, data_type, sampling_site, survey_date, LONG, LAT)
         ) |>
         dplyr::rename(taxa = "name", abundance = "value") |>
         group_by(sampling_site, taxa) |>
