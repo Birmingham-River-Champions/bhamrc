@@ -56,13 +56,13 @@ process_locations <- function(
         dplyr::distinct(ID, .keep_all = TRUE)
 
     write.csv(
-        Unique_BRC_Sampling_Locs,
+        BRC_Sampling_Locs,
         "./inst/extdata/Unique_BRC_Sampling_Locs.csv",
         row.names = FALSE
     )
 
     write.csv(
-        Unique_Outfall_Locs,
+        BRC_Outfall_Locs,
         "./inst/extdata/Unique_BRC_Outfall_Locs.csv",
         row.names = FALSE
     )

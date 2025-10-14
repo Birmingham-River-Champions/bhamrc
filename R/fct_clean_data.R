@@ -20,7 +20,7 @@ clean_data <- function(
     col_name_start,
     col_name_end,
     sample_site,
-    acceptable_site_orgs,
+    locations_name,
     data_type_name
 ) {
     cleaned_df <- input_df |>
@@ -33,6 +33,9 @@ clean_data <- function(
         ) |>
         ###Remove data uploads that included no site identifier
         dplyr::filter(!(!!sample_site) == "")
+
+    locations <- read.csv(app_sys("./extdata/", paste0(locations_name, ".csv")))
+    acceptable_site_orgs <- acceptable_locs(locations)
 
     # Filter out any observations for which the sampling site and organisation don't match what is expected
     wrong_org <- cleaned_df |>

@@ -106,7 +106,7 @@ test_df[, names(riverfly_spp_bw)] <- apply(
   as.double
 )
 
-test_output <- make_riverfly_ARMI("riverflytest")
+test_output <- make_riverfly_ARMI(test_df)
 
 
 test_that("ARMI scores are assigned correctly", {

@@ -213,7 +213,15 @@ mod_03_plot_data_server <- function(id) {
 
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
         # Get the right data for ARMI
-        ARMI_assignment <- make_riverfly_ARMI("riverfly")
+        con <- DBI::dbConnect(
+          RSQLite::SQLite(),
+          "data.sqlite",
+          extended_types = TRUE
+        )
+        riverfly_data <- DBI::dbReadTable(con, "riverfly")
+        dbDisconnect(con)
+
+        ARMI_assignment <- make_riverfly_ARMI(riverfly_data)
         ARMI_data <- sum_up_ARMI(ARMI_assignment)
         riverflyARMIDataList <- make_ARMI_plot_data(
           ARMI_data,

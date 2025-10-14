@@ -1,22 +1,19 @@
 #' make_riverfly_ARMI
 #'
 #' @description A function to add the ARMI values to the riverfly data
-#' @param table_name - name of the table to extract the riverfly data from
+#' @param riverfly_data - riverfly data frame from
 #' @return The data frame with riverfly data and an appended ARMI column.
 #' @importFrom DBI dbReadTable dbConnect dbDisconnect
 #' @importFrom dplyr mutate mutate_at left_join select vars c_across
 #' @importFrom dplyr summarise group_by join_by
-make_riverfly_ARMI <- function(table_name) {
-  con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
-  riverfly_data <- DBI::dbReadTable(con, table_name)
-  dbDisconnect(con)
-
+make_riverfly_ARMI <- function(riverfly_data) {
   riverfly_data <-
     as.data.frame(sapply(riverfly_data, function(x) {
       x <- gsub("1-9", "1", x)
     }))
 
-  #10-99 different between certain tolerant taxa and the rest
+  # 10-99 different between certain tolerant taxa and the rest
+  # TODO: change this to case_when for clarity
   Riverfly_ARMI <-
     riverfly_data |>
     dplyr::mutate(across(
@@ -80,7 +77,7 @@ sum_up_ARMI <- function(Riverfly_ARMI) {
             na.rm = TRUE
           )
         ) |> #,
-        ##Ntaxa = s> um(c_across(matches("Number of")) > 0, na.rm = TRUE))|> THOUGHT IT WAS CALCULATED LIKE ASPT, BUT IS ACTUALLY LIKE BMWP
+        ##Ntaxa = sum(c_across(matches("Number of")) > 0, na.rm = TRUE))|> THOUGHT IT WAS CALCULATED LIKE ASPT, BUT IS ACTUALLY LIKE BMWP
         dplyr::select(-all_of(names(riverfly_spp_bw)))
     ) # Should replace this with name constant eventually)
   return(Riverfly_ARMI_Calc)

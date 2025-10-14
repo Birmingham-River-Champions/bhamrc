@@ -1,6 +1,8 @@
 test_values <- test_fixture_riverfly()
 test_df <- test_values[[1]]
-test_locs <- test_values[[2]]
+
+test_locs <- read.csv(test_path("../../inst/extdata/BRC_Sampling_Locs.csv"))
+acceptable_site_orgs <- acceptable_locs(locations)
 
 plot_test_data <- left_join(
   test_df,

@@ -40,10 +40,18 @@ db_create <- function(table_name = "riverfly") {
         "invasive_species" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, sampling_site TEXT, invasive_spp_sampling_site TEXT,
+            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, invasive_spp_sampling_date TEXT,
+            sampling_site TEXT, invasive_spp_sampling_site TEXT,
             invasive_spp_what_three_words TEXT, signal_crayfish TEXT, killer_demon_shrimp TEXT,
             himalayan_balsam TEXT, japanese_knotweed TEXT, giant_hogweed TEXT,
             any_other_invasive_spp TEXT)"
+        ),
+        "outfall_safari" = paste(
+            "CREATE TABLE",
+            table_name,
+            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, outfall_survey_date TEXT,
+            sampling_site TEXT, outfall_photo TEXT,
+            outfall_flow TEXT, outfall_pollution_distance TEXT, outfall_aesthetics TEXT)"
         ),
         # Default case if no match is found
         stop("Unknown table name")
