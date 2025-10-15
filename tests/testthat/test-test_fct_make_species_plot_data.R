@@ -153,6 +153,7 @@ test_that("make_other_spp_plot works", {
 })
 
 test_that("make_recent_other_spp works", {
+  browser()
   expect_equal(test_spp[[4]], test_plot[[4]])
 })
 
@@ -212,7 +213,7 @@ test_that("make_recent_inv_spp works", {
     mutate(across(sampling_site, flip_site_names))
 
   inv_spp_test_recent <- inv_spp_test |>
-    filter(dmy(date_time) >= Sys.Date() - years(3))
+    filter(date_time >= Sys.Date() - years(3))
 
   inv_spp_test_recent$abundance <- factor(
     inv_spp_test_recent$abundance,
