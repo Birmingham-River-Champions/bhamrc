@@ -212,7 +212,7 @@ test_that("make_recent_inv_spp works", {
     mutate(across(sampling_site, flip_site_names))
 
   inv_spp_test_recent <- inv_spp_test |>
-    filter(date_time >= Sys.Date() - years(3))
+    filter(dmy(date_time) >= Sys.Date() - years(3))
 
   inv_spp_test_recent$abundance <- factor(
     inv_spp_test_recent$abundance,
