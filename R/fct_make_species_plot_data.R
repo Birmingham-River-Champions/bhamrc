@@ -24,7 +24,8 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
         ) |>
         dplyr::select(
             -invasive_spp_what_three_words,
-            -any_other_invasive_spp
+            -any_other_invasive_spp,
+            -data_type
         )
     BRCInvSpcs_Plot <- BRCInvSpcs_Plot |> # Remove unneeded columns
         tidyr::pivot_longer(

@@ -125,11 +125,11 @@ test_that("make_other_spp_plot works", {
 })
 
 test_that("make_recent_other_spp works", {
+  browser()
   expect_equal(test_spp[[4]], test_plot[[4]])
 })
 
 test_that("make_recent_inv_spp works", {
-  browser()
   plot_palette <- brewer.pal(n = 9, name = "RdBu")
   inv_spp_test <- left_join(
     test_values[[4]],
@@ -185,7 +185,7 @@ test_that("make_recent_inv_spp works", {
     mutate(across(sampling_site, flip_site_names))
 
   inv_spp_test_recent <- inv_spp_test |>
-    filter(dmy(date_time) >= Sys.Date() - years(3))
+    filter(date_time >= Sys.Date() - years(3))
 
   inv_spp_test_recent$abundance <- factor(
     inv_spp_test_recent$abundance,
@@ -200,19 +200,16 @@ test_that("make_recent_inv_spp works", {
   )
 
   inv_spp_test_recent <- inv_spp_test_recent |>
-    arrange(
-      organisation,
+    dplyr::arrange(
       sampling_site,
-      LAT,
-      LONG,
       measurement,
       abundance,
-      InvSpcs_Plot_Colour,
       desc(date_time)
     ) |>
     group_by(sampling_site, measurement) |>
     slice_head(n = 1) |>
-    ungroup()
+    ungroup() |>
+    dplyr::relocate(date_time, .after = InvSpcs_Plot_Colour)
 
   inv_spp_locs <- test_locs |>
     rename('sampling_site' = ID)
