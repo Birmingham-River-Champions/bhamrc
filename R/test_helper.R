@@ -19,5 +19,7 @@ test_fixture_riverfly <- function() {
     }
     dbDisconnect(con)
 
+    names(test_df) <- table_name
+
     return(test_df)
 }

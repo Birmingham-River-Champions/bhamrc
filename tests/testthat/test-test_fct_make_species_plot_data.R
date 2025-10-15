@@ -1,8 +1,9 @@
 test_values <- test_fixture_riverfly()
 test_df <- test_values[[1]]
 
+locs_name <- "BRC_Sampling_Locs"
 test_locs <- read.csv(test_path("../../inst/extdata/BRC_Sampling_Locs.csv"))
-acceptable_site_orgs <- acceptable_locs(locations)
+acceptable_site_orgs <- acceptable_locs(test_locs)
 
 plot_test_data <- left_join(
   test_df,
@@ -108,7 +109,8 @@ test_plot <- list(
   other_spp_plot_test,
   other_plot_test_recent
 )
-test_spp <- species_plots("riverflytest", test_locs)
+
+test_spp <- species_plots(test_df, test_locs)
 
 test_that("full riverfly species_plots work", {
   expect_equal(test_spp[[1]], test_plot[[1]])
@@ -127,9 +129,10 @@ test_that("make_recent_other_spp works", {
 })
 
 test_that("make_recent_inv_spp works", {
+  browser()
   plot_palette <- brewer.pal(n = 9, name = "RdBu")
   inv_spp_test <- left_join(
-    test_values[[3]],
+    test_values[[4]],
     test_locs[, c(
       "ID",
       "LAT",
@@ -137,6 +140,12 @@ test_that("make_recent_inv_spp works", {
     )],
     by = c("sampling_site" = "ID"),
   ) |>
+    dplyr::select(
+      -id,
+      -invasive_spp_what_three_words,
+      -any_other_invasive_spp,
+      -data_type
+    ) |>
     pivot_longer(
       -c(
         organisation,
@@ -167,11 +176,16 @@ test_that("make_recent_inv_spp works", {
     ) |>
     ungroup() |>
     rename('date_time' = invasive_spp_sampling_date) |>
-    dplyr::mutate(sampling_site = gsub("\\s+", " ", sampling_site)) |> ###################Remove the parenthsised organisation from the site ID
+    dplyr::arrange(sampling_site, date_time) |>
+    dplyr::select(
+      -survey_date
+    ) |>
+    dplyr::mutate(date_time = as.Date(lubridate::dmy(date_time))) |>
+    dplyr::mutate(sampling_site = gsub("\\s+", " ", sampling_site)) |> # Remove the parenthsised organisation from the site ID
     mutate(across(sampling_site, flip_site_names))
 
   inv_spp_test_recent <- inv_spp_test |>
-    filter(date_time >= Sys.Date() - years(3))
+    filter(dmy(date_time) >= Sys.Date() - years(3))
 
   inv_spp_test_recent$abundance <- factor(
     inv_spp_test_recent$abundance,
@@ -186,26 +200,24 @@ test_that("make_recent_inv_spp works", {
   )
 
   inv_spp_test_recent <- inv_spp_test_recent |>
-    select(-survey_date) |>
     arrange(
       organisation,
-      desc(date_time),
       sampling_site,
       LAT,
       LONG,
       measurement,
       abundance,
-      InvSpcs_Plot_Colour
+      InvSpcs_Plot_Colour,
+      desc(date_time)
     ) |>
     group_by(sampling_site, measurement) |>
     slice_head(n = 1) |>
-    ungroup() |>
-    dplyr::arrange(desc(date_time))
+    ungroup()
 
   inv_spp_locs <- test_locs |>
     rename('sampling_site' = ID)
   test_inv_spp <- make_recent_inv_spp(
-    test_values[[3]],
+    test_values[[4]][, -1],
     inv_spp_locs,
     plot_palette
   )
