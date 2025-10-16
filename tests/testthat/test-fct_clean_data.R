@@ -12,7 +12,7 @@ test_that("function returns full df when db is valid", {
     data_type = "Urban Riverfly",
     index_of_site_col = 4,
     table_name = "riverflytest",
-    db_path = testthat::test_path("../../data.sqlite")
+    db_path = "data.sqlite"
   )
 
   # Connect to the temporary database and read the data back
