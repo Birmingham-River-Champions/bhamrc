@@ -140,7 +140,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                     y = ARMI,
                     fill = cut(
                         ARMI,
-                        breaks = c(-Inf, 5:14, Inf),
+                        breaks = c(-Inf, 5:12, Inf),
                         labels = c(
                             "≤5",
                             "6",
@@ -150,9 +150,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                             "10",
                             "11",
                             "12",
-                            "13",
-                            "14",
-                            "≥15"
+                            "≥13"
                         )
                     )
                 )
@@ -161,7 +159,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                 theme_minimal() +
                 scale_fill_manual(
                     name = "ARMI",
-                    values = brewer.pal(n = 11, name = "RdBu"),
+                    values = brewer.pal(n = 9, name = "PuBu"),
                     drop = FALSE
                 ) +
                 xlab("Survey Date") +
