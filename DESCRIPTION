@@ -23,6 +23,7 @@ Imports:
     leaflet,
     leafpop,
     lubridate,
+    markdown,
     purrr,
     RColorBrewer,
     RSQLite,
