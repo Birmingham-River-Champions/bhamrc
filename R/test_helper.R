@@ -3,7 +3,7 @@ test_fixture_riverfly <- function() {
     # Make a copy of the data for testing
     con <- DBI::dbConnect(
         RSQLite::SQLite(),
-        testthat::test_path("../../data.sqlite"),
+        "data.sqlite",
         extended_types = TRUE
     )
     print(getwd())
