@@ -3,35 +3,47 @@ locations_name <- "BRC_Sampling_Locs"
 
 test_that("function returns full df when db is valid", {
   # Create a temporary database and populate it with the test data
-  names(test_df)[5] <- "sampling_site_riverfly"
-  test_df$data_type <- "Urban Riverfly"
+  cleaned_df <- test_df |>
+    #First select columns from col_name_start -> col_name_end
+    dplyr::select(
+      organisation:stonefly_plecoptera
+    ) |>
+    ###Remove data uploads that included no site identifier
+    dplyr::filter(sampling_site == "")
 
-  db_create_and_pop(
-    full_form = test_df,
-    locations_list = "riverfly_locs",
-    data_type = "Urban Riverfly",
-    index_of_site_col = 4,
-    table_name = "riverflytest",
-    db_path = "data.sqlite"
-  )
-
-  # Connect to the temporary database and read the data back
-  con <- dbConnect(
+  con <- DBI::dbConnect(
     RSQLite::SQLite(),
-    testthat::test_path("../../data.sqlite"),
+    "data.sqlite",
     extended_types = TRUE
   )
-  test_riverfly <- DBI::dbReadTable(con, "riverflytest")
+  locations <- DBI::dbReadTable(con, "riverflylocs")
+  dbDisconnect(con)
 
-  on.exit(
-    {
-      dbRemoveTable(con, "riverflytest")
-      dbDisconnect(con)
-    },
-    add = TRUE,
-    after = FALSE
-  )
-  names(test_df)[5] <- "sampling_site"
+  acceptable_site_orgs <- acceptable_locs(locations)
+
+  # Filter out any observations for which the sampling site and organisation don't match what is expected
+  wrong_org <- cleaned_df |>
+    dplyr::mutate(
+      site_orgs = paste(organisation, sampling_site)
+    ) |>
+    dplyr::filter(grepl("Urban Riverfly", data_type)) |>
+    dplyr::filter(!(site_orgs %in% acceptable_site_orgs$identifiers))
+
+  ## Filter out rows where the sampling site and organisation don't match
+  correct_org_df <- cleaned_df |>
+    dplyr::mutate(
+      site_orgs = paste(organisation, sampling_site)
+    ) |>
+    dplyr::filter(site_orgs %in% acceptable_site_orgs$identifiers) |>
+    dplyr::select(-site_orgs)
+
+  #Also check if there are duplicates, each sampling site + timestamp should be unique
+  deduped_df <- correct_org_df |>
+    dplyr::distinct(
+      survey_date,
+      sampling_site,
+      .keep_all = TRUE
+    )
 
   testthat::expect_equal(
     nrow(clean_data(
@@ -42,7 +54,7 @@ test_that("function returns full df when db is valid", {
       locations_name = "riverfly_locs",
       data_type_name = "Urban Riverfly"
     )),
-    nrow(test_riverfly[, c(2:19)])
+    nrow(deduped_df)
   )
 })
 
