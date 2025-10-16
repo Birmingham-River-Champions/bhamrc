@@ -262,7 +262,7 @@ mod_03_plot_data_server <- function(id) {
           selectedTaxa
         )
       } else if (input$metric == "Invasive Species") {
-        plot_palette <- brewer.pal(n = 9, name = "PuBu")
+        plot_palette <- brewer.pal(n = 9, name = "Blues")
         BRCInvSpcs_Plot_Recent <- make_recent_inv_spp(
           BRCInvSpcs,
           BRC_locs,

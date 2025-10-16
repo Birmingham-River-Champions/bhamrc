@@ -159,7 +159,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                 theme_minimal() +
                 scale_fill_manual(
                     name = "ARMI",
-                    values = brewer.pal(n = 9, name = "PuBu"),
+                    values = brewer.pal(n = 9, name = "Blues"),
                     drop = FALSE
                 ) +
                 xlab("Survey Date") +

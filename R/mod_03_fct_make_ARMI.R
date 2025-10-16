@@ -107,7 +107,7 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
       ARMI_Plot_Colour = cut(
         ARMI,
         breaks = c(-Inf, 5:12, Inf),
-        labels = brewer.pal(n = 9, name = "PuBu")
+        labels = brewer.pal(n = 9, name = "Blues")
       )
     ) |> #11=max no. colours, xtreme red to xtreme blue- Blue rather than green so its colorblind friendly
     dplyr::select(organisation, everything())
@@ -144,7 +144,7 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
       ARMI_Plot_Colour = cut(
         ARMI,
         breaks = c(-Inf, c(5:12), Inf),
-        labels = c(brewer.pal(n = 9, name = "PuBu"))
+        labels = c(brewer.pal(n = 9, name = "Blues"))
       )
     ) |>
     ungroup() #11=max no. colours, xtreme red to xtreme blue
