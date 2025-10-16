@@ -153,7 +153,6 @@ test_that("make_other_spp_plot works", {
 })
 
 test_that("make_recent_other_spp works", {
-  browser()
   expect_equal(test_spp[[4]], test_plot[[4]])
 })
 
