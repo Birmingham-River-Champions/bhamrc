@@ -3,9 +3,10 @@ test_fixture_riverfly <- function() {
     # Make a copy of the data for testing
     con <- DBI::dbConnect(
         RSQLite::SQLite(),
-        test_path("../../data.sqlite"),
+        testthat::test_path("../../data.sqlite"),
         extended_types = TRUE
     )
+    print(getwd())
     table_name <- c(
         "riverfly",
         "water_quality",
