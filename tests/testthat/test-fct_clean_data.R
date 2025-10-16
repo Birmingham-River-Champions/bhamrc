@@ -2,16 +2,44 @@ test_df <- test_fixture_riverfly()[[1]]
 locations_name <- "BRC_Sampling_Locs"
 
 test_that("function returns full df when db is valid", {
+  # Create a temporary database and populate it with the test data
+  names(test_df)[5] <- "sampling_site_riverfly"
+  test_df$data_type <- "Urban Riverfly"
+
+  db_create_and_pop(
+    full_form = test_df,
+    locations_list = read.csv(test_path(
+      "../../inst/extdata/BRC_Sampling_Locs.csv"
+    )),
+    data_type = "Urban Riverfly",
+    index_of_site_col = 4,
+    table_name = "riverflytest"
+  )
+
+  # Connect to the temporary database and read the data back
+  con <- dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
+  test_riverfly <- DBI::dbReadTable(con, "riverflytest")
+
+  on.exit(
+    {
+      dbRemoveTable(con, "riverflytest")
+      dbDisconnect(con)
+    },
+    add = TRUE,
+    after = FALSE
+  )
+  names(test_df)[5] <- "sampling_site"
+
   testthat::expect_equal(
-    clean_data(
+    nrow(clean_data(
       input_df = test_df,
       col_name_start = "organisation",
       col_name_end = "stonefly_plecoptera",
       sample_site = "sampling_site",
       locations_name = locations_name,
       data_type_name = "Urban Riverfly"
-    ),
-    test_df[, c(1, 3, 2, 4:18)]
+    )),
+    nrow(test_riverfly[, c(2:19)])
   )
 })
 
@@ -57,7 +85,8 @@ test_that("function catches an entry with a blank site", {
 
 test_that("function catches an entry with a duplicate site and timestamp", {
   dupe_df <- test_df
-  dupe_df$survey_date[2] <- as.Date("2023-10-01")
+  fake_row <- dupe_df[1, ]
+  dupe_df <- rbind(dupe_df, fake_row)
 
   testthat::expect_warning(clean_data(
     input_df = dupe_df,

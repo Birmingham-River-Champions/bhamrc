@@ -203,13 +203,14 @@ mod_03_plot_data_server <- function(id) {
         "extdata/Unique_BRC_Sampling_Locs.csv"
       ))
 
-      # Get the right data for ARMI
+      # Get the right data for Riverfly or Invasive species
       con <- DBI::dbConnect(
         RSQLite::SQLite(),
         "data.sqlite",
         extended_types = TRUE
       )
       riverfly_data <- DBI::dbReadTable(con, "riverfly")
+      BRCInvSpcs <- DBI::dbReadTable(con, "invasive_species")
       dbDisconnect(con)
 
       Riverfly_Species_Plot_All <- species_plots(

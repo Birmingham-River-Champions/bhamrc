@@ -14,12 +14,12 @@ plot_test_data <- left_join(
   )],
   by = c("sampling_site" = "ID"),
   multiple = "first"
-) |>
-  select(-data_type)
+)
 
 other_spp_plot_test <- select(
   plot_test_data,
-  survey_date:sampling_site,
+  survey_date,
+  sampling_site,
   organisation,
   LAT,
   LONG,
@@ -43,7 +43,22 @@ other_spp_plot_test <- select(
       abundance,
       levels = c(">1000", "100-999", "10-99", "1-9")
     )
-  )
+  ) |>
+  mutate(survey_date = dmy(survey_date))
+
+other_spp_plot_test$organisation <- ifelse(
+  other_spp_plot_test$organisation == "Friends of Lifford Reservoir",
+  "Anonymous",
+  other_spp_plot_test$organisation
+)
+
+other_spp_plot_test$sampling_site <- gsub(
+  "\\s*\\(.*\\)$",
+  "",
+  other_spp_plot_test$sampling_site
+)
+other_spp_plot_test <- other_spp_plot_test |>
+  mutate(across(sampling_site, flip_site_names))
 
 riverfly_species_plot_test <- select(
   plot_test_data,
@@ -75,7 +90,21 @@ riverfly_species_plot_test <- select(
       abundance == "100-999" ~ 3,
       abundance == ">1000" ~ 4
     ))
-  )
+  ) |>
+  mutate(survey_date = dmy(survey_date))
+
+riverfly_species_plot_test$organisation <- ifelse(
+  riverfly_species_plot_test$organisation == "Friends of Lifford Reservoir",
+  "Anonymous",
+  riverfly_species_plot_test$organisation
+)
+riverfly_species_plot_test$sampling_site <- gsub(
+  "\\s*\\(.*\\)$",
+  "",
+  riverfly_species_plot_test$sampling_site
+)
+riverfly_species_plot_test <- riverfly_species_plot_test |>
+  mutate(across(sampling_site, flip_site_names))
 
 riverfly_plot_test_recent <- riverfly_species_plot_test |>
   filter(survey_date >= Sys.Date() - years(3)) |>
@@ -125,7 +154,6 @@ test_that("make_other_spp_plot works", {
 })
 
 test_that("make_recent_other_spp works", {
-  browser()
   expect_equal(test_spp[[4]], test_plot[[4]])
 })
 
@@ -214,7 +242,7 @@ test_that("make_recent_inv_spp works", {
   inv_spp_locs <- test_locs |>
     rename('sampling_site' = ID)
   test_inv_spp <- make_recent_inv_spp(
-    test_values[[4]][, -1],
+    test_values[[4]],
     inv_spp_locs,
     plot_palette
   )

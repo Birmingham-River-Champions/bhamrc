@@ -57,13 +57,13 @@ process_locations <- function(
 
     write.csv(
         BRC_Sampling_Locs,
-        "./inst/extdata/Unique_BRC_Sampling_Locs.csv",
+        "./inst/extdata/BRC_Sampling_Locs.csv",
         row.names = FALSE
     )
 
     write.csv(
         BRC_Outfall_Locs,
-        "./inst/extdata/Unique_BRC_Outfall_Locs.csv",
+        "./inst/extdata/BRC_Outfall_Locs.csv",
         row.names = FALSE
     )
     return(list(BRC = BRC_Sampling_Locs, Outfall = BRC_Outfall_Locs))

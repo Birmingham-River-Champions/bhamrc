@@ -15,7 +15,14 @@ turn_gsheets_into_db <- function(
         "Water Quality",
         "Urban Outfall Safari",
         "Invasive Species"
-    )
+    ),
+    table_name = c(
+        "riverfly",
+        "water_quality",
+        "outfall_safari",
+        "invasive_species"
+    ),
+    col_indices = c(4, 4, 5, 5)
 ) {
     # Function to create the SQLite database and tables if they don't exist
     full_form_url <- "https://docs.google.com/spreadsheets/d/1458OWr2_x3vdM_LGAQaf0lcOWitO9LtnRm2GsAF_pys/edit?usp=sharing"
@@ -103,20 +110,6 @@ turn_gsheets_into_db <- function(
         outfall_locs_url = 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
     )
 
-    table_name <- c(
-        "riverfly",
-        "water_quality",
-        "outfall_safari",
-        "invasive_species"
-    )
-
-    col_indices <- c(4, 4, 5, 5)
-
-    # usethis::use_data(BRC_UrbRiverfly, overwrite = TRUE)
-    # usethis::use_data(BRC_WQ, overwrite = TRUE)
-    # usethis::use_data(BRC_locs, overwrite = TRUE)
-    # usethis::use_data(BRCInvSpcs, overwrite = TRUE)
-
     # Create the database tables if they don't exist
     for (i in seq_len(length(data_types))) {
         if (data_types[i] != "") {
@@ -173,7 +166,6 @@ db_create_and_pop <- function(
         ),
         data_type_name = data_type
     )
-    print(names(processed_data))
 
     names(processed_data)[index_of_site_col] <- "sampling_site"
 

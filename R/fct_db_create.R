@@ -53,6 +53,20 @@ db_create <- function(table_name = "riverfly") {
             sampling_site TEXT, outfall_photo TEXT,
             outfall_flow TEXT, outfall_pollution_distance TEXT, outfall_aesthetics TEXT)"
         ),
+        "riverflytest" = paste(
+            "CREATE TABLE",
+            table_name,
+            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT,
+            sampling_site TEXT, cased_caddisfly TEXT, caseless_caddisfly TEXT,
+            olive_mayfly TEXT, blue_winged_olive_mayfly TEXT,
+            freshwater_shrimp TEXT, freshwater_hoglouse TEXT, blackfly_larvae TEXT, 
+            freshwater_worm TEXT, freshwater_leech TEXT, freshwater_snail TEXT, 
+            freshwater_beetle TEXT, green_drake_mayfly TEXT, flat_bodied_stone_clinger_mayfly TEXT,
+            stonefly_plecoptera TEXT, other_chironomidae TEXT, other_dicranota TEXT,
+            other_tipulidae TEXT, other_hydracarina TEXT, other_hydropsychidae TEXT,
+            other_rhyacophilidae TEXT, other_planorbidae TEXT, other_sphaeriidae TEXT,
+            other_acroloxidae_ancylidae TEXT, other_bullhead TEXT)"
+        ),
         # Default case if no match is found
         stop("Unknown table name")
     )

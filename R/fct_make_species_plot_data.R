@@ -23,10 +23,12 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
             multiple = "first"
         ) |>
         dplyr::select(
+            -id,
             -invasive_spp_what_three_words,
             -any_other_invasive_spp,
             -data_type
         )
+
     BRCInvSpcs_Plot <- BRCInvSpcs_Plot |> # Remove unneeded columns
         tidyr::pivot_longer(
             -c(
@@ -145,7 +147,8 @@ species_plots <- function(riverfly_data, sampling_locs) {
     # Create 2 separate sets - One of other species and a table (like invasive species) - do this first for now
     Riverfly_Other_Species_Plot <- Riverfly_Species_Plot |>
         dplyr::select(
-            survey_date:sampling_site,
+            survey_date,
+            sampling_site,
             organisation,
             LAT,
             LONG,
@@ -154,7 +157,8 @@ species_plots <- function(riverfly_data, sampling_locs) {
     # Then the other set for Urban Riverfly taxa and a ggplot (like ARMI) - did this second here so I can overwrite df name
     Riverfly_Species_Plot <- Riverfly_Species_Plot |>
         dplyr::select(
-            survey_date:sampling_site,
+            survey_date,
+            sampling_site,
             organisation,
             LAT,
             LONG,
@@ -210,7 +214,7 @@ species_plots <- function(riverfly_data, sampling_locs) {
     # Organise - this plot df not used in the end. Seemed off trying to plot inconsistently ID'd taxa. So did a pop up table of the most recent instead (like invasive)
     Riverfly_Other_Species_Plot <- Riverfly_Other_Species_Plot |>
         pivot_longer(
-            -c(organisation, data_type, sampling_site, survey_date, LONG, LAT)
+            -c(organisation, sampling_site, survey_date, LONG, LAT)
         ) |>
         dplyr::rename(taxa = "name", abundance = "value") |>
         group_by(sampling_site, taxa) |>
