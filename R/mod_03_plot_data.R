@@ -198,11 +198,6 @@ mod_03_plot_data_server <- function(id) {
       addPolygonsAndLines(mapProxy, zoomLevel)
       mapProxy |> clearControls()
 
-      # need to rename sampling_site across datasets
-      Unique_BRC_Sampling_Locs <- read.csv(app_sys(
-        "extdata/Unique_BRC_Sampling_Locs.csv"
-      ))
-
       # Get the right data for Riverfly or Invasive species
       con <- DBI::dbConnect(
         RSQLite::SQLite(),
@@ -211,7 +206,11 @@ mod_03_plot_data_server <- function(id) {
       )
       riverfly_data <- DBI::dbReadTable(con, "riverfly")
       BRCInvSpcs <- DBI::dbReadTable(con, "invasive_species")
+      BRC_locs <- DBI::dbReadTable(con, "riverfly_locs")
       dbDisconnect(con)
+
+      Unique_BRC_Sampling_Locs <- BRC_locs |>
+        dplyr::distinct(sampling_site, .keep_all = TRUE)
 
       Riverfly_Species_Plot_All <- species_plots(
         riverfly_data,

@@ -34,7 +34,14 @@ clean_data <- function(
         ###Remove data uploads that included no site identifier
         dplyr::filter(!(!!sample_site) == "")
 
-    locations <- read.csv(app_sys("./extdata/", paste0(locations_name, ".csv")))
+    con <- DBI::dbConnect(
+        RSQLite::SQLite(),
+        "data.sqlite",
+        extended_types = TRUE
+    )
+    locations <- DBI::dbReadTable(con, locations_name)
+    dbDisconnect(con)
+
     acceptable_site_orgs <- acceptable_locs(locations)
 
     # Filter out any observations for which the sampling site and organisation don't match what is expected

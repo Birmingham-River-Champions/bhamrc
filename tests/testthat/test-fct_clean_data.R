@@ -8,16 +8,19 @@ test_that("function returns full df when db is valid", {
 
   db_create_and_pop(
     full_form = test_df,
-    locations_list = read.csv(test_path(
-      "../../inst/extdata/BRC_Sampling_Locs.csv"
-    )),
+    locations_list = "riverfly_locs",
     data_type = "Urban Riverfly",
     index_of_site_col = 4,
-    table_name = "riverflytest"
+    table_name = "riverflytest",
+    db_path = test_path("../../data.sqlite")
   )
 
   # Connect to the temporary database and read the data back
-  con <- dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
+  con <- dbConnect(
+    RSQLite::SQLite(),
+    test_path("../../data.sqlite"),
+    extended_types = TRUE
+  )
   test_riverfly <- DBI::dbReadTable(con, "riverflytest")
 
   on.exit(
@@ -36,7 +39,7 @@ test_that("function returns full df when db is valid", {
       col_name_start = "organisation",
       col_name_end = "stonefly_plecoptera",
       sample_site = "sampling_site",
-      locations_name = locations_name,
+      locations_name = "riverfly_locs",
       data_type_name = "Urban Riverfly"
     )),
     nrow(test_riverfly[, c(2:19)])
@@ -50,7 +53,7 @@ test_that("function returns no error when db is valid", {
       col_name_start = "organisation",
       col_name_end = "stonefly_plecoptera",
       sample_site = "sampling_site",
-      locations_name = locations_name,
+      locations_name = "riverfly_locs",
       data_type_name = "Urban Riverfly"
     )
   )
@@ -64,7 +67,7 @@ test_that("function catches an invalid site and organisation combination", {
     col_name_start = "organisation",
     col_name_end = "stonefly_plecoptera",
     sample_site = "sampling_site",
-    locations_name = locations_name,
+    locations_name = "riverfly_locs",
     data_type_name = "Urban Riverfly"
   ))
 })
@@ -78,7 +81,7 @@ test_that("function catches an entry with a blank site", {
     col_name_start = "organisation",
     col_name_end = "stonefly_plecoptera",
     sample_site = "sampling_site",
-    locations_name = locations_name,
+    locations_name = "riverfly_locs",
     data_type_name = "Urban Riverfly"
   ))
 })
@@ -93,7 +96,7 @@ test_that("function catches an entry with a duplicate site and timestamp", {
     col_name_start = "organisation",
     col_name_end = "stonefly_plecoptera",
     sample_site = "sampling_site",
-    locations_name = locations_name,
+    locations_name = "riverfly_locs",
     data_type = "Urban Riverfly"
   ))
 })

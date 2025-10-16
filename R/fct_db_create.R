@@ -6,7 +6,7 @@
 #' @importFrom DBI dbConnect dbDisconnect dbExecute dbExistsTable
 #' @importFrom RSQLite SQLite
 #' @noRd
-db_create <- function(table_name = "riverfly") {
+db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
     # Create a unique table for each data type
     sql_string <- switch(
         table_name,
@@ -66,6 +66,12 @@ db_create <- function(table_name = "riverfly") {
             other_tipulidae TEXT, other_hydracarina TEXT, other_hydropsychidae TEXT,
             other_rhyacophilidae TEXT, other_planorbidae TEXT, other_sphaeriidae TEXT,
             other_acroloxidae_ancylidae TEXT, other_bullhead TEXT)"
+        ),
+        "outfall_locs" = paste(
+            "CREATE TABLE",
+            table_name,
+            "(id INTEGER PRIMARY KEY, Organisation TEXT, sampling_site TEXT, Easting INTEGER, Northing INTEGER,
+            LAT REAL, LONG REAL)"
         ),
         # Default case if no match is found
         stop("Unknown table name")

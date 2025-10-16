@@ -110,12 +110,19 @@ turn_gsheets_into_db <- function(
         outfall_locs_url = 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
     )
 
+    locations_name <- c(
+        "riverfly_locs",
+        "riverfly_locs",
+        "outfall_locs",
+        "riverfly_locs"
+    )
+
     # Create the database tables if they don't exist
     for (i in seq_len(length(data_types))) {
         if (data_types[i] != "") {
             db_create_and_pop(
                 BRC_full_form,
-                locations_list,
+                locations_name[i],
                 data_types[i],
                 col_indices[i],
                 table_name = table_name[i]
@@ -138,7 +145,8 @@ db_create_and_pop <- function(
     locations_list,
     data_type,
     index_of_site_col,
-    table_name
+    table_name,
+    ...
 ) {
     processed_data <- clean_data(
         input_df = full_form,
@@ -161,8 +169,8 @@ db_create_and_pop <- function(
             data_type == "Urban Outfall Safari" ~ "outfall_sampling_site"
         ),
         locations_name = case_when(
-            data_type == "Urban Outfall Safari" ~ "Unique_BRC_Outfall_Locs",
-            .default = "Unique_BRC_Sampling_Locs"
+            data_type == "Urban Outfall Safari" ~ "outfall_locs",
+            .default = "riverfly_locs"
         ),
         data_type_name = data_type
     )
@@ -171,7 +179,7 @@ db_create_and_pop <- function(
 
     # Create SQLite tables for riverfly, water quality, and associated location identifiers
     # Invasive species and outfall safari data not currently being added to the database because they are empty
-    db_create(table_name)
+    db_create(table_name, ...)
 
     # Populate the database tables with the cleaned data
     populate_db(processed_data, table_name)

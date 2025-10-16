@@ -1,18 +1,17 @@
 test_values <- test_fixture_riverfly()
 test_df <- test_values[[1]]
+test_locs <- test_values[[5]]
 
-locs_name <- "BRC_Sampling_Locs"
-test_locs <- read.csv(test_path("../../inst/extdata/BRC_Sampling_Locs.csv"))
 acceptable_site_orgs <- acceptable_locs(test_locs)
 
 plot_test_data <- left_join(
   test_df,
   test_locs[, c(
-    "ID",
+    "sampling_site",
     "LAT",
     "LONG"
   )],
-  by = c("sampling_site" = "ID"),
+  by = join_by(sampling_site),
   multiple = "first"
 )
 
@@ -162,11 +161,11 @@ test_that("make_recent_inv_spp works", {
   inv_spp_test <- left_join(
     test_values[[4]],
     test_locs[, c(
-      "ID",
+      "sampling_site",
       "LAT",
       "LONG"
     )],
-    by = c("sampling_site" = "ID"),
+    by = join_by(sampling_site),
   ) |>
     dplyr::select(
       -id,
@@ -239,8 +238,8 @@ test_that("make_recent_inv_spp works", {
     ungroup() |>
     dplyr::relocate(date_time, .after = InvSpcs_Plot_Colour)
 
-  inv_spp_locs <- test_locs |>
-    rename('sampling_site' = ID)
+  inv_spp_locs <- test_locs
+
   test_inv_spp <- make_recent_inv_spp(
     test_values[[4]],
     inv_spp_locs,

@@ -10,9 +10,9 @@ test_fixture_riverfly <- function() {
         "riverfly",
         "water_quality",
         "outfall_safari",
-        "invasive_species"
+        "invasive_species",
+        "riverfly_locs"
     )
-
     test_df <- vector("list")
     for (i in seq_len(length(table_name))) {
         test_df[[i]] <- DBI::dbReadTable(con, table_name[i])

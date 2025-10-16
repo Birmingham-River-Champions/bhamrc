@@ -120,11 +120,11 @@ species_plots <- function(riverfly_data, sampling_locs) {
     Riverfly_Species_Plot <- left_join(
         riverfly_data,
         sampling_locs[, c(
-            "ID",
+            "sampling_site",
             "LAT",
             "LONG"
         )],
-        by = c("sampling_site" = "ID"),
+        by = join_by(sampling_site),
         multiple = "first"
     ) |>
         dplyr::select(organisation, everything())
