@@ -18,6 +18,7 @@ Imports:
     ggplot2,
     golem,
     gsheet,
+    hms,
     htmlwidgets,
     leaflet,
     leafpop,
