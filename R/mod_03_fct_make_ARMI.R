@@ -111,7 +111,7 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
       )
     ) |> #11=max no. colours, xtreme red to xtreme blue- Blue rather than green so its colorblind friendly
     dplyr::select(organisation, everything())
-
+  browser()
   #######Remove the parenthsised organisation from the site ID
   Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
     mutate(gsub(
