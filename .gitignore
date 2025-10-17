@@ -19,3 +19,4 @@
 *.sr.lock
 *.vscode
 .radian_profile
+*.sqlite
