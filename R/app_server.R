@@ -21,7 +21,7 @@ app_server <- function(input, output, session) {
 
   # Application server logic
   # Database setup
-  con <- dbConnect(RSQLite::SQLite(), "data.sqlite")
+  con <- dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
   if (!dbExistsTable(con, "submissions")) {
     dbExecute(
       con,

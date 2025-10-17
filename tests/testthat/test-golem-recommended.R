@@ -18,45 +18,46 @@ test_that("app server", {
   }
 })
 
-test_that(
-  "app_sys works",
-  {
-    expect_true(
-      app_sys("golem-config.yml") != ""
-    )
-  }
-)
+test_that("app_sys works", {
+  expect_true(
+    app_sys("golem-config.yml") != ""
+  )
+})
 
-test_that(
-  "golem-config works",
-  {
-    config_file <- app_sys("golem-config.yml")
-    skip_if(config_file == "")
+test_that("golem-config works", {
+  config_file <- app_sys("golem-config.yml")
+  skip_if(config_file == "")
 
-    expect_true(
-      get_golem_config(
-        "app_prod",
-        config = "production",
-        file = config_file
-      )
+  expect_true(
+    get_golem_config(
+      "app_prod",
+      config = "production",
+      file = config_file
     )
-    expect_false(
-      get_golem_config(
-        "app_prod",
-        config = "dev",
-        file = config_file
-      )
+  )
+  expect_false(
+    get_golem_config(
+      "app_prod",
+      config = "dev",
+      file = config_file
     )
-  }
-)
+  )
+})
 
 # Configure this test to fit your need.
 # testServer() function makes it possible to test code in server functions and modules, without needing to run the full Shiny application
 testServer(app_server, {
-
   # Set and test an input
-  session$setInputs(x = 2)
-  expect_equal(input$x, 2)
+  session$setInputs(
+    riverfly = "ARMI",
+    riverflySpecies = "stonefly_plecoptera",
+    otherSpecies = "other_bullhead",
+    invasiveType = "signal_crayfish",
+  )
+  expect_equal(input$invasiveType, "signal_crayfish")
+  expect_equal(input$riverfly, "ARMI")
+  expect_equal(input$riverflySpecies, "stonefly_plecoptera")
+  expect_equal(input$otherSpecies, "other_bullhead")
 
   # Example of tests you can do on the server:
   # - Checking reactiveValues
@@ -66,9 +67,6 @@ testServer(app_server, {
 })
 
 # Configure this test to fit your need
-test_that(
-  "app launches",
-  {
-    golem::expect_running(sleep = 5)
-  }
-)
+test_that("app launches", {
+  golem::expect_running(sleep = 5)
+})
