@@ -241,6 +241,19 @@ make_water_quality_plot_data <- function(
     sampling_locs,
     reading_type
 ) {
+    # Determine breaks for water quality data
+    # Based on 95% quantile
+    break_endpoint <- quantile(
+        water_quality_data$value,
+        c(0.025, .0975),
+        na.rm = TRUE
+    )
+    wq_breaks <- c(
+        -Inf,
+        seq(break_endpoint[1], break_endpoint[2], length.out = 8),
+        Inf
+    )
+
     # Placeholder function for future water quality plot data processing
     water_quality_plots <- left_join(
         water_quality_data,
@@ -259,10 +272,11 @@ make_water_quality_plot_data <- function(
         mutate(
             WQ_Plot_Colour = cut(
                 value,
-                breaks = c(-Inf, 5:12, Inf),
+                breaks = wq_breaks,
                 labels = brewer.pal(n = 9, name = "Blues")
             )
-        )
+        ) |>
+        dplyr::mutate(survey_date = dmy(survey_date))
 
-    return(water_quality_plot)
+    return(water_quality_plots)
 }

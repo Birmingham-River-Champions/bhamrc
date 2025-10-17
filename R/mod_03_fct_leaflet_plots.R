@@ -726,6 +726,12 @@ addWaterQualityMarkers <- function(
                                 1
                             )))
                         )
+                        # breaks = value_breaks,
+                        # labels = c(
+                        #     paste("<=", value_breaks[2]),
+                        #     value_breaks[-c(1, tail(length(value_breaks)))],
+                        #     paste("≥", value_breaks[length(value_breaks) - 1])
+                        # )
                     )
                 )
             ) +
