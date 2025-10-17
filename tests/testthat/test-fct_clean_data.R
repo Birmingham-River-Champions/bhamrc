@@ -1,4 +1,4 @@
-test_data <- test_fixture_riverfly()[[1]]
+test_data <- test_fixture_riverfly()
 test_df <- test_data[[1]]
 locations_name <- "BRC_Sampling_Locs"
 
@@ -10,7 +10,7 @@ test_that("function returns full df when db is valid", {
       organisation:stonefly_plecoptera
     ) |>
     ###Remove data uploads that included no site identifier
-    dplyr::filter(sampling_site == "")
+    dplyr::filter(sampling_site != "")
 
   locations <- test_data[[5]]
   acceptable_site_orgs <- acceptable_locs(locations)
