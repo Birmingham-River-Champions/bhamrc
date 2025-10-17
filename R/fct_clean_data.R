@@ -23,6 +23,11 @@ clean_data <- function(
     locations_name,
     data_type_name
 ) {
+    if (data_type_name == "Water Quality") {
+        input_df <- input_df |>
+            select(-survey_date) |>
+            rename(survey_date = wq_survey_date)
+    }
     cleaned_df <- input_df |>
         #First select columns from col_name_start -> col_name_end
         dplyr::select(

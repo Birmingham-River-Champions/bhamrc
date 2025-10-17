@@ -64,11 +64,7 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
         mutate(across(sampling_site, flip_site_names))
 
     # Anonymise those that want to be based on the sign up sheet
-    BRCInvSpcs_Plot$organisation <- ifelse(
-        BRCInvSpcs_Plot$organisation == "Friends of Lifford Reservoir",
-        "Anonymous",
-        BRCInvSpcs_Plot$organisation
-    )
+    BRCInvScs_Plot <- anonymise_organisations(BRCInvSpcs_Plot)
 
     BRCInvSpcs_Plot_Recent <- BRCInvSpcs_Plot |>
         filter(date_time >= Sys.Date() - lubridate::years(3))
@@ -99,11 +95,6 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
     return(BRCInvSpcs_Plot_Recent)
 }
 
-flip_site_names <- function(site_name) {
-    # Use regex to capture the two parts of the string
-    gsub("^(\\w+(?: \\w+)*),\\s*(.*)$", "\\2, \\1", site_name)
-}
-
 #' species_plots
 #'
 #' Function to create the data for the Riverfly plots
@@ -130,18 +121,10 @@ species_plots <- function(riverfly_data, sampling_locs) {
         dplyr::select(organisation, everything())
 
     # Anonymise those that want to be based on the sign up sheet
-    Riverfly_Species_Plot$organisation <- ifelse(
-        Riverfly_Species_Plot$organisation == "Friends of Lifford Reservoir",
-        "Anonymous",
-        Riverfly_Species_Plot$organisation
-    )
-    # Rename site ID, remove the parenthsised organisation from the site ID and flip
-    Riverfly_Species_Plot$sampling_site <- gsub(
-        "\\s*\\(.*\\)$",
-        "",
-        Riverfly_Species_Plot$sampling_site
-    )
+    # flip names, and remove parenthesised orgs
     Riverfly_Species_Plot <- Riverfly_Species_Plot |>
+        anonymise_organisations() |>
+        remove_parenthesised_orgs() |>
         mutate(across(sampling_site, flip_site_names))
 
     # Create 2 separate sets - One of other species and a table (like invasive species) - do this first for now
@@ -242,4 +225,67 @@ species_plots <- function(riverfly_data, sampling_locs) {
         Riverfly_Other_Species_Plot,
         Riverfly_Other_Species_Plot_Recent
     ))
+}
+
+#' make_water_quality_plot_data
+#'
+#' Function to create the data for the Water Quality plots
+#' @param water_quality_data The cleaned water quality data
+#' @param sampling_locs The sampling locations for water quality data
+#' @param reading_type The type of water quality reading (e.g., "Temperature (°C)")
+#' @return A data frame for the water quality plot
+#' @importFrom dplyr left_join select mutate across
+#' @importFrom RColorBrewer brewer.pal
+make_water_quality_plot_data <- function(
+    water_quality_data,
+    sampling_locs,
+    reading_type
+) {
+    # Select only the relevant reading type and rename
+    waterQuality_Map <- water_quality_data |>
+        select(
+            organisation,
+            survey_date,
+            sampling_site,
+            !!as.name(reading_type)
+        ) |>
+        rename(value = !!as.name(reading_type))
+    # Determine breaks for water quality data
+    # Based on 95% quantile
+    break_endpoint <- quantile(
+        waterQuality_Map$value,
+        c(0.025, .975),
+        na.rm = TRUE
+    )
+    wq_breaks <- c(
+        -Inf,
+        seq(break_endpoint[1], break_endpoint[2], length.out = 8),
+        Inf
+    )
+
+    # Placeholder function for future water quality plot data processing
+    water_quality_plots <- left_join(
+        waterQuality_Map,
+        sampling_locs[, c(
+            "sampling_site",
+            "LAT",
+            "LONG"
+        )],
+        by = join_by(sampling_site),
+        multiple = "first"
+    ) |>
+        dplyr::select(organisation, everything()) |>
+        anonymise_organisations() |>
+        remove_parenthesised_orgs() |>
+        mutate(across(sampling_site, flip_site_names)) |>
+        mutate(
+            WQ_Plot_Colour = cut(
+                value,
+                breaks = wq_breaks,
+                labels = brewer.pal(n = 9, name = "Blues")
+            )
+        ) |>
+        dplyr::mutate(survey_date = dmy(survey_date))
+
+    return(water_quality_plots)
 }
