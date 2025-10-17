@@ -647,16 +647,32 @@ addInvasiveSpeciesMarkers <- function(
 addWaterQualityMarkers <- function(
     mapProxy,
     wq_data,
-    reading_type
+    input
 ) {
+    reading_type <- input$readingType
+    pal <- colorFactor(
+        palette = levels(wq_data$WQ_Plot_Colour),
+        domain = wq_data$WQ_Plot_Colour
+    )
+    wq_data <- wq_data |>
+        filter(!is.na(value))
+
+    quantiles <- quantile(
+        wq_data$value,
+        probs = c(.025, .975)
+    )
+    value_breaks <- c(
+        -Inf,
+        seq(quantiles[1], quantiles[2], length.out = 8),
+        Inf
+    )
+
     mapProxy |> clearPopups() |> clearGroup("points")
 
-    reading_domain <- levels(data$reading)
-
-    if (!is.null(data) && nrow(data) > 0) {
+    if (!is.null(wq_data) && nrow(wq_data) > 0) {
         plotPopups <- function(i, popup_width) {
-            site_id <- data$sampling_site[i]
-            organisation <- data$organisation[i]
+            site_id <- wq_data$sampling_site[i]
+            organisation <- wq_data$organisation[i]
 
             wqdata_SiteID <- filter(
                 wq_data,
@@ -671,7 +687,6 @@ addWaterQualityMarkers <- function(
             } else {
                 organisation <- organisation # This line is optional, just for clarity
             }
-
             # Calculate date range buffer if there's only one sample
             date_range <- range(
                 wqdata_SiteID$survey_date,
@@ -694,7 +709,6 @@ addWaterQualityMarkers <- function(
                 organisation,
                 "."
             )
-
             p <- ggplot(
                 wqdata_SiteID,
                 aes(
@@ -702,18 +716,24 @@ addWaterQualityMarkers <- function(
                     y = value,
                     fill = cut(
                         value,
-                        breaks = c(-Inf, 5:12, Inf),
+                        breaks = value_breaks,
                         labels = c(
-                            "≤5",
-                            "6",
-                            "7",
-                            "8",
-                            "9",
-                            "10",
-                            "11",
-                            "12",
-                            "≥13"
+                            "≤234",
+                            "309",
+                            "383",
+                            "458",
+                            "533",
+                            "607",
+                            "682",
+                            "756",
+                            "≥800"
                         )
+                        # breaks = value_breaks,
+                        # labels = c(
+                        #     paste("<=", value_breaks[2]),
+                        #     value_breaks[-c(1, tail(length(value_breaks)))],
+                        #     paste("≥", value_breaks[length(value_breaks) - 1])
+                        # )
                     )
                 )
             ) +
@@ -768,13 +788,13 @@ addWaterQualityMarkers <- function(
                 popup_height <- 350
             }
 
-            plots <- lapply(1:nrow(data), function(i) {
+            plots <- lapply(1:nrow(wq_data), function(i) {
                 plotPopups(i, popup_width)
             })
 
             mapProxy |>
                 addCircleMarkers(
-                    data = data,
+                    data = wq_data,
                     lng = ~LONG,
                     lat = ~LAT,
                     radius = 6,
@@ -798,13 +818,13 @@ addWaterQualityMarkers <- function(
     mapProxy |> clearGroup("points")
 
     # Generate ggplot
-    ggplot(WQ_plot_data, aes(x = survey_date, y = value)) +
-        geom_point(color = site_data$WQ_Plot_Colour) +
-        geom_line(color = site_data$WQ_Plot_Colour) +
-        labs(
-            title = paste("Water Chemistry -", reading_type),
-            x = "Date",
-            y = "Value"
-        ) +
-        theme_minimal()
+    # ggplot(wq_data, aes(x = survey_date, y = value)) +
+    #     geom_point(color = site_data$WQ_Plot_Colour) +
+    #     geom_line(color = site_data$WQ_Plot_Colour) +
+    #     labs(
+    #         title = paste("Water Chemistry -", reading_type),
+    #         x = "Date",
+    #         y = "Value"
+    #     ) +
+    #     theme_minimal()
 }

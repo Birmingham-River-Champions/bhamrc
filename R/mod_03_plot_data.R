@@ -296,7 +296,7 @@ mod_03_plot_data_server <- function(id) {
         plot_palette <- brewer.pal(n = 9, name = "Blues")
 
         # Select only the relevant reading type and rename
-        selected_reading <- names(input$readingType)
+        selected_reading <- input$readingType
         waterQuality_Map <- BRC_wq |>
           select(
             organisation,
@@ -309,16 +309,14 @@ mod_03_plot_data_server <- function(id) {
         # If the user chooses Water Chemistry, plot water quality data
         WQ_plot_data <- make_water_quality_plot_data(
           waterQuality_Map,
-          ,
           Unique_BRC_Sampling_Locs,
           input$readingType
         )
 
         addWaterQualityMarkers(
-          WQ_plot_data,
-          mapProxy,
-          input$readingType,
-          plot_palette
+          wq_data = WQ_plot_data,
+          mapProxy = mapProxy,
+          input = input
         )
       }
     }
