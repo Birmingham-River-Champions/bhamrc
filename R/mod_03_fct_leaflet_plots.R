@@ -79,7 +79,7 @@ addPolygonsAndLines <- function(mapProxy, zoomLevel) {
 #' @param riverflyARMIData A data frame containing all ARMI data for generating the ggplot graphs.
 #' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
+#' @importFrom ggplot2 ggplot aes geom_point geom_line theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
 #' @noRd
@@ -654,6 +654,7 @@ addWaterQualityMarkers <- function(
         palette = levels(wq_data$WQ_Plot_Colour),
         domain = wq_data$WQ_Plot_Colour
     )
+
     wq_data <- wq_data |>
         filter(!is.na(value))
 
@@ -718,26 +719,18 @@ addWaterQualityMarkers <- function(
                         value,
                         breaks = value_breaks,
                         labels = c(
-                            "≤234",
-                            "309",
-                            "383",
-                            "458",
-                            "533",
-                            "607",
-                            "682",
-                            "756",
-                            "≥800"
+                            "≤191",
+                            as.character(unlist(lapply(
+                                value_breaks[-c(1, length(value_breaks))],
+                                round,
+                                1
+                            )))
                         )
-                        # breaks = value_breaks,
-                        # labels = c(
-                        #     paste("<=", value_breaks[2]),
-                        #     value_breaks[-c(1, tail(length(value_breaks)))],
-                        #     paste("≥", value_breaks[length(value_breaks) - 1])
-                        # )
                     )
                 )
             ) +
                 geom_point(size = 5, pch = 21, colour = "black") +
+                #geom_line(color = wqdata_SiteID$WQ_Plot_Colour) +
                 theme_minimal() +
                 scale_fill_manual(
                     name = reading_type,
@@ -816,15 +809,4 @@ addWaterQualityMarkers <- function(
     }
     # Clear existing points before adding new ones
     mapProxy |> clearGroup("points")
-
-    # Generate ggplot
-    # ggplot(wq_data, aes(x = survey_date, y = value)) +
-    #     geom_point(color = site_data$WQ_Plot_Colour) +
-    #     geom_line(color = site_data$WQ_Plot_Colour) +
-    #     labs(
-    #         title = paste("Water Chemistry -", reading_type),
-    #         x = "Date",
-    #         y = "Value"
-    #     ) +
-    #     theme_minimal()
 }

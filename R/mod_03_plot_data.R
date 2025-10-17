@@ -293,22 +293,10 @@ mod_03_plot_data_server <- function(id) {
         )
       } else if (input$metric == "Water Chemistry") {
         # If the user chooses Water Chemistry, plot water quality data
-        plot_palette <- brewer.pal(n = 9, name = "Blues")
-
-        # Select only the relevant reading type and rename
-        selected_reading <- input$readingType
-        waterQuality_Map <- BRC_wq |>
-          select(
-            organisation,
-            survey_date,
-            sampling_site,
-            !!as.name(selected_reading)
-          ) |>
-          rename(value = !!as.name(selected_reading))
 
         # If the user chooses Water Chemistry, plot water quality data
         WQ_plot_data <- make_water_quality_plot_data(
-          waterQuality_Map,
+          BRC_wq,
           Unique_BRC_Sampling_Locs,
           input$readingType
         )
