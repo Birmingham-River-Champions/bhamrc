@@ -241,11 +241,20 @@ make_water_quality_plot_data <- function(
     sampling_locs,
     reading_type
 ) {
+    # Select only the relevant reading type and rename
+    waterQuality_Map <- water_quality_data |>
+        select(
+            organisation,
+            survey_date,
+            sampling_site,
+            !!as.name(reading_type)
+        ) |>
+        rename(value = !!as.name(reading_type))
     # Determine breaks for water quality data
     # Based on 95% quantile
     break_endpoint <- quantile(
-        water_quality_data$value,
-        c(0.025, .0975),
+        waterQuality_Map$value,
+        c(0.025, .975),
         na.rm = TRUE
     )
     wq_breaks <- c(
@@ -256,7 +265,7 @@ make_water_quality_plot_data <- function(
 
     # Placeholder function for future water quality plot data processing
     water_quality_plots <- left_join(
-        water_quality_data,
+        waterQuality_Map,
         sampling_locs[, c(
             "sampling_site",
             "LAT",
