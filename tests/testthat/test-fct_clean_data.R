@@ -1,4 +1,5 @@
-test_df <- test_fixture_riverfly()[[1]]
+test_data <- test_fixture_riverfly()[[1]]
+test_df <- test_data[[1]]
 locations_name <- "BRC_Sampling_Locs"
 
 test_that("function returns full df when db is valid", {
@@ -11,14 +12,7 @@ test_that("function returns full df when db is valid", {
     ###Remove data uploads that included no site identifier
     dplyr::filter(sampling_site == "")
 
-  con <- DBI::dbConnect(
-    RSQLite::SQLite(),
-    "data.sqlite",
-    extended_types = TRUE
-  )
-  locations <- DBI::dbReadTable(con, "riverflylocs")
-  dbDisconnect(con)
-
+  locations <- test_data[[5]]
   acceptable_site_orgs <- acceptable_locs(locations)
 
   # Filter out any observations for which the sampling site and organisation don't match what is expected
