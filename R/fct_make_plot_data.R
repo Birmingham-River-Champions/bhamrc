@@ -249,7 +249,9 @@ make_water_quality_plot_data <- function(
             sampling_site,
             !!as.name(reading_type)
         ) |>
-        rename(value = !!as.name(reading_type))
+        rename(value = !!as.name(reading_type)) |>
+        mutate(value = as.numeric(value))
+
     # Determine breaks for water quality data
     # Based on 95% quantile
     break_endpoint <- quantile(

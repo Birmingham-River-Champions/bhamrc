@@ -65,7 +65,7 @@ mod_03_plot_data_ui <- function(id) {
           ns("readingType"),
           "Choose water chemistry reading type:",
           choices = c(
-            "Conductivity (mS)" = "conductivity_mS",
+            "Conductivity (\u03BCS)" = "conductivity_mS",
             "Temperature (°C)" = "temperature_C",
             "Ammonia (ppm)" = "ammonia_ppm",
             "Phosphate (ppm)" = "phosphate_ppm",

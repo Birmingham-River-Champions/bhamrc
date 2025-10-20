@@ -719,7 +719,7 @@ addWaterQualityMarkers <- function(
                         value,
                         breaks = value_breaks,
                         labels = c(
-                            "≤191",
+                            paste("≤", value_breaks[2] %>% round(1)),
                             as.character(unlist(lapply(
                                 value_breaks[-c(1, length(value_breaks))],
                                 round,
@@ -738,7 +738,7 @@ addWaterQualityMarkers <- function(
                     drop = FALSE
                 ) +
                 xlab("Survey Date") +
-                ylab(reading_type) +
+                ylab(names(which(water_quality_bw == reading_type))) +
                 scale_x_date(
                     date_breaks = "1 month",
                     date_labels = "%b '%y",

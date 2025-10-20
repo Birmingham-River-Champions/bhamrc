@@ -28,5 +28,14 @@ other_spp_bw <- list(
     "other_bullhead" = "Bullhead (fish - Cottus gobio)"
 )
 
+water_quality_bw <- list(
+    "Conductivity (\u03BCS)" = "conductivity_mS",
+    "Temperature (°C)" = "temperature_C",
+    "Ammonia (ppm)" = "ammonia_ppm",
+    "Phosphate (ppm)" = "phosphate_ppm",
+    "Nitrate (ppm)" = "nitrate_ppm",
+    "Turbidity (NTU)" = "turbidity_NTU"
+)
+
 setNames(names(riverfly_spp_bw), riverfly_spp_bw)
 setNames(names(other_spp_bw), other_spp_bw)
