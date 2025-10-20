@@ -1,15 +1,17 @@
 #' make_recent_inv_spp
 #'
-#' @description A fct function
-#'
-#' @return The return value, if any, from executing the function.
+#' @description This function makes the data for the recent invasive species plot
+#' @param cleaned_data The cleaned invasive species data
+#' @param sampling_locs The sampling locations for invasive species data
+#' @param plot_palette The colour palette to use for the plot
+#' @return The data frame for the recent invasive species plot.
 #' @importFrom dplyr left_join select rename arrange filter mutate across group_by slice_head ungroup
 #' @importFrom tidyr pivot_longer drop_na
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom lubridate dmy years
 #' @noRd
 make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
-    BRCInvSpcs_Plot <- ##Needed to make a dataframe and not a tibble for melt to work
+    BRCInvSpcs_Plot <-
         dplyr::left_join(
             # Select lat and long from the locations data frame and add to the invasive species date
             cleaned_data, # only the first lat and long are used per location
@@ -21,9 +23,12 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
             multiple = "first"
         ) |>
         dplyr::select(
+            -id,
             -invasive_spp_what_three_words,
-            -any_other_invasive_spp
+            -any_other_invasive_spp,
+            -data_type
         )
+
     BRCInvSpcs_Plot <- BRCInvSpcs_Plot |> # Remove unneeded columns
         tidyr::pivot_longer(
             -c(
@@ -54,16 +59,12 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
         ) |>
         mutate(date_time = lubridate::dmy(invasive_spp_sampling_date)) |>
         dplyr::arrange(sampling_site, date_time) |>
-        dplyr::select(-survey_date, -invasive_spp_sampling_date) |> ##Arrange by date
-        dplyr::mutate(sampling_site = gsub("\\s+", " ", sampling_site)) |> ###################Remove the parenthsised organisation from the site ID
+        dplyr::select(-survey_date, -invasive_spp_sampling_date) |>
+        dplyr::mutate(sampling_site = gsub("\\s+", " ", sampling_site)) |> # Remove the parenthesised organisation from the site ID
         mutate(across(sampling_site, flip_site_names))
 
-    ##Anonymise those that want to be based on the sign up sheet
-    BRCInvSpcs_Plot$organisation <- ifelse(
-        BRCInvSpcs_Plot$organisation == "Friends of Lifford Reservoir",
-        "Anonymous",
-        BRCInvSpcs_Plot$organisation
-    )
+    # Anonymise those that want to be based on the sign up sheet
+    BRCInvScs_Plot <- anonymise_organisations(BRCInvSpcs_Plot)
 
     BRCInvSpcs_Plot_Recent <- BRCInvSpcs_Plot |>
         filter(date_time >= Sys.Date() - lubridate::years(3))
@@ -94,11 +95,6 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
     return(BRCInvSpcs_Plot_Recent)
 }
 
-flip_site_names <- function(site_name) {
-    # Use regex to capture the two parts of the string
-    gsub("^(\\w+(?: \\w+)*),\\s*(.*)$", "\\2, \\1", site_name)
-}
-
 #' species_plots
 #'
 #' Function to create the data for the Riverfly plots
@@ -110,60 +106,49 @@ flip_site_names <- function(site_name) {
 #' Other_Species_Plot_Recent
 #' @importFrom dplyr select rename group_by mutate ungroup case_when
 #' @importFrom tidyr pivot_longer
-species_plots <- function(sampling_locs) {
-    # Connect to the DB to pull riverfly data
-    con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite")
-    riverfly_data <- DBI::dbReadTable(con, "riverfly")
-    dbDisconnect(con)
-
+species_plots <- function(riverfly_data, sampling_locs) {
     # Join the riverfly data with the locations data to get lat and long
     Riverfly_Species_Plot <- left_join(
         riverfly_data,
         sampling_locs[, c(
-            "ID",
+            "sampling_site",
             "LAT",
             "LONG"
         )],
-        by = c("sampling_site" = "ID"),
+        by = join_by(sampling_site),
         multiple = "first"
     ) |>
         dplyr::select(organisation, everything())
 
-    ###Anonymise those that want to be based on the sign up sheet
-    Riverfly_Species_Plot$organisation <- ifelse(
-        Riverfly_Species_Plot$organisation == "Friends of Lifford Reservoir",
-        "Anonymous",
-        Riverfly_Species_Plot$organisation
-    )
-    #######Rename site ID, remove the parenthsised organisation from the site ID and flip
-    Riverfly_Species_Plot$sampling_site <- gsub(
-        "\\s*\\(.*\\)$",
-        "",
-        Riverfly_Species_Plot$sampling_site
-    )
+    # Anonymise those that want to be based on the sign up sheet
+    # flip names, and remove parenthesised orgs
     Riverfly_Species_Plot <- Riverfly_Species_Plot |>
+        anonymise_organisations() |>
+        remove_parenthesised_orgs() |>
         mutate(across(sampling_site, flip_site_names))
 
-    #########Create 2 separate sets - One of other species and a table (like invasive species) - do this first for now
+    # Create 2 separate sets - One of other species and a table (like invasive species) - do this first for now
     Riverfly_Other_Species_Plot <- Riverfly_Species_Plot |>
         dplyr::select(
-            survey_date:sampling_site,
+            survey_date,
+            sampling_site,
             organisation,
             LAT,
             LONG,
             one_of(names(other_spp_bw))
         )
-    ########Then the other set for Urban Riverfly taxa and a ggplot (like ARMI) - did this second here so I can overwrite df name
+    # Then the other set for Urban Riverfly taxa and a ggplot (like ARMI) - did this second here so I can overwrite df name
     Riverfly_Species_Plot <- Riverfly_Species_Plot |>
         dplyr::select(
-            survey_date:sampling_site,
+            survey_date,
+            sampling_site,
             organisation,
             LAT,
             LONG,
             one_of(names(riverfly_spp_bw))
         )
 
-    ###Melt - good to go for ggplot, converted to numeric as it represents y-axis (labels edited in ggplot code in server below)
+    # Converted to numeric as it represents y-axis (labels edited in ggplot code in server below)
     Riverfly_Species_Plot <- Riverfly_Species_Plot |>
         pivot_longer(
             -c(
@@ -189,7 +174,7 @@ species_plots <- function(sampling_locs) {
         ) |>
         mutate(survey_date = dmy(survey_date))
 
-    ###Then find the highest/most recent - factor fine for the purpose of the leaflet marker
+    # Then find the highest/most recent - factor fine for the purpose of the leaflet marker
     Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot |>
         filter(survey_date >= Sys.Date() - years(3)) |>
         arrange(sampling_site, taxa, desc(abundance), desc(survey_date)) |>
@@ -209,7 +194,7 @@ species_plots <- function(sampling_locs) {
             )
         )
 
-    ##Organise - this plot df not used in the end. Seemed off trying to plot inconsistently ID'd taxa. So did a pop up table of the most recent instead (like invasive)
+    # Organise - this plot df not used in the end. Seemed off trying to plot inconsistently ID'd taxa. So did a pop up table of the most recent instead (like invasive)
     Riverfly_Other_Species_Plot <- Riverfly_Other_Species_Plot |>
         pivot_longer(
             -c(organisation, sampling_site, survey_date, LONG, LAT)
@@ -226,7 +211,7 @@ species_plots <- function(sampling_locs) {
         ) |>
         mutate(survey_date = dmy(survey_date))
 
-    ###Then find the highest/most recent
+    # Then find the highest/most recent
     Riverfly_Other_Species_Plot_Recent <- Riverfly_Other_Species_Plot |>
         filter(survey_date >= Sys.Date() - years(3)) |>
         arrange(sampling_site, taxa, abundance, desc(survey_date)) |>
@@ -240,4 +225,67 @@ species_plots <- function(sampling_locs) {
         Riverfly_Other_Species_Plot,
         Riverfly_Other_Species_Plot_Recent
     ))
+}
+
+#' make_water_quality_plot_data
+#'
+#' Function to create the data for the Water Quality plots
+#' @param water_quality_data The cleaned water quality data
+#' @param sampling_locs The sampling locations for water quality data
+#' @param reading_type The type of water quality reading (e.g., "Temperature (°C)")
+#' @return A data frame for the water quality plot
+#' @importFrom dplyr left_join select mutate across
+#' @importFrom RColorBrewer brewer.pal
+make_water_quality_plot_data <- function(
+    water_quality_data,
+    sampling_locs,
+    reading_type
+) {
+    # Select only the relevant reading type and rename
+    waterQuality_Map <- water_quality_data |>
+        select(
+            organisation,
+            survey_date,
+            sampling_site,
+            !!as.name(reading_type)
+        ) |>
+        rename(value = !!as.name(reading_type))
+    # Determine breaks for water quality data
+    # Based on 95% quantile
+    break_endpoint <- quantile(
+        waterQuality_Map$value,
+        c(0.025, .975),
+        na.rm = TRUE
+    )
+    wq_breaks <- c(
+        -Inf,
+        seq(break_endpoint[1], break_endpoint[2], length.out = 8),
+        Inf
+    )
+
+    # Placeholder function for future water quality plot data processing
+    water_quality_plots <- left_join(
+        waterQuality_Map,
+        sampling_locs[, c(
+            "sampling_site",
+            "LAT",
+            "LONG"
+        )],
+        by = join_by(sampling_site),
+        multiple = "first"
+    ) |>
+        dplyr::select(organisation, everything()) |>
+        anonymise_organisations() |>
+        remove_parenthesised_orgs() |>
+        mutate(across(sampling_site, flip_site_names)) |>
+        mutate(
+            WQ_Plot_Colour = cut(
+                value,
+                breaks = wq_breaks,
+                labels = brewer.pal(n = 9, name = "Blues")
+            )
+        ) |>
+        dplyr::mutate(survey_date = dmy(survey_date))
+
+    return(water_quality_plots)
 }

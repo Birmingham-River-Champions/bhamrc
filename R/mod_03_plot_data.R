@@ -18,7 +18,8 @@ mod_03_plot_data_ui <- function(id) {
         choices = c(
           " ",
           "Urban Riverfly",
-          "Invasive Species"
+          "Invasive Species",
+          "Water Chemistry"
         )
       ),
       conditionalPanel(
@@ -59,10 +60,10 @@ mod_03_plot_data_ui <- function(id) {
         ns = ns
       ),
       conditionalPanel(
-        condition = "input.metric == 'Water Quality'",
+        condition = "input.metric == 'Water Chemistry'",
         radioButtons(
           ns("readingType"),
-          "Choose water quality reading type:",
+          "Choose water chemistry reading type:",
           choices = c(
             "Conductivity (mS)" = "conductivity_mS",
             "Temperature (°C)" = "temperature_C",
@@ -99,10 +100,11 @@ mod_03_plot_data_ui <- function(id) {
       ), # Add this wrapper
       # Conditional panel for Urban Riverfly species
       conditionalPanel(
-        condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'Urban Riverfly species'",
+        condition = "input.metric == 'Water Chemistry' && input.riverfly == 'temperature_C'",
+        div(HTML("Placeholder for Water Quality legends")),
         img(
           src = "www/images/Species_legend.png",
-          id = "species-legend",
+          id = "wq-legend",
           alt = "Legend for Urban Riverfly species. Max abundance in the last three years. Options are >1000, 100-999, 10-99, and 1-9."
         ),
         ns = ns
@@ -147,6 +149,15 @@ mod_03_plot_data_ui <- function(id) {
           src = "www/images/Invasive_flora_legend.png",
           id = "invasive-flora-legend",
           alt = "Legend for Invasive flora species. Options are Present (red) and Not detected (green)."
+        ),
+        ns = ns
+      ),
+      conditionalPanel(
+        condition = "input.metric == 'Water Chemistry' && input.riverfly == 'ARMI'",
+        img(
+          src = "www/images/ARMI_legend.png",
+          id = "armi-legend",
+          alt = "Legend for Anglers Riverfly Monitoring Initiative (ARMI) scores. Options are 0-3 (red), 4-5 (orange), 6-7 (yellow), 8-9 (light green), and 10+ (dark green)."
         ),
         ns = ns
       ),
@@ -198,19 +209,35 @@ mod_03_plot_data_server <- function(id) {
       addPolygonsAndLines(mapProxy, zoomLevel)
       mapProxy |> clearControls()
 
-      # need to rename sampling_site across datasets
-      Unique_BRC_Sampling_Locs <- read.csv(app_sys(
-        "extdata/Unique_BRC_Sampling_Locs.csv"
-      ))
-      Riverfly_Species_Plot_All <- species_plots(Unique_BRC_Sampling_Locs)
+      # Pull the processed data from the db for riverfly, invasive species, and water quality
+      con <- DBI::dbConnect(
+        RSQLite::SQLite(),
+        "data.sqlite",
+        extended_types = TRUE
+      )
+      riverfly_data <- DBI::dbReadTable(con, "riverfly")
+      BRCInvSpcs <- DBI::dbReadTable(con, "invasive_species")
+      BRC_locs <- DBI::dbReadTable(con, "riverfly_locs")
+      BRC_wq <- DBI::dbReadTable(con, "water_quality")
+      dbDisconnect(con)
+
+      # Generate the modified plot data for the riverfly plots
+      Unique_BRC_Sampling_Locs <- BRC_locs |>
+        dplyr::distinct(sampling_site, .keep_all = TRUE)
+
+      Riverfly_Species_Plot_All <- species_plots(
+        riverfly_data,
+        Unique_BRC_Sampling_Locs
+      )
       Riverfly_Species_Plot <- Riverfly_Species_Plot_All[[1]]
       Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot_All[[2]]
       Riverfly_Other_Species_Plot <- Riverfly_Species_Plot_All[[3]]
       Riverfly_Other_Species_Plot_Recent <- Riverfly_Species_Plot_All[[4]]
 
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
-        # Get the right data for ARMI
-        ARMI_data <- make_riverfly_ARMI()
+        # If the user chooses ARMI, calculate the ARMI scores and plot data
+        ARMI_assignment <- make_riverfly_ARMI(riverfly_data)
+        ARMI_data <- sum_up_ARMI(ARMI_assignment)
         riverflyARMIDataList <- make_ARMI_plot_data(
           ARMI_data,
           Unique_BRC_Sampling_Locs
@@ -222,6 +249,7 @@ mod_03_plot_data_server <- function(id) {
         input$metric == "Urban Riverfly" &&
           input$riverfly == "Urban Riverfly species"
       ) {
+        # If the user chooses Urban Riverfly species, plot abundance data
         # Filter by the selected Taxa
         selectedTaxa <- names(which(riverfly_spp_bw == input$riverflySpecies))
 
@@ -238,6 +266,7 @@ mod_03_plot_data_server <- function(id) {
         input$metric == "Urban Riverfly" &&
           input$riverfly == "Other species"
       ) {
+        # If the user chooses Other species, plot abundance data
         # Filter data for the selected 'other species' from the radio buttons
         selectedTaxa <- names(which(other_spp_bw == input$otherSpecies))
         otherspeciesData_Recent_Map <- Riverfly_Other_Species_Plot_Recent |>
@@ -248,7 +277,8 @@ mod_03_plot_data_server <- function(id) {
           selectedTaxa
         )
       } else if (input$metric == "Invasive Species") {
-        plot_palette <- brewer.pal(n = 9, name = "RdBu")
+        # If the user chooses Invasive Species, plot presence/absence data
+        plot_palette <- brewer.pal(n = 9, name = "Blues")
         BRCInvSpcs_Plot_Recent <- make_recent_inv_spp(
           BRCInvSpcs,
           BRC_locs,
@@ -260,6 +290,21 @@ mod_03_plot_data_server <- function(id) {
           BRCInvSpcs_Plot_Recent,
           input$invasiveType,
           plot_palette
+        )
+      } else if (input$metric == "Water Chemistry") {
+        # If the user chooses Water Chemistry, plot water quality data
+
+        # If the user chooses Water Chemistry, plot water quality data
+        WQ_plot_data <- make_water_quality_plot_data(
+          BRC_wq,
+          Unique_BRC_Sampling_Locs,
+          input$readingType
+        )
+
+        addWaterQualityMarkers(
+          wq_data = WQ_plot_data,
+          mapProxy = mapProxy,
+          input = input
         )
       }
     }

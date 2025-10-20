@@ -1,32 +1,31 @@
 #' make_riverfly_ARMI
 #'
 #' @description A function to add the ARMI values to the riverfly data
+#' @param riverfly_data - riverfly data frame from
 #' @return The data frame with riverfly data and an appended ARMI column.
 #' @importFrom DBI dbReadTable dbConnect dbDisconnect
 #' @importFrom dplyr mutate mutate_at left_join select vars c_across
 #' @importFrom dplyr summarise group_by join_by
-make_riverfly_ARMI <- function() {
-  con <- DBI::dbConnect(RSQLite::SQLite(), "data.sqlite")
-  riverfly_data <- DBI::dbReadTable(con, "riverfly")
-  dbDisconnect(con)
-
-  Riverfly_ARMI <-
+make_riverfly_ARMI <- function(riverfly_data) {
+  riverfly_data <-
     as.data.frame(sapply(riverfly_data, function(x) {
       x <- gsub("1-9", "1", x)
     }))
-  #10-99 different between certain tolerant taxa and the rest
+
+  # 10-99 different between certain tolerant taxa and the rest
+  # TODO: change this to case_when for clarity
   Riverfly_ARMI <-
-    Riverfly_ARMI |>
+    riverfly_data |>
     dplyr::mutate(across(
-      .cols = -matches("snails|leeches|worms|hoglouse"),
+      .cols = -matches("snail|leech|worm|hoglouse"),
       .fns = ~ ifelse(. == '10-99', '2', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("snails|leeches|worms|hoglouse"),
+      .cols = matches("snail|leech|worm|hoglouse"),
       .fns = ~ ifelse(. == '10-99', '1', .)
     )) |>
     dplyr::mutate(across(
-      .cols = -matches("snails|leeches|worms|hoglouse|blackfly"),
+      .cols = -matches("snail|leech|worm|hoglouse|blackfly"),
       .fns = ~ ifelse(. == '100-999', '3', .)
     )) |>
     dplyr::mutate(across(
@@ -34,15 +33,15 @@ make_riverfly_ARMI <- function() {
       .fns = ~ ifelse(. == '100-999', '2', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("snails"),
+      .cols = matches("snail"),
       .fns = ~ ifelse(. == '100-999', '1', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("leeches|worms|hoglouse"),
+      .cols = matches("leech|worm|hoglouse"),
       .fns = ~ ifelse(. == '100-999', '0', .)
     )) |>
     dplyr::mutate(across(
-      .cols = -matches("snails|leeches|worms|hoglouse|blackfly|shrimp"),
+      .cols = -matches("snail|leech|worm|hoglouse|blackfly|shrimp"),
       .fns = ~ ifelse(. == '>1000', '4', .)
     )) |>
     dplyr::mutate(across(
@@ -50,19 +49,23 @@ make_riverfly_ARMI <- function() {
       .fns = ~ ifelse(. == '>1000', '2', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("blackfly|snails"),
+      .cols = matches("blackfly|snail"),
       .fns = ~ ifelse(. == '>1000', '0', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("leeches|hoglouse"),
+      .cols = matches("leech|hoglouse"),
       .fns = ~ ifelse(. == '>1000', '-2', .)
     )) |>
     dplyr::mutate(across(
-      .cols = matches("worms"),
+      .cols = matches("worm"),
       .fns = ~ ifelse(. == '>1000', '-3', .)
     )) |>
-    dplyr::mutate(across(cased_caddisfly:stonefly_plecoptera, as.numeric))
+    mutate(across(all_of(names(riverfly_spp_bw)), as.numeric))
 
+  return(Riverfly_ARMI)
+}
+
+sum_up_ARMI <- function(Riverfly_ARMI) {
   # Sum ARMI observations across taxa and remove individual species observations
   Riverfly_ARMI_Calc <-
     as.data.frame(
@@ -70,15 +73,13 @@ make_riverfly_ARMI <- function() {
         rowwise() |>
         mutate(
           ARMI = sum(
-            c_across(
-              cased_caddisfly:stonefly_plecoptera
-            ),
+            c_across(all_of(names(riverfly_spp_bw))),
             na.rm = TRUE
           )
         ) |> #,
         ##Ntaxa = sum(c_across(matches("Number of")) > 0, na.rm = TRUE))|> THOUGHT IT WAS CALCULATED LIKE ASPT, BUT IS ACTUALLY LIKE BMWP
-        dplyr::select(!(cased_caddisfly:stonefly_plecoptera)) # Should replace this with name constant eventually
-    )
+        dplyr::select(-all_of(names(riverfly_spp_bw)))
+    ) # Should replace this with name constant eventually)
   return(Riverfly_ARMI_Calc)
 }
 
@@ -97,7 +98,7 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
     left_join(
       Riverfly_ARMI_Calc,
       Unique_BRC_Sampling_Locs,
-      by = c("sampling_site" = "ID")
+      by = join_by(sampling_site)
     )
 
   ##And colour code the point according to the ARMI score
@@ -105,8 +106,8 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
     mutate(
       ARMI_Plot_Colour = cut(
         ARMI,
-        breaks = c(-Inf, 5:14, Inf),
-        labels = brewer.pal(n = 11, name = "RdBu")
+        breaks = c(-Inf, 5:12, Inf),
+        labels = brewer.pal(n = 9, name = "Blues")
       )
     ) |> #11=max no. colours, xtreme red to xtreme blue- Blue rather than green so its colorblind friendly
     dplyr::select(organisation, everything())
@@ -142,8 +143,8 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
     mutate(
       ARMI_Plot_Colour = cut(
         ARMI,
-        breaks = c(-Inf, c(5:14), Inf),
-        labels = c(brewer.pal(n = 11, name = "RdBu"))
+        breaks = c(-Inf, c(5:12), Inf),
+        labels = c(brewer.pal(n = 9, name = "Blues"))
       )
     ) |>
     ungroup() #11=max no. colours, xtreme red to xtreme blue
