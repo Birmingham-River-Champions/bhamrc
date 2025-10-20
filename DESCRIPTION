@@ -41,4 +41,4 @@ Suggests:
 Config/testthat/edition: 3
 Language: en-US
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1)
