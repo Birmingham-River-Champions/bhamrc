@@ -104,6 +104,9 @@ turn_gsheets_into_db <- function(
         "location_wtw"
     )
 
+    BRC_full_form <- BRC_full_form |>
+        mutate(across(everything(), ~ replace(., . == "N/A", "")))
+
     # Create location data frames for the two different location tables
     locations_list <- process_locations(
         sampling_locs_url = 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing',
