@@ -30,11 +30,11 @@ process_locations <- function(
     BRC_Sampling_Locs <- BRC_Sampling_Locs_raw |>
         dplyr::bind_cols(data.frame(BRC_Sampling_Locs_sf)[, 2]) |>
         dplyr::bind_cols(data.frame(BRC_Sampling_Locs_sf)[, 1]) |>
-        dplyr::rename(ID = BRC.sampling.site.ID, LAT = ...5, LONG = ...6)
-
-    ##Now just need to bring in the sampling locations - first keep one organisation per SITE ID (i.e., remove BRC project partners except only those I'm sampling)
-    Unique_BRC_Sampling_Locs <- BRC_Sampling_Locs |>
-        dplyr::distinct(ID, .keep_all = TRUE)
+        dplyr::rename(
+            sampling_site = BRC.sampling.site.ID,
+            LAT = ...5,
+            LONG = ...6
+        )
 
     ###Same for Outfall locs
     BRC_Outfall_Locs_sf <-
@@ -49,23 +49,14 @@ process_locations <- function(
     BRC_Outfall_Locs <- BRC_Outfall_Locs_raw |>
         dplyr::bind_cols(data.frame(BRC_Outfall_Locs_sf)[, 2]) |>
         dplyr::bind_cols(data.frame(BRC_Outfall_Locs_sf)[, 1]) |>
-        dplyr::rename(ID = Outfall.ID, LAT = ...5, LONG = ...6)
+        dplyr::rename(sampling_site = Outfall.ID, LAT = ...5, LONG = ...6)
 
-    ##Now just need to bring in the sampling locations - first keep one organisation per SITE ID (i.e., remove BRC project partners except only those I'm sampling)
-    Unique_Outfall_Locs <- BRC_Outfall_Locs |>
-        dplyr::distinct(ID, .keep_all = TRUE)
+    db_create("riverfly_locs")
+    db_create("outfall_locs")
+    # Populate the database tables with the cleaned data
+    populate_db(BRC_Sampling_Locs, "riverfly_locs")
+    populate_db(BRC_Outfall_Locs, "outfall_locs")
 
-    write.csv(
-        Unique_BRC_Sampling_Locs,
-        "./inst/extdata/Unique_BRC_Sampling_Locs.csv",
-        row.names = FALSE
-    )
-
-    write.csv(
-        Unique_Outfall_Locs,
-        "./inst/extdata/Unique_BRC_Outfall_Locs.csv",
-        row.names = FALSE
-    )
     return(list(BRC = BRC_Sampling_Locs, Outfall = BRC_Outfall_Locs))
 }
 
@@ -73,6 +64,6 @@ process_locations <- function(
 # Helper function to create acceptable location identifiers
 acceptable_locs <- function(df) {
     df |>
-        dplyr::mutate(identifiers = paste(Organisation, ID)) |>
+        dplyr::mutate(identifiers = paste(Organisation, sampling_site)) |>
         dplyr::select(identifiers)
 }

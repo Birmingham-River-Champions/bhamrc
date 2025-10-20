@@ -20,9 +20,14 @@ clean_data <- function(
     col_name_start,
     col_name_end,
     sample_site,
-    acceptable_site_orgs,
+    locations_name,
     data_type_name
 ) {
+    if (data_type_name == "Water Quality") {
+        input_df <- input_df |>
+            select(-survey_date) |>
+            rename(survey_date = wq_survey_date)
+    }
     cleaned_df <- input_df |>
         #First select columns from col_name_start -> col_name_end
         dplyr::select(
@@ -34,6 +39,16 @@ clean_data <- function(
         ###Remove data uploads that included no site identifier
         dplyr::filter(!(!!sample_site) == "")
 
+    con <- DBI::dbConnect(
+        RSQLite::SQLite(),
+        "data.sqlite",
+        extended_types = TRUE
+    )
+    locations <- DBI::dbReadTable(con, locations_name)
+    dbDisconnect(con)
+
+    acceptable_site_orgs <- acceptable_locs(locations)
+
     # Filter out any observations for which the sampling site and organisation don't match what is expected
     wrong_org <- cleaned_df |>
         dplyr::mutate(
@@ -41,16 +56,6 @@ clean_data <- function(
         ) |>
         dplyr::filter(grepl(!!(data_type_name), data_type)) |>
         dplyr::filter(!(site_orgs %in% acceptable_site_orgs$identifiers))
-
-    # If any sampling sites have been associated with the wrong organisation, throw an error
-    if (nrow(wrong_org) > 0) {
-        warning(
-            "Warning: Some ",
-            data_type_name,
-            " sampling sites seem incorrectly labelled: ",
-            wrong_org$site_orgs
-        )
-    }
 
     ## Filter out rows where the sampling site and organisation don't match
     correct_org_df <- cleaned_df |>
@@ -62,21 +67,34 @@ clean_data <- function(
 
     #Also check if there are duplicates, each sampling site + timestamp should be unique
     deduped_df <- correct_org_df |>
-        dplyr::distinct(survey_date, !!(sample_site), .keep_all = TRUE) |>
-        dplyr::select(-last_col())
-
-    if (nrow(deduped_df != nrow(cleaned_df))) {
-        # Add a new warning to the list if duplicate combinations exist
-        warning(
-            paste(
-                "Warning: Duplicated",
-                data_type_name,
-                "sample locations / date - check",
-                data_type_name,
-                "_deduped."
-            )
+        dplyr::distinct(
+            survey_date,
+            !!(as.name(sample_site)),
+            .keep_all = TRUE
         )
+
+    if (nrow(deduped_df) != nrow(cleaned_df)) {
+        # If any sampling sites have been associated with the wrong organisation, throw an error
+        if (nrow(wrong_org) > 0) {
+            warning(
+                "Warning: Some ",
+                data_type_name,
+                " sampling sites seem incorrectly labelled: ",
+                wrong_org$site_orgs
+            )
+        } else {
+            # Add a new warning to the list if duplicate combinations exist
+            warning(
+                paste(
+                    "Warning: Duplicated",
+                    data_type_name,
+                    "sample locations / date - check",
+                    data_type_name,
+                    "_deduped."
+                )
+            )
+        }
     }
 
-    return(correct_org_df)
+    return(deduped_df)
 }

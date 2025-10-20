@@ -4,7 +4,7 @@
 \alias{species_plots}
 \title{species_plots}
 \usage{
-species_plots(sampling_locs)
+species_plots(table_name, sampling_locs)
 }
 \arguments{
 \item{sampling_locs}{The sampling locations for Riverfly data}

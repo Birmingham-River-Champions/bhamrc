@@ -4,7 +4,10 @@
 \alias{make_riverfly_ARMI}
 \title{make_riverfly_ARMI}
 \usage{
-make_riverfly_ARMI()
+make_riverfly_ARMI(table_name)
+}
+\arguments{
+\item{table_name}{- name of the table to extract the riverfly data from}
 }
 \value{
 The data frame with riverfly data and an appended ARMI column.
