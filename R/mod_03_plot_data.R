@@ -6,7 +6,7 @@
 #'
 #' @noRd
 #'
-#' @importFrom shiny NS tagList leafletOutput
+#' @importFrom shiny NS tagList
 mod_03_plot_data_ui <- function(id) {
   ns <- NS(id)
 
@@ -66,7 +66,7 @@ mod_03_plot_data_ui <- function(id) {
           "Choose water chemistry reading type:",
           choices = c(
             "Conductivity (\u03BCS)" = "conductivity_mS",
-            "Temperature (°C)" = "temperature_C",
+            "Temperature (\u00B0C)" = "temperature_C",
             "Ammonia (ppm)" = "ammonia_ppm",
             "Phosphate (ppm)" = "phosphate_ppm",
             "Nitrate (ppm)" = "nitrate_ppm",
@@ -236,7 +236,7 @@ mod_03_plot_data_server <- function(id) {
 
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
         # If the user chooses ARMI, calculate the ARMI scores and plot data
-        ARMI_assignment <- make_riverfly_ARMI(riverfly_data)
+        ARMI_assignment <- make_riverfly_ARMI(select(riverfly_data, -c(id)))
         ARMI_data <- sum_up_ARMI(ARMI_assignment)
         riverflyARMIDataList <- make_ARMI_plot_data(
           ARMI_data,

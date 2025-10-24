@@ -14,6 +14,10 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
         domain = data$ARMI_Plot_Colour
     )
 
+    breaks_vector <- filter(plot_breaks, metric == "ARMI") |>
+        select(bin_breaks) |>
+        unlist()
+
     mapProxy |> clearGroup("points")
 
     if (!is.null(data) && nrow(data) > 0) {
@@ -65,18 +69,8 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                     y = ARMI,
                     fill = cut(
                         ARMI,
-                        breaks = c(-Inf, 5:12, Inf),
-                        labels = c(
-                            "≤5",
-                            "6",
-                            "7",
-                            "8",
-                            "9",
-                            "10",
-                            "11",
-                            "12",
-                            "≥13"
-                        )
+                        breaks = c(-Inf, breaks_vector, Inf),
+                        labels = c(brewer.pal(n = 5, name = "Blues"))
                     )
                 )
             ) +
@@ -84,7 +78,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                 theme_minimal() +
                 scale_fill_manual(
                     name = "ARMI",
-                    values = brewer.pal(n = 9, name = "Blues"),
+                    values = brewer.pal(n = 6, name = "Blues"),
                     drop = FALSE
                 ) +
                 xlab("Survey Date") +

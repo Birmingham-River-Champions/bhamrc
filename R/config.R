@@ -1,3 +1,13 @@
+#' Riverfly species and water quality reading type mappings
+#' A set of named lists that map internal column names to human-readable names for Riverfly species and water quality reading types.
+#' These mappings are used throughout the package for data processing and visualization.
+#' @format A list of named lists:
+#' \describe{
+#' \item{riverfly_spp_bw}{A named list mapping Riverfly species internal column names to human-readable names.}
+#' \item{other_spp_bw}{A named list mapping other species internal column names to human-readable names.}
+#' \item{water_quality_bw}{A named list mapping water quality reading type internal column
+#' names to human-readable names.}
+#' }
 riverfly_spp_bw <- list(
     "cased_caddisfly" = "Cased caddisfly (Trichoptera)",
     "caseless_caddisfly" = "Caseless caddisfly (Trichoptera)",
@@ -30,7 +40,7 @@ other_spp_bw <- list(
 
 water_quality_bw <- list(
     "Conductivity (\u03BCS)" = "conductivity_mS",
-    "Temperature (°C)" = "temperature_C",
+    "Temperature (\u00B0C)" = "temperature_C",
     "Ammonia (ppm)" = "ammonia_ppm",
     "Phosphate (ppm)" = "phosphate_ppm",
     "Nitrate (ppm)" = "nitrate_ppm",
@@ -39,3 +49,50 @@ water_quality_bw <- list(
 
 setNames(names(riverfly_spp_bw), riverfly_spp_bw)
 setNames(names(other_spp_bw), other_spp_bw)
+
+palette_for_leaflet <- RColorBrewer::brewer.pal(n = 9, name = "Blues")
+
+#' plot_breaks
+#'
+#'
+plot_breaks <- data.frame(
+    metric = c(
+        rep("ARMI", 4),
+        rep("conductivity_mS", 4),
+        rep("ammonia_ppm", 4),
+        rep("phosphate_ppm", 4),
+        rep("nitrate_ppm", 4),
+        rep("turbidity_NTU", 4),
+        rep("temperature_C", 4)
+    ),
+    bin_breaks = c(
+        5,
+        8,
+        11,
+        14,
+        350,
+        450,
+        550,
+        650,
+        .05,
+        .15,
+        .25,
+        .58,
+        0.05,
+        0.1,
+        0.2,
+        0.5,
+        0.5,
+        1,
+        2,
+        5,
+        17,
+        25,
+        40,
+        100,
+        5,
+        10,
+        15,
+        25
+    )
+)

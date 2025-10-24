@@ -16,41 +16,34 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
             by = join_by(sampling_site)
         )
 
+    # Get the breaks for the ARMI scoring
+    breaks_vector <- unlist(filter(plot_breaks, metric == "ARMI")$bin_breaks)
+
     ##And colour code the point according to the ARMI score
     Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
         mutate(
             ARMI_Plot_Colour = cut(
                 ARMI,
-                breaks = c(-Inf, 5:12, Inf),
-                labels = brewer.pal(n = 9, name = "Blues")
+                breaks = c(-Inf, breaks_vector, Inf),
+                labels = c(brewer.pal(n = 5, name = "Blues"))
             )
-        ) |> #11=max no. colours, xtreme red to xtreme blue- Blue rather than green so its colorblind friendly
+        ) |>
         dplyr::select(organisation, everything())
 
-    #######Remove the parenthsised organisation from the site ID
+    # Remove the parenthsised organisation from the site ID
     Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
-        mutate(gsub(
-            "\\s*\\(.*\\)$",
-            "",
-            sampling_site
-        ))
-    ##Now also flip the names around so the RIVER comes after the Site
+        remove_parenthesised_orgs()
+    # Now also flip the names around so the RIVER comes after the Site
 
     # Code was from ChatGPT initially designed for multiple columns, but works fine.
     Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
         mutate(across(c(sampling_site), flip_site_names)) |>
         dplyr::select(-c(Easting, Northing)) |>
         mutate(survey_date = dmy(survey_date)) |>
-        arrange(sampling_site, survey_date)
+        arrange(sampling_site, survey_date) |>
+        anonymise_organisations()
 
-    # Make organisation anonymous if desired
-    Riverfly_ARMI_Plot$organisation <- ifelse(
-        Riverfly_ARMI_Plot$organisation == "Friends of Lifford Reservoir",
-        "Anonymous",
-        Riverfly_ARMI_Plot$organisation
-    )
-
-    ##Now get average value for plotting purposes - in time I want to only select the last 12 months
+    # Now get average value for plotting purposes - in time I want to only select the last 12 months
     Riverfly_ARMI_Plot_SiteAv <- Riverfly_ARMI_Plot |>
         select(sampling_site, ARMI, organisation) |>
         group_by(sampling_site, organisation) |>
@@ -58,18 +51,16 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
         mutate(
             ARMI_Plot_Colour = cut(
                 ARMI,
-                breaks = c(-Inf, c(5:12), Inf),
-                labels = c(brewer.pal(n = 9, name = "Blues"))
+                breaks = c(-Inf, breaks_vector, Inf),
+                labels = c(brewer.pal(n = 5, name = "Blues"))
             )
         ) |>
-        ungroup() #11=max no. colours, xtreme red to xtreme blue
-    ##
+        ungroup()
 
     Riverfly_ARMI_Plot_SiteAv <- left_join(
         Riverfly_ARMI_Plot_SiteAv,
         unique(Riverfly_ARMI_Plot[, c("sampling_site", "LAT", "LONG")]),
         multiple = "first"
     )
-
     return(list(Riverfly_ARMI_Plot, Riverfly_ARMI_Plot_SiteAv))
 }
