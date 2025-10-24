@@ -1,8 +1,22 @@
+#'
+#' Add water quality markers to a Leaflet map proxy
+#' @param mapProxy A leaflet map proxy object.
+#' @param wq_data_list A list containing two data frames: all observations and recent averages.
+#' @param input Shiny input object for reactive inputs.
+#' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorFactor
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
+#' @importFrom stringr str_wrap
+#' @importFrom leafpop popupGraph
+#' @noRd
 addWaterQualityMarkers <- function(
     mapProxy,
-    wq_data,
+    wq_data_list,
     input
 ) {
+    wq_data <- wq_data_list$all_obs
+    wq_data_recent <- wq_data_list$recent
+
     reading_type <- input$readingType
     pal <- colorFactor(
         palette = levels(wq_data$WQ_Plot_Colour),
@@ -12,15 +26,9 @@ addWaterQualityMarkers <- function(
     wq_data <- wq_data |>
         filter(!is.na(value))
 
-    quantiles <- quantile(
-        wq_data$value,
-        probs = c(.025, .975)
-    )
-    value_breaks <- c(
-        -Inf,
-        seq(quantiles[1], quantiles[2], length.out = 8),
-        Inf
-    )
+    current_breaks <- plot_breaks$bin_breaks[
+        plot_breaks$metric == reading_type
+    ]
 
     mapProxy |> clearPopups() |> clearGroup("points")
 
@@ -71,14 +79,11 @@ addWaterQualityMarkers <- function(
                     y = value,
                     fill = cut(
                         value,
-                        breaks = value_breaks,
+                        breaks = current_breaks,
                         labels = c(
-                            paste("≤", value_breaks[2] %>% round(1)),
-                            as.character(unlist(lapply(
-                                value_breaks[-c(1, length(value_breaks))],
-                                round,
-                                1
-                            )))
+                            paste("≤", current_breaks[1]),
+                            current_breaks[-length(current_breaks)],
+                            paste("≥", current_breaks[length(current_breaks)])
                         )
                     )
                 )
@@ -141,7 +146,7 @@ addWaterQualityMarkers <- function(
 
             mapProxy |>
                 addCircleMarkers(
-                    data = wq_data,
+                    data = wq_data_recent,
                     lng = ~LONG,
                     lat = ~LAT,
                     radius = 6,
