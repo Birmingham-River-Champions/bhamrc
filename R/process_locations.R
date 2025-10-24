@@ -31,7 +31,7 @@ process_locations <- function(
         dplyr::bind_cols(data.frame(BRC_Sampling_Locs_sf)[, 2]) |>
         dplyr::bind_cols(data.frame(BRC_Sampling_Locs_sf)[, 1]) |>
         dplyr::rename(
-            sampling_site = BRC.sampling.site.ID,
+            sampling_site = "BRC sampling site ID",
             LAT = ...5,
             LONG = ...6
         )
@@ -49,7 +49,7 @@ process_locations <- function(
     BRC_Outfall_Locs <- BRC_Outfall_Locs_raw |>
         dplyr::bind_cols(data.frame(BRC_Outfall_Locs_sf)[, 2]) |>
         dplyr::bind_cols(data.frame(BRC_Outfall_Locs_sf)[, 1]) |>
-        dplyr::rename(sampling_site = Outfall.ID, LAT = ...5, LONG = ...6)
+        dplyr::rename(sampling_site = "Outfall ID", LAT = ...5, LONG = ...6)
 
     db_create("riverfly_locs")
     db_create("outfall_locs")
