@@ -11,6 +11,7 @@ output: github_document
     fig.path = "man/figures/README-",
     out.width = "100%"
 )
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 ```
 
 # `{bhamrc}`

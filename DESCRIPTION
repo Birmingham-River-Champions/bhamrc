@@ -24,6 +24,7 @@ Imports:
     leafpop,
     lubridate,
     markdown,
+    pkgload,
     purrr,
     RColorBrewer,
     RSQLite,

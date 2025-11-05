@@ -7,12 +7,12 @@
 addPolygonsAndLines <- function(mapProxy, zoomLevel) {
     Tame_shapefile <- sf::st_read(
         "./inst/extdata/Upper_Tame_Wbs_Complete_SubCtchmnts_Dsslvd.shp"
-    ) %>%
+    ) |>
         sf::st_transform(crs = 4326)
     Tame_river_shapefile <- sf::st_read(
         "./inst/extdata/Tame_OS_WatercourseLink.shp"
-    ) %>%
-        sf::st_zm(Tame_river_shapefile) %>%
+    ) |>
+        sf::st_zm(Tame_river_shapefile) |>
         sf::st_transform(crs = 4326)
 
     mapProxy |> clearGroup("polygons") |> clearGroup("lines")
