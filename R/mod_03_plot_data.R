@@ -233,6 +233,7 @@ mod_03_plot_data_server <- function(id) {
       Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot_All[[2]]
       Riverfly_Other_Species_Plot <- Riverfly_Species_Plot_All[[3]]
       Riverfly_Other_Species_Plot_Recent <- Riverfly_Species_Plot_All[[4]]
+      plot_palette <- brewer.pal(n = 9, name = "Blues")
 
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
         # If the user chooses ARMI, calculate the ARMI scores and plot data
@@ -278,7 +279,6 @@ mod_03_plot_data_server <- function(id) {
         )
       } else if (input$metric == "Invasive Species") {
         # If the user chooses Invasive Species, plot presence/absence data
-        plot_palette <- brewer.pal(n = 9, name = "Blues")
         BRCInvSpcs_Plot_Recent <- make_recent_inv_spp(
           BRCInvSpcs,
           BRC_locs,
@@ -298,7 +298,7 @@ mod_03_plot_data_server <- function(id) {
         WQ_plot_data <- make_water_quality_plot_data(
           BRC_wq,
           Unique_BRC_Sampling_Locs,
-          input$readingType
+          plot_palette
         )
 
         addWaterQualityMarkers(

@@ -94,5 +94,6 @@ plot_breaks <- data.frame(
         10,
         15,
         25
-    )
+    ),
+    bin = rep(1:4, 7)
 )

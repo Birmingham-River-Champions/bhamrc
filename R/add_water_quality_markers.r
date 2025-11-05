@@ -77,15 +77,7 @@ addWaterQualityMarkers <- function(
                 aes(
                     x = as.Date(survey_date),
                     y = value,
-                    fill = cut(
-                        value,
-                        breaks = current_breaks,
-                        labels = c(
-                            paste("≤", current_breaks[1]),
-                            current_breaks[-length(current_breaks)],
-                            paste("≥", current_breaks[length(current_breaks)])
-                        )
-                    )
+                    fill = WQ_Plot_Colour
                 )
             ) +
                 geom_point(size = 5, pch = 21, colour = "black") +
