@@ -3,7 +3,7 @@
 #' @description A fct function
 #'
 #' @return The return value, if any, from executing the function.
-#'
+#' @importFrom dplyr bind_cols rename rename_with select contains
 #' @noRd
 process_locations <- function(
     sampling_locs_url = 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing',
@@ -31,9 +31,12 @@ process_locations <- function(
         dplyr::bind_cols(data.frame(BRC_Sampling_Locs_sf)[, 2]) |>
         dplyr::bind_cols(data.frame(BRC_Sampling_Locs_sf)[, 1]) |>
         dplyr::rename(
-            sampling_site = "BRC.sampling.site.ID",
             LAT = ...5,
             LONG = ...6
+        ) |>
+        dplyr::rename_with(
+            ~ return("sampling_site"),
+            contains(c("BRC.sampling.site.ID", "BRC sampling site ID"))
         )
 
     ###Same for Outfall locs
@@ -49,7 +52,11 @@ process_locations <- function(
     BRC_Outfall_Locs <- BRC_Outfall_Locs_raw |>
         dplyr::bind_cols(data.frame(BRC_Outfall_Locs_sf)[, 2]) |>
         dplyr::bind_cols(data.frame(BRC_Outfall_Locs_sf)[, 1]) |>
-        dplyr::rename(sampling_site = "Outfall.ID", LAT = ...5, LONG = ...6)
+        dplyr::rename(LAT = ...5, LONG = ...6) |>
+        dplyr::rename_with(
+            ~ return("sampling_site"),
+            contains(c("Outfall.ID", "Outfall ID"))
+        )
 
     db_create("riverfly_locs")
     db_create("outfall_locs")
