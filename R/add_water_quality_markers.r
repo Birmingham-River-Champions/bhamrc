@@ -3,7 +3,7 @@
 #' @param mapProxy A leaflet map proxy object.
 #' @param wq_data_list A list containing two data frames: all observations and recent averages.
 #' @param input Shiny input object for reactive inputs.
-#' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorFactor
+#' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend addPopups
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_brewer xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
@@ -20,10 +20,31 @@ addWaterQualityMarkers <- function(
     wq_data_recent_map <- wq_data_recent |>
         drop_na()
 
-    pal <- colorFactor(
-        palette = levels(as.factor(wq_data$WQ_Plot_Colour)),
-        domain = wq_data$WQ_Plot_Colour
-    )
+    if (metric != "temperature_C") {
+        pal_name <- "Blues"
+        pal <- colorBin(
+            palette = pal_name,
+            domain = c(
+                min(wq_data$value, na.rm = TRUE),
+                max(wq_data$value, na.rm = TRUE)
+            ),
+            pretty = FALSE,
+            bins = 9
+        )
+    } else {
+        pal_name = "RdBu"
+        pal <- colorBin(
+            palette = pal_name,
+            domain = c(
+                min(wq_data$value, na.rm = TRUE),
+                25
+            ),
+            bins = 9,
+            pretty = FALSE,
+            reverse = TRUE
+        )
+    }
+    browser()
 
     wq_data <- wq_data |>
         filter(!is.na(value))
@@ -79,7 +100,7 @@ addWaterQualityMarkers <- function(
                     y = value,
                     fill = cut(
                         value,
-                        breaks = c(-Inf, current_breaks)
+                        breaks = attr(pal, "colorArgs")$bins
                     )
                 )
             ) +
@@ -90,7 +111,10 @@ addWaterQualityMarkers <- function(
                 ) +
                 scale_fill_manual(
                     name = reading_type_name,
-                    values = brewer.pal(n = 6, name = "Blues"),
+                    values = brewer.pal(
+                        n = length(attr(pal, "colorArgs")$bins),
+                        name = pal_name
+                    ),
                     drop = FALSE
                 ) +
                 theme_minimal() +
@@ -150,7 +174,7 @@ addWaterQualityMarkers <- function(
                     lat = ~LAT,
                     radius = 6,
                     weight = 2,
-                    fillColor = ~ pal(WQ_Plot_Colour),
+                    fillColor = ~ pal(value),
                     color = "black",
                     stroke = TRUE,
                     opacity = 0.5,
@@ -165,11 +189,8 @@ addWaterQualityMarkers <- function(
                 ) |>
                 addLegend(
                     position = "topright",
-                    colors = levels(as.factor(wq_data$WQ_Plot_Colour)),
-                    labels = c(
-                        rev(current_breaks),
-                        paste("<", min(current_breaks))
-                    ),
+                    pal = pal,
+                    values = wq_data$value,
                     title = reading_type_name,
                     group = "points",
                     opacity = 0.75
