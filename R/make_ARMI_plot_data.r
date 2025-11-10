@@ -17,7 +17,9 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
         )
 
     # Get the breaks for the ARMI scoring
-    breaks_vector <- unlist(filter(plot_breaks, metric == "ARMI")$bin_breaks)
+    breaks_vector <- unlist(
+        filter(plot_breaks, reading_type == "ARMI")$bin_breaks
+    )
 
     ##And colour code the point according to the ARMI score
     Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>

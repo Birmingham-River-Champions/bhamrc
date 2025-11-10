@@ -14,7 +14,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
         domain = data$ARMI_Plot_Colour
     )
 
-    breaks_vector <- filter(plot_breaks, metric == "ARMI") |>
+    breaks_vector <- filter(plot_breaks, reading_type == "ARMI") |>
         select(bin_breaks) |>
         unlist()
 
