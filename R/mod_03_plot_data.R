@@ -284,7 +284,6 @@ mod_03_plot_data_server <- function(id) {
           BRC_locs,
           plot_palette
         )
-
         addInvasiveSpeciesMarkers(
           mapProxy,
           BRCInvSpcs_Plot_Recent,
@@ -300,9 +299,16 @@ mod_03_plot_data_server <- function(id) {
           Unique_BRC_Sampling_Locs,
           plot_palette
         )
+        selectedReading <- input$readingType
+        wq_Recent_Map <- WQ_plot_data[[2]] |>
+          filter(reading_type == selectedReading)
+
+        wq_data <- WQ_plot_data[[1]] |>
+          filter(reading_type == selectedReading)
 
         addWaterQualityMarkers(
-          wq_data = WQ_plot_data,
+          wq_data = wq_data,
+          wq_data_recent = wq_Recent_Map,
           mapProxy = mapProxy,
           input = input
         )

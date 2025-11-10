@@ -5,42 +5,42 @@
 #' @param input Shiny input object for reactive inputs.
 #' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
+#' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_brewer xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
 #' @noRd
 addWaterQualityMarkers <- function(
     mapProxy,
-    wq_data_list,
+    wq_data,
+    wq_data_recent,
     input
 ) {
-    wq_data <- wq_data_list$all_obs
-    wq_data_recent <- wq_data_list$recent
+    metric <- input$readingType
+    reading_type_name <- unlist(names(which(water_quality_bw == metric)))
+    wq_data_recent_map <- wq_data_recent |>
+        drop_na()
 
-    reading_type <- input$readingType
     pal <- colorFactor(
-        palette = levels(wq_data$WQ_Plot_Colour),
+        palette = levels(as.factor(wq_data$WQ_Plot_Colour)),
         domain = wq_data$WQ_Plot_Colour
     )
 
     wq_data <- wq_data |>
         filter(!is.na(value))
 
-    current_breaks <- plot_breaks$bin_breaks[
-        plot_breaks$metric == reading_type
-    ]
+    current_breaks <- filter(plot_breaks, reading_type == metric) |>
+        select(bin_breaks) |>
+        unlist()
 
     mapProxy |> clearPopups() |> clearGroup("points")
 
     if (!is.null(wq_data) && nrow(wq_data) > 0) {
-        plotPopups <- function(i, popup_width) {
-            site_id <- wq_data$sampling_site[i]
-            organisation <- wq_data$organisation[i]
-
+        plotPopups <- function(site_id, popup_width) {
             wqdata_SiteID <- filter(
                 wq_data,
                 sampling_site == site_id
             )
+            organisation <- wqdata_SiteID$organisation[1]
             ##Some organisations don't sound right with "the" in front
             organisation <- if (
                 organisation != "Hall Green's Keepin' It Clean" &
@@ -77,19 +77,25 @@ addWaterQualityMarkers <- function(
                 aes(
                     x = as.Date(survey_date),
                     y = value,
-                    fill = WQ_Plot_Colour
+                    fill = cut(
+                        value,
+                        breaks = c(-Inf, current_breaks)
+                    )
                 )
             ) +
-                geom_point(size = 5, pch = 21, colour = "black") +
-                #geom_line(color = wqdata_SiteID$WQ_Plot_Colour) +
-                theme_minimal() +
+                geom_point(
+                    size = 5,
+                    pch = 21,
+                    colour = "black"
+                ) +
                 scale_fill_manual(
-                    name = reading_type,
-                    values = brewer.pal(n = 9, name = "Blues"),
+                    name = reading_type_name,
+                    values = brewer.pal(n = 6, name = "Blues"),
                     drop = FALSE
                 ) +
+                theme_minimal() +
                 xlab("Survey Date") +
-                ylab(names(which(water_quality_bw == reading_type))) +
+                ylab(reading_type_name) +
                 scale_x_date(
                     date_breaks = "1 month",
                     date_labels = "%b '%y",
@@ -132,13 +138,14 @@ addWaterQualityMarkers <- function(
                 popup_height <- 350
             }
 
-            plots <- lapply(1:nrow(wq_data), function(i) {
-                plotPopups(i, popup_width)
+            unique_site_ids <- unique(wq_data$sampling_site)
+            plots <- lapply(unique_site_ids, function(site_id) {
+                plotPopups(site_id, popup_width)
             })
 
             mapProxy |>
                 addCircleMarkers(
-                    data = wq_data_recent,
+                    data = wq_data_recent_map,
                     lng = ~LONG,
                     lat = ~LAT,
                     radius = 6,
@@ -155,8 +162,39 @@ addWaterQualityMarkers <- function(
                         width = popup_width,
                         height = popup_height
                     )
+                ) |>
+                addLegend(
+                    position = "topright",
+                    colors = levels(as.factor(wq_data$WQ_Plot_Colour)),
+                    labels = c(
+                        rev(current_breaks),
+                        paste("<", min(current_breaks))
+                    ),
+                    title = reading_type_name,
+                    group = "points",
+                    opacity = 0.75
                 )
         })
+    } else {
+        # Handle no data case
+        if (all(is.na(wq_data$LONG)) || all(is.na(wq_data$LAT))) {
+            default_lng <- -1.89983 # Example: center of Birmingham
+            default_lat <- 52.48624 # Example: center of Birmingham
+        } else {
+            default_lng <- mean(wq_data$LONG, na.rm = TRUE)
+            default_lat <- mean(wq_data$LAT, na.rm = TRUE)
+        }
+
+        mapProxy |>
+            addPopups(
+                lng = default_lng,
+                lat = default_lat,
+                popup = "<div style='text-align:center;'><strong>No project records currently</strong></div>",
+                options = popupOptions(
+                    closeButton = TRUE,
+                    closeOnClick = FALSE
+                )
+            )
     }
     # Clear existing points before adding new ones
     mapProxy |> clearGroup("points")

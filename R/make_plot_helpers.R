@@ -55,7 +55,7 @@ add_colours <- function(
     obj_return <- plot_data_object |>
         left_join(
             wide_breaks,
-            by = join_by(metric),
+            by = join_by(reading_type),
             multiple = "first"
         ) |>
         mutate(

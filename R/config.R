@@ -56,7 +56,7 @@ palette_for_leaflet <- RColorBrewer::brewer.pal(n = 9, name = "Blues")
 #'
 #'
 plot_breaks <- data.frame(
-    metric = c(
+    reading_type = c(
         rep("ARMI", 4),
         rep("conductivity_mS", 4),
         rep("ammonia_ppm", 4),

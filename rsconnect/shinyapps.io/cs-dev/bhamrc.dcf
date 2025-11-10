@@ -1,0 +1,10 @@
+name: bhamrc
+title: bhamrc
+username: cs-dev
+account: cs-dev
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15972098
+bundleId: 11134346
+url: https://cs-dev.shinyapps.io/bhamrc/
+version: 1

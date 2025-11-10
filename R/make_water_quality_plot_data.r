@@ -48,9 +48,8 @@ make_water_quality_plot_data <- function(
 
     # Now get average value for plotting purposes - in time I want to only select the last 12 months
     site_average <- water_quality_plots |>
-        select(sampling_site, reading_type, value, organisation) |>
         group_by(sampling_site, organisation, reading_type) |>
-        summarise_all(mean) |>
+        summarise(value = mean(value)) |>
         add_colours() |>
         ungroup()
 

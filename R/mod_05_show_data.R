@@ -31,7 +31,7 @@ mod_05_show_data_server <- function(id) {
     ns <- session$ns
     # Determine table name based on selected survey
     table_name <- data_type_input_server("data_type")
-
+    con <- dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
     survey <- reactive({
       switch(
         table_name(),
@@ -54,7 +54,6 @@ mod_05_show_data_server <- function(id) {
     output$table_name <- renderText(table_name())
 
     output$entries <- DT::renderDT({
-      con <- dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
       dbReadTable(
         con,
         survey()
