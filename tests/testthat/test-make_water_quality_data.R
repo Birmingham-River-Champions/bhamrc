@@ -11,7 +11,8 @@ test_that("make_water_quality_data works", {
         )],
         by = join_by(sampling_site),
         multiple = "first"
-    )
+    ) |>
+        dplyr::mutate(ammonia_ppm = as.numeric(ammonia_ppm))
 
     water_quality_test <- select(
         plot_test_data,
