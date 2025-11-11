@@ -45,11 +45,12 @@ make_water_quality_plot_data <- function(
         dplyr::rename(reading_type = "name", value = "value") |>
         mutate(value = as.numeric(value)) |>
         dplyr::mutate(survey_date = dmy(survey_date))
+
     # Now get average value for plotting purposes - in time I want to only select the last 12 months
     site_average <- water_quality_plots |>
+        filter(survey_date >= Sys.Date() - years(3)) |>
         group_by(sampling_site, organisation, reading_type) |>
         summarise(value = mean(value)) |>
-        add_colours() |>
         ungroup() |>
         drop_na()
 
@@ -59,8 +60,6 @@ make_water_quality_plot_data <- function(
             by = join_by(sampling_site),
             multiple = "first"
         )
-    # Make colours for the non-averaged data frame
-    water_quality_plots <- add_colours(water_quality_plots)
 
     return(list(
         "all_obs" = water_quality_plots,

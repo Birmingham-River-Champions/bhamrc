@@ -23,13 +23,6 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
 
     ##And colour code the point according to the ARMI score
     Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
-        mutate(
-            ARMI_Plot_Colour = cut(
-                ARMI,
-                breaks = c(-Inf, breaks_vector, Inf),
-                labels = c(brewer.pal(n = 5, name = "Blues"))
-            )
-        ) |>
         dplyr::select(organisation, everything())
 
     # Remove the parenthsised organisation from the site ID
@@ -50,13 +43,6 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
         select(sampling_site, ARMI, organisation) |>
         group_by(sampling_site, organisation) |>
         summarise_all(mean) |>
-        mutate(
-            ARMI_Plot_Colour = cut(
-                ARMI,
-                breaks = c(-Inf, breaks_vector, Inf),
-                labels = c(brewer.pal(n = 5, name = "Blues"))
-            )
-        ) |>
         ungroup()
 
     Riverfly_ARMI_Plot_SiteAv <- left_join(

@@ -1,8 +1,10 @@
 #'
 #' Add water quality markers to a Leaflet map proxy
 #' @param mapProxy A leaflet map proxy object.
-#' @param wq_data_list A list containing two data frames: all observations and recent averages.
+#' @param wq_data A list containing two data frames: all observations and recent averages.
+#' @param wq_data_recent A data frame containing recent average water quality data for generating the ggplot graphs.
 #' @param input Shiny input object for reactive inputs.
+#' @description This function adds water quality markers to a Leaflet map proxy with popups containing ggplot graphs.
 #' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend addPopups
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_brewer xlab ylab scale_x_date theme element_text ggtitle
@@ -24,37 +26,36 @@ addWaterQualityMarkers <- function(
         select(bin_breaks) |>
         unlist()
 
+    wq_data <- wq_data |>
+        filter(!is.na(value))
+
     if (metric != "temperature_C") {
         pal_name <- "Blues"
         pal <- colorBin(
             palette = pal_name,
-            domain = c(
-                min(wq_data$value, na.rm = TRUE),
-                max(wq_data$value, na.rm = TRUE)
-            ),
+            domain = wq_data_recent_map$value,
             pretty = FALSE,
-            bins = c(
-                min(wq_data$value, na.rm = TRUE),
-                current_breaks,
-                max(wq_data$value, na.rm = TRUE)
-            )
+            bins = current_breaks,
+            reverse = TRUE
+        )
+        pal_values <- brewer.pal(
+            length(attr(pal, "colorArgs")$bins),
+            pal_name
         )
     } else {
         pal_name = "RdBu"
         pal <- colorBin(
             palette = pal_name,
-            domain = c(
-                min(wq_data$value, na.rm = TRUE),
-                30
-            ),
-            bins = c(min(wq_data$value), current_breaks, 30),
+            domain = wq_data_recent_map$value,
+            bins = current_breaks,
             pretty = FALSE,
             reverse = TRUE
         )
+        pal_values <- rev(brewer.pal(
+            length(attr(pal, "colorArgs")$bins),
+            pal_name
+        ))
     }
-
-    wq_data <- wq_data |>
-        filter(!is.na(value))
 
     mapProxy |> clearPopups() |> clearGroup("points")
 
@@ -103,7 +104,8 @@ addWaterQualityMarkers <- function(
                     y = value,
                     fill = cut(
                         value,
-                        breaks = attr(pal, "colorArgs")$bins
+                        breaks = current_breaks,
+                        labels = pal_values
                     )
                 )
             ) +
@@ -114,10 +116,7 @@ addWaterQualityMarkers <- function(
                 ) +
                 scale_fill_manual(
                     name = reading_type_name,
-                    values = rev(brewer.pal(
-                        n = length(attr(pal, "colorArgs")$bins),
-                        name = pal_name
-                    )),
+                    values = pal_values,
                     drop = FALSE
                 ) +
                 theme_minimal() +
@@ -169,7 +168,7 @@ addWaterQualityMarkers <- function(
             plots <- lapply(unique_site_ids, function(site_id) {
                 plotPopups(site_id, popup_width)
             })
-
+            browser()
             mapProxy |>
                 addCircleMarkers(
                     data = wq_data_recent_map,

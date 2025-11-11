@@ -2,7 +2,7 @@
 #' @param mapProxy A leaflet map proxy object.
 #' @param data A data frame containing the ARMI data to be plotted.
 #' @param riverflyARMIData A data frame containing all ARMI data for generating the ggplot graphs.
-#' @importFrom leaflet clearGroup addMarkers popupOptions pathOptions colorBin addLegend icons
+#' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point geom_line theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
@@ -16,7 +16,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
     pal <- colorBin(
         palette = "Blues",
         domain = data$ARMI,
-        bins = c(min(data$ARMI), breaks_vector, 16),
+        bins = breaks_vector,
         pretty = FALSE
     )
 
@@ -71,7 +71,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                     y = ARMI,
                     fill = cut(
                         ARMI,
-                        breaks = c(-Inf, breaks_vector, Inf),
+                        breaks = breaks_vector,
                         labels = c(brewer.pal(n = 5, name = "Blues"))
                     )
                 )
@@ -131,18 +131,19 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                 plotPopups(i, popup_width)
             })
 
-            iconFiles <- pchIcons(seq(21, 25), 40, 40, lwd = 2)
-
             mapProxy |>
-                addMarkers(
+                addCircleMarkers(
                     data = data,
                     lng = ~LONG,
                     lat = ~LAT,
-                    icon = ~ icons(
-                        iconUrl = iconFiles[group],
-                        popupAnchorX = 20,
-                        popupAnchorY = 0
-                    ),
+                    radius = 6,
+                    weight = 2,
+                    fillColor = ~ pal(ARMI),
+                    color = "black",
+                    stroke = TRUE,
+                    opacity = 0.5,
+                    fill = TRUE,
+                    fillOpacity = 1,
                     group = "points",
                     popup = popupGraph(
                         plots,
