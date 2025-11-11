@@ -20,6 +20,10 @@ addWaterQualityMarkers <- function(
     wq_data_recent_map <- wq_data_recent |>
         drop_na()
 
+    current_breaks <- filter(plot_breaks, reading_type == metric) |>
+        select(bin_breaks) |>
+        unlist()
+
     if (metric != "temperature_C") {
         pal_name <- "Blues"
         pal <- colorBin(
@@ -29,7 +33,11 @@ addWaterQualityMarkers <- function(
                 max(wq_data$value, na.rm = TRUE)
             ),
             pretty = FALSE,
-            bins = 9
+            bins = c(
+                min(wq_data$value, na.rm = TRUE),
+                current_breaks,
+                max(wq_data$value, na.rm = TRUE)
+            )
         )
     } else {
         pal_name = "RdBu"
@@ -37,21 +45,16 @@ addWaterQualityMarkers <- function(
             palette = pal_name,
             domain = c(
                 min(wq_data$value, na.rm = TRUE),
-                25
+                30
             ),
-            bins = 9,
+            bins = c(min(wq_data$value), current_breaks, 30),
             pretty = FALSE,
             reverse = TRUE
         )
     }
-    browser()
 
     wq_data <- wq_data |>
         filter(!is.na(value))
-
-    current_breaks <- filter(plot_breaks, reading_type == metric) |>
-        select(bin_breaks) |>
-        unlist()
 
     mapProxy |> clearPopups() |> clearGroup("points")
 
@@ -111,10 +114,10 @@ addWaterQualityMarkers <- function(
                 ) +
                 scale_fill_manual(
                     name = reading_type_name,
-                    values = brewer.pal(
+                    values = rev(brewer.pal(
                         n = length(attr(pal, "colorArgs")$bins),
                         name = pal_name
-                    ),
+                    )),
                     drop = FALSE
                 ) +
                 theme_minimal() +

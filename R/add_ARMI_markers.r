@@ -2,21 +2,23 @@
 #' @param mapProxy A leaflet map proxy object.
 #' @param data A data frame containing the ARMI data to be plotted.
 #' @param riverflyARMIData A data frame containing all ARMI data for generating the ggplot graphs.
-#' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorFactor
+#' @importFrom leaflet clearGroup addMarkers popupOptions pathOptions colorBin addLegend icons
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point geom_line theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
 #' @noRd
 addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
-    pal <- colorFactor(
-        palette = levels(data$ARMI_Plot_Colour),
-        domain = data$ARMI_Plot_Colour
-    )
-
     breaks_vector <- filter(plot_breaks, reading_type == "ARMI") |>
         select(bin_breaks) |>
         unlist()
+
+    pal <- colorBin(
+        palette = "Blues",
+        domain = data$ARMI,
+        bins = c(min(data$ARMI), breaks_vector, 16),
+        pretty = FALSE
+    )
 
     mapProxy |> clearGroup("points")
 
@@ -129,25 +131,32 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                 plotPopups(i, popup_width)
             })
 
+            iconFiles <- pchIcons(seq(21, 25), 40, 40, lwd = 2)
+
             mapProxy |>
-                addCircleMarkers(
+                addMarkers(
                     data = data,
                     lng = ~LONG,
                     lat = ~LAT,
-                    radius = 6,
-                    weight = 2,
-                    fillColor = ~ pal(ARMI_Plot_Colour),
-                    color = "black",
-                    stroke = TRUE,
-                    opacity = 0.5,
-                    fill = TRUE,
-                    fillOpacity = 1,
+                    icon = ~ icons(
+                        iconUrl = iconFiles[group],
+                        popupAnchorX = 20,
+                        popupAnchorY = 0
+                    ),
                     group = "points",
                     popup = popupGraph(
                         plots,
                         width = popup_width,
                         height = popup_height
                     )
+                ) |>
+                addLegend(
+                    position = "topright",
+                    pal = pal,
+                    values = data$ARMI,
+                    title = "ARMI Score",
+                    group = "points",
+                    opacity = 0.75
                 )
         })
     }

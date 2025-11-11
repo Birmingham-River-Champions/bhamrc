@@ -98,18 +98,6 @@ mod_03_plot_data_ui <- function(id) {
           "<b>Select the survey from the drop down menus and click on each point to view extra details</b>"
         )
       ), # Add this wrapper
-      # Conditional panel for Urban Riverfly species
-      conditionalPanel(
-        condition = "input.metric == 'Water Chemistry' && input.riverfly == 'temperature_C'",
-        div(HTML("Placeholder for Water Quality legends")),
-        img(
-          src = "www/images/Species_legend.png",
-          id = "wq-legend",
-          alt = "Legend for Urban Riverfly species. Max abundance in the last three years. Options are >1000, 100-999, 10-99, and 1-9."
-        ),
-        ns = ns
-      ),
-
       # Conditional panel for Other species
       conditionalPanel(
         condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'Other species'",
@@ -120,18 +108,6 @@ mod_03_plot_data_ui <- function(id) {
         ),
         ns = ns
       ),
-
-      # Conditional panel for ARMI
-      conditionalPanel(
-        condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'ARMI'",
-        img(
-          src = "www/images/ARMI_legend.png",
-          id = "armi-legend",
-          alt = "Legend for Anglers Riverfly Monitoring Initiative (ARMI) scores. Options are 0-3 (red), 4-5 (orange), 6-7 (yellow), 8-9 (light green), and 10+ (dark green)."
-        ),
-        ns = ns
-      ),
-
       conditionalPanel(
         condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'signal_crayfish' || input.invasiveType == 'killer_demon_shrimp')",
         img(
@@ -149,15 +125,6 @@ mod_03_plot_data_ui <- function(id) {
           src = "www/images/Invasive_flora_legend.png",
           id = "invasive-flora-legend",
           alt = "Legend for Invasive flora species. Options are Present (red) and Not detected (green)."
-        ),
-        ns = ns
-      ),
-      conditionalPanel(
-        condition = "input.metric == 'Water Chemistry' && input.riverfly == 'ARMI'",
-        img(
-          src = "www/images/ARMI_legend.png",
-          id = "armi-legend",
-          alt = "Legend for Anglers Riverfly Monitoring Initiative (ARMI) scores. Options are 0-3 (red), 4-5 (orange), 6-7 (yellow), 8-9 (light green), and 10+ (dark green)."
         ),
         ns = ns
       ),
@@ -201,50 +168,52 @@ mod_03_plot_data_server <- function(id) {
         setView(lng = -1.83, lat = 52.45, zoom = 10)
     })
 
+    # Pull the processed data from the db for riverfly, invasive species, and water quality
+    con <- DBI::dbConnect(
+      RSQLite::SQLite(),
+      "data.sqlite",
+      extended_types = TRUE
+    )
+    riverfly_data <- DBI::dbReadTable(con, "riverfly")
+    BRCInvSpcs <- DBI::dbReadTable(con, "invasive_species")
+    BRC_locs <- DBI::dbReadTable(con, "riverfly_locs")
+    BRC_wq <- DBI::dbReadTable(con, "water_quality")
+    dbDisconnect(con)
+
+    # Generate the modified plot data for the riverfly plots
+    Unique_BRC_Sampling_Locs <- BRC_locs |>
+      dplyr::distinct(sampling_site, .keep_all = TRUE)
+
+    Riverfly_Species_Plot_All <- species_plots(
+      riverfly_data,
+      Unique_BRC_Sampling_Locs
+    )
+    Riverfly_Species_Plot <- Riverfly_Species_Plot_All[[1]]
+    Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot_All[[2]]
+    Riverfly_Other_Species_Plot <- Riverfly_Species_Plot_All[[3]]
+    Riverfly_Other_Species_Plot_Recent <- Riverfly_Species_Plot_All[[4]]
+    plot_palette <- brewer.pal(n = 9, name = "Blues")
+
+    # If the user chooses ARMI, calculate the ARMI scores and plot data
+    ARMI_assignment <- make_riverfly_ARMI(select(riverfly_data, -c(id)))
+    ARMI_data <- sum_up_ARMI(ARMI_assignment)
+    riverflyARMIDataList <- make_ARMI_plot_data(
+      ARMI_data,
+      Unique_BRC_Sampling_Locs
+    )
+    riverflyARMIData <- riverflyARMIDataList[[2]]
+    Riverfly_ARMI_Plot <- riverflyARMIDataList[[1]]
+
     # Update the map with appropriate data
     updateMap <- function(input, output, session) {
       mapProxy <- leafletProxy("map")
       zoomLevel <- input$map_zoom
       clearMapLayers(mapProxy)
+      mapProxy |> clearGroup("points")
       addPolygonsAndLines(mapProxy, zoomLevel)
       mapProxy |> clearControls()
 
-      # Pull the processed data from the db for riverfly, invasive species, and water quality
-      con <- DBI::dbConnect(
-        RSQLite::SQLite(),
-        "data.sqlite",
-        extended_types = TRUE
-      )
-      riverfly_data <- DBI::dbReadTable(con, "riverfly")
-      BRCInvSpcs <- DBI::dbReadTable(con, "invasive_species")
-      BRC_locs <- DBI::dbReadTable(con, "riverfly_locs")
-      BRC_wq <- DBI::dbReadTable(con, "water_quality")
-      dbDisconnect(con)
-
-      # Generate the modified plot data for the riverfly plots
-      Unique_BRC_Sampling_Locs <- BRC_locs |>
-        dplyr::distinct(sampling_site, .keep_all = TRUE)
-
-      Riverfly_Species_Plot_All <- species_plots(
-        riverfly_data,
-        Unique_BRC_Sampling_Locs
-      )
-      Riverfly_Species_Plot <- Riverfly_Species_Plot_All[[1]]
-      Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot_All[[2]]
-      Riverfly_Other_Species_Plot <- Riverfly_Species_Plot_All[[3]]
-      Riverfly_Other_Species_Plot_Recent <- Riverfly_Species_Plot_All[[4]]
-      plot_palette <- brewer.pal(n = 9, name = "Blues")
-
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
-        # If the user chooses ARMI, calculate the ARMI scores and plot data
-        ARMI_assignment <- make_riverfly_ARMI(select(riverfly_data, -c(id)))
-        ARMI_data <- sum_up_ARMI(ARMI_assignment)
-        riverflyARMIDataList <- make_ARMI_plot_data(
-          ARMI_data,
-          Unique_BRC_Sampling_Locs
-        )
-        riverflyARMIData <- riverflyARMIDataList[[2]]
-        Riverfly_ARMI_Plot <- riverflyARMIDataList[[1]]
         addARMIMarkers(mapProxy, riverflyARMIData, Riverfly_ARMI_Plot, input)
       } else if (
         input$metric == "Urban Riverfly" &&

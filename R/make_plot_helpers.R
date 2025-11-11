@@ -81,3 +81,21 @@ add_colours <- function(
         dplyr::select(-starts_with("bin_break_"))
     return(obj_return)
 }
+
+
+# use point symbols from base R graphics as leaflet icons
+pchIcons <- function(pch = 15:25, width = 30, height = 30, ...) {
+    n <- length(pch)
+    files <- character(n)
+    # create a sequence of png images
+    for (i in seq_len(n)) {
+        f <- tempfile(fileext = ".png")
+        png(f, width = width, height = height, bg = "transparent")
+        par(mar = c(0, 0, 0, 0))
+        plot.new()
+        points(.5, .5, pch = pch[i], cex = min(width, height) / 8, ...)
+        dev.off()
+        files[i] <- f
+    }
+    files
+}
