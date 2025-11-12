@@ -12,7 +12,7 @@ information_card(title, description, alt_text = NULL, url, image_src)
 
 \item{description}{The description underneath the link}
 
-\item{alt_text}{Alternative text for the provided image}
+\item{alt_text}{Alternative text for the provided image, defaults to NULL}
 
 \item{url}{The URL that the header link should target}
 

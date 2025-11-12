@@ -9,7 +9,6 @@
 #' @importFrom tidyr pivot_longer drop_na
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom lubridate dmy years
-#' @noRd
 make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
     BRCInvSpcs_Plot <-
         dplyr::left_join(

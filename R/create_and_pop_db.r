@@ -1,10 +1,12 @@
 # Read in data from Google Sheets
 #' db_create
 #' A function to create a SQLite database with specified tables for storing Riverfly and Water Quality data.
-#' @param BRC_full The full data frame read in from the Google Sheet.
+#' @param full_form The full data frame read in from the Google Sheet.
+#' @param locations_list A list of data frames containing location information for different data types.
 #' @param data_type A string indicating the type of data being processed (e.g., "Urban Riverfly", "Water Quality", etc.).
 #' @param index_of_site_col The index of the column in the cleaned data that contains the sampling site information.
 #' @param table_name Name of the SQLite table file to create.
+#' @param ... Additional arguments to pass to the db_create function.
 #' @return The return value, if any, from executing the function.
 #' @importFrom dplyr case_when
 db_create_and_pop <- function(

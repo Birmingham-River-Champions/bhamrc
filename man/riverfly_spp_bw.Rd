@@ -11,8 +11,9 @@ A list of named lists:
 \describe{
 \item{riverfly_spp_bw}{A named list mapping Riverfly species internal column names to human-readable names.}
 \item{other_spp_bw}{A named list mapping other species internal column names to human-readable names.}
-\item{water_quality_bw}{A named list mapping water quality reading type internal column
-names to human-readable names.}
+\item{water_quality_bw}{A named list mapping water quality reading type internal column}
+\item{plot_palette}{A vector of colors used for plotting water quality data.}
+\item{plot_breaks}{A named vector mapping Riverfly species internal column names to human-readable names.}
 }
 }
 \usage{

@@ -1,10 +1,9 @@
 #' This function adds Other species markers to the map.
 #' @param mapProxy A leaflet map proxy object.
-#' @param data A data frame containing the Other species data to be plotted.
+#' @param fullData A data frame containing the Other species data to be plotted.
 #' @param otherSpecies The specific Other species to filter and plot.
 #' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
-#' @noRd
 addOtherSpeciesMarkers <- function(mapProxy, fullData, otherSpecies) {
     pal <- colorFactor(
         palette = brewer.pal(n = 5, name = "Greys")[5:2],

@@ -16,11 +16,11 @@ test_that("make_water_quality_data works", {
 
     water_quality_test <- select(
         plot_test_data,
-        survey_date,
-        sampling_site,
         organisation,
-        LAT,
+        survey_date,
         LONG,
+        LAT,
+        sampling_site,
         one_of(unlist(water_quality_bw)),
     ) |>
         pivot_longer(
@@ -28,15 +28,18 @@ test_that("make_water_quality_data works", {
                 organisation,
                 survey_date,
                 sampling_site,
-                LAT,
-                LONG
+                LONG,
+                LAT
             )
         ) |>
-        rename(metric = "name") |>
-        mutate(survey_date = dmy(survey_date))
+        rename(reading_type = "name") |>
+        mutate(survey_date = dmy(survey_date)) |>
+        remove_parenthesised_orgs() |>
+        mutate(across(sampling_site, flip_site_names)) |>
+        anonymise_organisations()
 
     recent_avg_wq <- water_quality_test |>
-        group_by(sampling_site, metric) |>
+        group_by(sampling_site, reading_type) |>
         filter(
             survey_date >= max(survey_date) - 365 &
                 survey_date <= max(survey_date)
@@ -47,21 +50,18 @@ test_that("make_water_quality_data works", {
             LONG = dplyr::first(LONG),
             organisation = dplyr::first(organisation)
         ) |>
-        add_colours() |>
         ungroup()
 
-    #water_quality_test_full <- water_quality_test |>
-    #    mutate(reading_type = as.numeric(reading_type)) |>
-    #    add_colours(plot_palette = brewer.pal(5, "Blues"))
+    water_quality_test_full <- water_quality_test
 
-    # actual_water_quality_plot_data <- make_water_quality_plot_data(
-    #     water_quality_data = test_data,
-    #     sampling_locs = test_locs,
-    #     plot_palette = brewer.pal(5, "Blues")
-    # )
+    actual_water_quality_plot_data <- make_water_quality_plot_data(
+        water_quality_data = test_data,
+        sampling_locs = test_locs,
+        plot_palette = brewer.pal(5, "Blues")
+    )
 
     expect_equal(
-        4,
-        2 * 2
+        water_quality_test_full,
+        actual_water_quality_plot_data$all_obs
     )
 })

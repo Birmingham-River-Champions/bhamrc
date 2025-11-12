@@ -3,12 +3,12 @@
 #' @param data A data frame containing the Urban Riverfly species data to be plotted.
 #' @param riverflyspeciesData A data frame containing all Urban Riverfly species data for generating the ggplot graphs.
 #' @param taxaType The specific Urban Riverfly species to filter and plot.
+#' @param input The Shiny input object to access screen width for responsive popup sizing.
 #' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_manual xlab ylab scale_x_date scale_y_continuous theme element_text ggtitle
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
-#' @noRd
 addRiverflySpeciesMarkers <- function(
     mapProxy,
     data,

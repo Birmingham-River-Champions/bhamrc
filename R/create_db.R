@@ -2,6 +2,7 @@
 #'
 #' @description A function to create a SQLite database with specified tables for storing Riverfly and Water Quality data.
 #' @param table_name Name of the SQLite table file to create.
+#' @param db_path Path to the SQLite database file.
 #' @return The return value, if any, from executing the function.
 #' @importFrom DBI dbConnect dbDisconnect dbExecute dbExistsTable
 #' @importFrom RSQLite SQLite

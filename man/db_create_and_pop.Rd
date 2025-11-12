@@ -15,13 +15,17 @@ db_create_and_pop(
 )
 }
 \arguments{
+\item{full_form}{The full data frame read in from the Google Sheet.}
+
+\item{locations_list}{A list of data frames containing location information for different data types.}
+
 \item{data_type}{A string indicating the type of data being processed (e.g., "Urban Riverfly", "Water Quality", etc.).}
 
 \item{index_of_site_col}{The index of the column in the cleaned data that contains the sampling site information.}
 
 \item{table_name}{Name of the SQLite table file to create.}
 
-\item{BRC_full}{The full data frame read in from the Google Sheet.}
+\item{...}{Additional arguments to pass to the db_create function.}
 }
 \value{
 The return value, if any, from executing the function.

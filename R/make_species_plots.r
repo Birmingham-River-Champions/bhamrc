@@ -1,6 +1,7 @@
 #' species_plots
 #'
 #' Function to create the data for the Riverfly plots
+#' @param riverfly_data The cleaned Riverfly data
 #' @param sampling_locs The sampling locations for Riverfly data
 #' @return a list with four elements: Riverfly_Species_Plot which
 #' has all Riverfly species, Riverfly_Species_Plot_Recent which has

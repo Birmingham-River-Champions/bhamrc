@@ -4,7 +4,6 @@
 #'
 #' @return The return value, if any, from executing the function.
 #' @importFrom dplyr bind_cols rename rename_with select contains
-#' @noRd
 process_locations <- function(
     sampling_locs_url = 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing',
     outfall_locs_url = 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'

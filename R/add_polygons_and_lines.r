@@ -3,7 +3,6 @@
 #' @param zoomLevel The current zoom level of the map.
 #' @importFrom leaflet clearGroup addPolygons addPolylines pathOptions highlightOptions labelOptions
 #' @importFrom sf st_read st_transform st_zm
-#' @noRd
 addPolygonsAndLines <- function(mapProxy, zoomLevel) {
     Tame_shapefile <- sf::st_read(
         "./inst/extdata/Upper_Tame_Wbs_Complete_SubCtchmnts_Dsslvd.shp"

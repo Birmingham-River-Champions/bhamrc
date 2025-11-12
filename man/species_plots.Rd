@@ -7,6 +7,8 @@
 species_plots(riverfly_data, sampling_locs)
 }
 \arguments{
+\item{riverfly_data}{The cleaned Riverfly data}
+
 \item{sampling_locs}{The sampling locations for Riverfly data}
 }
 \value{

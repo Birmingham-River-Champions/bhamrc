@@ -10,7 +10,6 @@
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_brewer xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
-#' @noRd
 addWaterQualityMarkers <- function(
     mapProxy,
     wq_data_recent,

@@ -2,6 +2,8 @@
 #' Function to read in data from Google Sheets and populate the SQLite database
 #' Also saves cleaned data as internal package data
 #' @param data_types A character vector specifying which data types to process.
+#' @param table_name A character vector specifying the corresponding SQLite table names for each data type.
+#' @param col_indices A numeric vector specifying the starting column index for each data type in the Google Sheet.
 #' Options include "riverfly", "water_quality", "invasive_species", and "
 #' outfall_safari". Default is to process all data types.
 #' @return None. The function creates/updates the SQLite database and saves cleaned data as internal package data.

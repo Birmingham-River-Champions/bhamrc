@@ -5,7 +5,7 @@
 \alias{plot_breaks}
 \title{plot_breaks}
 \format{
-An object of class \code{data.frame} with 28 rows and 3 columns.
+An object of class \code{data.frame} with 42 rows and 3 columns.
 }
 \usage{
 plot_breaks

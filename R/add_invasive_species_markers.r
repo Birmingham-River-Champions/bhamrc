@@ -2,9 +2,9 @@
 #' @param mapProxy A leaflet map proxy object.
 #' @param data A data frame containing the Invasive species data to be plotted.
 #' @param invasiveType The specific Invasive species to filter and plot.
+#' @param plot_palette A vector of colors to use for the invasive species markers.
 #' @importFrom leaflet clearPopups clearGroup addCircleMarkers addPopups popupOptions pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
-#' @noRd
 addInvasiveSpeciesMarkers <- function(
     mapProxy,
     data,

@@ -2,12 +2,12 @@
 #' @param mapProxy A leaflet map proxy object.
 #' @param data A data frame containing the site-averaged recent ARMI data to be plotted.
 #' @param riverflyARMIData A data frame containing all ARMI data for generating the ggplot graphs.
+#' @param input The Shiny input object to access screen width for responsive popup sizing.
 #' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point geom_line theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
-#' @noRd
 addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
     breaks_vector <- filter(plot_breaks, reading_type == "ARMI") |>
         select(bin_breaks) |>
