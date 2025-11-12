@@ -1,43 +1,41 @@
 test_data <- test_fixture_riverfly()
 test_df <- test_data[[1]]
 locations_name <- "BRC_Sampling_Locs"
+# Create a temporary database and populate it with the test data
+cleaned_df <- test_df |>
+  #First select columns from col_name_start -> col_name_end
+  dplyr::select(
+    organisation:stonefly_plecoptera
+  ) |>
+  ###Remove data uploads that included no site identifier
+  dplyr::filter(sampling_site != "")
 
-test_that("function returns full df when db is valid", {
-  # Create a temporary database and populate it with the test data
-  cleaned_df <- test_df |>
-    #First select columns from col_name_start -> col_name_end
-    dplyr::select(
-      organisation:stonefly_plecoptera
-    ) |>
-    ###Remove data uploads that included no site identifier
-    dplyr::filter(sampling_site != "")
+locations <- test_data[[5]]
+acceptable_site_orgs <- acceptable_locs(locations)
 
-  locations <- test_data[[5]]
-  acceptable_site_orgs <- acceptable_locs(locations)
+# Filter out any observations for which the sampling site and organisation don't match what is expected
+wrong_org <- cleaned_df |>
+  dplyr::mutate(
+    site_orgs = paste(organisation, sampling_site)
+  ) |>
+  dplyr::filter(grepl("Urban Riverfly", data_type)) |>
+  dplyr::filter(!(site_orgs %in% acceptable_site_orgs$identifiers))
 
-  # Filter out any observations for which the sampling site and organisation don't match what is expected
-  wrong_org <- cleaned_df |>
-    dplyr::mutate(
-      site_orgs = paste(organisation, sampling_site)
-    ) |>
-    dplyr::filter(grepl("Urban Riverfly", data_type)) |>
-    dplyr::filter(!(site_orgs %in% acceptable_site_orgs$identifiers))
+## Filter out rows where the sampling site and organisation don't match
+correct_org_df <- cleaned_df |>
+  dplyr::mutate(
+    site_orgs = paste(organisation, sampling_site)
+  ) |>
+  dplyr::filter(site_orgs %in% acceptable_site_orgs$identifiers) |>
+  dplyr::select(-site_orgs)
 
-  ## Filter out rows where the sampling site and organisation don't match
-  correct_org_df <- cleaned_df |>
-    dplyr::mutate(
-      site_orgs = paste(organisation, sampling_site)
-    ) |>
-    dplyr::filter(site_orgs %in% acceptable_site_orgs$identifiers) |>
-    dplyr::select(-site_orgs)
-
-  #Also check if there are duplicates, each sampling site + timestamp should be unique
-  deduped_df <- correct_org_df |>
-    dplyr::distinct(
-      survey_date,
-      sampling_site,
-      .keep_all = TRUE
-    )
+#Also check if there are duplicates, each sampling site + timestamp should be unique
+deduped_df <- correct_org_df |>
+  dplyr::distinct(
+    survey_date,
+    sampling_site,
+    .keep_all = TRUE
+  )
 
 test_that("function returns full df when db is valid", {
   testthat::expect_equal(
