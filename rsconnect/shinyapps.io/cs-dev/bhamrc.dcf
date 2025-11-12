@@ -5,6 +5,6 @@ account: cs-dev
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 15972098
-bundleId: 11166923
+bundleId: 11167434
 url: https://cs-dev.shinyapps.io/bhamrc/
 version: 1
