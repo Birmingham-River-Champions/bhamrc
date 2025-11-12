@@ -97,36 +97,6 @@ mod_03_plot_data_ui <- function(id) {
         HTML(
           "<b>Select the survey from the drop down menus and click on each point to view extra details</b>"
         )
-      ), # Add this wrapper
-      # Conditional panel for Other species
-      conditionalPanel(
-        condition = "input.metric == 'Urban Riverfly' && input.riverfly == 'Other species'",
-        img(
-          src = "www/images/Species_legend.png",
-          id = "species-legend",
-          alt = "Legend for Other species. Max abundance in the last three years. Options are >1000, 100-999, 10-99, and 1-9."
-        ),
-        ns = ns
-      ),
-      conditionalPanel(
-        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'signal_crayfish' || input.invasiveType == 'killer_demon_shrimp')",
-        img(
-          src = "www/images/Invasive_fauna_legend.png",
-          id = "invasive-fauna-legend",
-          alt = "Legend for Invasive fauna species. Options are Present (red) and Not detected (green)."
-        ),
-        ns = ns
-      ),
-
-      # Conditional panel for invasive species - flora legend
-      conditionalPanel(
-        condition = "input.metric == 'Invasive Species' && (input.invasiveType == 'himalayan_balsam' || input.invasiveType == 'giant_hogweed' || input.invasiveType == 'japanese_knotweed')",
-        img(
-          src = "www/images/Invasive_flora_legend.png",
-          id = "invasive-flora-legend",
-          alt = "Legend for Invasive flora species. Options are Present (red) and Not detected (green)."
-        ),
-        ns = ns
       ),
       # Map: Use a separate class for the Leaflet map
       div(
@@ -257,7 +227,7 @@ mod_03_plot_data_server <- function(id) {
           mapProxy,
           BRCInvSpcs_Plot_Recent,
           input$invasiveType,
-          plot_palette
+          rev(brewer.pal(n = 4, name = "Blues"))
         )
       } else if (input$metric == "Water Chemistry") {
         # If the user chooses Water Chemistry, plot water quality data
@@ -265,8 +235,7 @@ mod_03_plot_data_server <- function(id) {
         # If the user chooses Water Chemistry, plot water quality data
         WQ_plot_data <- make_water_quality_plot_data(
           BRC_wq,
-          Unique_BRC_Sampling_Locs,
-          plot_palette
+          Unique_BRC_Sampling_Locs
         )
         selectedReading <- input$readingType
         wq_Recent_Map <- WQ_plot_data$recent |>

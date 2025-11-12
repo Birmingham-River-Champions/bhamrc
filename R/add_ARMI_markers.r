@@ -13,11 +13,17 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
         select(bin_breaks) |>
         unlist()
 
+    pal_name <- "Blues"
     pal <- colorBin(
-        palette = "Blues",
+        palette = pal_name,
         domain = data$ARMI,
         bins = breaks_vector,
         pretty = FALSE
+    )
+
+    pal_values <- brewer.pal(
+        length(attr(pal, "colorArgs")$bins),
+        pal_name
     )
 
     mapProxy |> clearGroup("points")
@@ -153,8 +159,15 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
                 ) |>
                 addLegend(
                     position = "topright",
-                    pal = pal,
                     values = data$ARMI,
+                    colors = rev(pal_values[-length(pal_values)]),
+                    labels = rev(c(
+                        paste0("<", breaks_vector[2]),
+                        paste0(breaks_vector[2], " - ", breaks_vector[3]),
+                        paste0(breaks_vector[3], " - ", breaks_vector[4]),
+                        paste0(breaks_vector[4], " - ", breaks_vector[5]),
+                        paste0(">", breaks_vector[5])
+                    )),
                     title = "ARMI Score",
                     group = "points",
                     opacity = 0.75

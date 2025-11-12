@@ -56,8 +56,7 @@ test_that("make_water_quality_data works", {
 
     actual_water_quality_plot_data <- make_water_quality_plot_data(
         water_quality_data = test_data,
-        sampling_locs = test_locs,
-        plot_palette = brewer.pal(5, "Blues")
+        sampling_locs = test_locs
     )
 
     expect_equal(

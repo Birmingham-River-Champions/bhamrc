@@ -39,6 +39,19 @@ addInvasiveSpeciesMarkers <- function(
                     invasiveType &
                     abundance %in% c(">1000", "100-999", "10-99", "1-9")
             )
+        legend_colors <- c(
+            plot_palette[1],
+            plot_palette[2],
+            plot_palette[3],
+            plot_palette[4]
+        )
+
+        legend_labels <- c(
+            ">1000",
+            "100-999",
+            "10-99",
+            "1-9"
+        )
     } else if (
         invasiveType %in%
             c("himalayan_balsam", "japanese_knotweed", "giant_hogweed")
@@ -50,6 +63,16 @@ addInvasiveSpeciesMarkers <- function(
                     abundance %in%
                         c("Abundant (>33%)", "Present (1-33%)")
             )
+
+        legend_colors <- c(
+            plot_palette[1],
+            plot_palette[3]
+        )
+
+        legend_labels <- c(
+            "Abundant (>33%)",
+            "Present (1-33%)"
+        )
     } else {
         data_filtered <- NULL
     }
@@ -99,6 +122,15 @@ addInvasiveSpeciesMarkers <- function(
                 fillOpacity = 1,
                 group = "points",
                 options = pathOptions(zIndex = 2)
+            ) |>
+            addLegend(
+                position = "topright",
+                colors = legend_colors,
+                labels = legend_labels,
+                values = data_filtered$abundance,
+                title = "Abundance",
+                opacity = 0.75,
+                group = "points"
             )
     } else {
         # If no records, add a popup message in the center of the map

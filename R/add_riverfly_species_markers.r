@@ -22,13 +22,13 @@ addRiverflySpeciesMarkers <- function(
         filter(taxa == taxaType) |>
         drop_na()
 
+    current_breaks <- c(-Inf, 0:4)
     pal <- colorFactor(
         palette = levels(
             riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
         ),
         domain = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
     )
-
     # Clear existing points before adding new ones
     mapProxy |> clearGroup("points")
 
@@ -121,7 +121,7 @@ addRiverflySpeciesMarkers <- function(
                     y = abundance,
                     fill = cut(
                         abundance,
-                        breaks = c(-Inf, 0:4),
+                        breaks = current_breaks,
                         labels = c(
                             "0",
                             "1-9",
@@ -211,6 +211,21 @@ addRiverflySpeciesMarkers <- function(
                         width = popup_width,
                         height = popup_height
                     )
+                ) |>
+                addLegend(
+                    position = "topright",
+                    values = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour,
+                    colors = rev(brewer.pal(5, "Greys")),
+                    labels = rev(c(
+                        "0",
+                        "1-9",
+                        "10-99",
+                        "100-999",
+                        ">1000"
+                    )),
+                    title = "Abundance",
+                    opacity = 0.75,
+                    group = "points"
                 )
         })
     }

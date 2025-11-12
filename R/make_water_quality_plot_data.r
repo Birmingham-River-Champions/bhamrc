@@ -9,8 +9,7 @@
 #' @importFrom RColorBrewer brewer.pal
 make_water_quality_plot_data <- function(
     water_quality_data,
-    sampling_locs,
-    plot_palette
+    sampling_locs
 ) {
     # Get locations of water quality observations
     water_quality_plots <- left_join(

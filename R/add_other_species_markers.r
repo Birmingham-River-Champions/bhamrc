@@ -57,6 +57,14 @@ addOtherSpeciesMarkers <- function(mapProxy, fullData, otherSpecies) {
                 fillOpacity = 1,
                 group = "points",
                 options = pathOptions(zIndex = 2)
+            ) |>
+            addLegend(
+                position = "topright",
+                pal = pal,
+                values = data$abundance,
+                title = "Abundance",
+                opacity = 0.75,
+                group = "points"
             )
     }
 }

@@ -104,7 +104,7 @@ addWaterQualityMarkers <- function(
                     fill = cut(
                         value,
                         breaks = current_breaks,
-                        labels = pal_values[-1]
+                        labels = pal_values[-length(pal_values)]
                     )
                 )
             ) +
@@ -189,7 +189,14 @@ addWaterQualityMarkers <- function(
                 ) |>
                 addLegend(
                     position = "topright",
-                    pal = pal,
+                    colors = rev(pal_values[-length(pal_values)]),
+                    labels = rev(c(
+                        paste0("<", current_breaks[2]),
+                        paste0(current_breaks[2], " - ", current_breaks[3]),
+                        paste0(current_breaks[3], " - ", current_breaks[4]),
+                        paste0(current_breaks[4], " - ", current_breaks[5]),
+                        paste0(">", current_breaks[5])
+                    )),
                     values = wq_data_recent_map$value,
                     title = reading_type_name,
                     group = "points",
