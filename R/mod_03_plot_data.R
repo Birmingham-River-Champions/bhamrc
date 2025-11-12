@@ -201,7 +201,7 @@ mod_03_plot_data_server <- function(id) {
       ARMI_data,
       Unique_BRC_Sampling_Locs
     )
-    riverflyARMIData <- riverflyARMIDataList[[2]]
+    riverflyARMISiteAv <- riverflyARMIDataList[[2]]
     Riverfly_ARMI_Plot <- riverflyARMIDataList[[1]]
 
     # Update the map with appropriate data
@@ -214,7 +214,7 @@ mod_03_plot_data_server <- function(id) {
       mapProxy |> clearControls()
 
       if (input$metric == "Urban Riverfly" && input$riverfly == "ARMI") {
-        addARMIMarkers(mapProxy, riverflyARMIData, Riverfly_ARMI_Plot, input)
+        addARMIMarkers(mapProxy, riverflyARMISiteAv, Riverfly_ARMI_Plot, input)
       } else if (
         input$metric == "Urban Riverfly" &&
           input$riverfly == "Urban Riverfly species"
@@ -269,10 +269,10 @@ mod_03_plot_data_server <- function(id) {
           plot_palette
         )
         selectedReading <- input$readingType
-        wq_Recent_Map <- WQ_plot_data[[2]] |>
+        wq_Recent_Map <- WQ_plot_data$recent |>
           filter(reading_type == selectedReading)
 
-        wq_data <- WQ_plot_data[[1]] |>
+        wq_data <- WQ_plot_data$all_obs |>
           filter(reading_type == selectedReading)
 
         addWaterQualityMarkers(

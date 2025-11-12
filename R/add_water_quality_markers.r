@@ -13,8 +13,8 @@
 #' @noRd
 addWaterQualityMarkers <- function(
     mapProxy,
-    wq_data,
     wq_data_recent,
+    wq_data,
     input
 ) {
     metric <- input$readingType
@@ -33,10 +33,9 @@ addWaterQualityMarkers <- function(
         pal_name <- "Blues"
         pal <- colorBin(
             palette = pal_name,
-            domain = wq_data_recent_map$value,
             pretty = FALSE,
             bins = current_breaks,
-            reverse = TRUE
+            reverse = FALSE
         )
         pal_values <- brewer.pal(
             length(attr(pal, "colorArgs")$bins),
@@ -46,7 +45,6 @@ addWaterQualityMarkers <- function(
         pal_name = "RdBu"
         pal <- colorBin(
             palette = pal_name,
-            domain = wq_data_recent_map$value,
             bins = current_breaks,
             pretty = FALSE,
             reverse = TRUE
@@ -59,13 +57,15 @@ addWaterQualityMarkers <- function(
 
     mapProxy |> clearPopups() |> clearGroup("points")
 
-    if (!is.null(wq_data) && nrow(wq_data) > 0) {
-        plotPopups <- function(site_id, popup_width) {
+    if (!is.null(wq_data_recent_map) && nrow(wq_data_recent_map) > 0) {
+        plotPopups <- function(i, popup_width) {
+            # Filter the data to include all observations only from the specific site
+            site_id <- wq_data_recent_map$sampling_site[i]
             wqdata_SiteID <- filter(
                 wq_data,
                 sampling_site == site_id
             )
-            organisation <- wqdata_SiteID$organisation[1]
+            organisation <- wq_data_recent_map$organisation[1]
             ##Some organisations don't sound right with "the" in front
             organisation <- if (
                 organisation != "Hall Green's Keepin' It Clean" &
@@ -105,7 +105,7 @@ addWaterQualityMarkers <- function(
                     fill = cut(
                         value,
                         breaks = current_breaks,
-                        labels = pal_values
+                        labels = pal_values[-1]
                     )
                 )
             ) +
@@ -164,11 +164,10 @@ addWaterQualityMarkers <- function(
                 popup_height <- 350
             }
 
-            unique_site_ids <- unique(wq_data$sampling_site)
-            plots <- lapply(unique_site_ids, function(site_id) {
-                plotPopups(site_id, popup_width)
+            # Loop through recent averaged data to create point popups
+            plots <- lapply(1:nrow(wq_data_recent_map), function(i) {
+                plotPopups(i, popup_width)
             })
-            browser()
             mapProxy |>
                 addCircleMarkers(
                     data = wq_data_recent_map,
@@ -192,7 +191,7 @@ addWaterQualityMarkers <- function(
                 addLegend(
                     position = "topright",
                     pal = pal,
-                    values = wq_data$value,
+                    values = wq_data_recent_map$value,
                     title = reading_type_name,
                     group = "points",
                     opacity = 0.75
@@ -200,12 +199,15 @@ addWaterQualityMarkers <- function(
         })
     } else {
         # Handle no data case
-        if (all(is.na(wq_data$LONG)) || all(is.na(wq_data$LAT))) {
+        if (
+            all(is.na(wq_data_recent_map$LONG)) ||
+                all(is.na(wq_data_recent_map$LAT))
+        ) {
             default_lng <- -1.89983 # Example: center of Birmingham
             default_lat <- 52.48624 # Example: center of Birmingham
         } else {
-            default_lng <- mean(wq_data$LONG, na.rm = TRUE)
-            default_lat <- mean(wq_data$LAT, na.rm = TRUE)
+            default_lng <- mean(wq_data_recent_map$LONG, na.rm = TRUE)
+            default_lat <- mean(wq_data_recent_map$LAT, na.rm = TRUE)
         }
 
         mapProxy |>

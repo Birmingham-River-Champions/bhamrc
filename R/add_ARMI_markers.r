@@ -1,6 +1,6 @@
 #' This function adds ARMI markers to the map with popups containing ggplot graphs.
 #' @param mapProxy A leaflet map proxy object.
-#' @param data A data frame containing the ARMI data to be plotted.
+#' @param data A data frame containing the site-averaged recent ARMI data to be plotted.
 #' @param riverflyARMIData A data frame containing all ARMI data for generating the ggplot graphs.
 #' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend
 #' @importFrom RColorBrewer brewer.pal
