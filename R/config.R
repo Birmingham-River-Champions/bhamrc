@@ -48,6 +48,14 @@ water_quality_bw <- list(
     "Turbidity (NTU)" = "turbidity_NTU"
 )
 
+data_types_bw <- list(
+    "Urban Riverfly" = "riverfly",
+    "Water Quality" = "water_quality",
+    "Invasive Species" = "invasive_species",
+    "Riverfly Locations" = "riverfly_locs",
+    "Urban Outfall Safari" = "outfall_safari"
+)
+
 setNames(names(riverfly_spp_bw), riverfly_spp_bw)
 setNames(names(other_spp_bw), other_spp_bw)
 

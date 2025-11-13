@@ -11,7 +11,7 @@ mod_05_show_data_ui <- function(id) {
   ns <- NS(id)
   sidebarLayout(
     sidebarPanel(
-      data_type_input_ui(ns("data_type"))
+      data_type_input_ui(ns("data_type"), which_data_types = c(1, 2, 3, 4, 5))
     ),
     mainPanel(
       textOutput(ns("survey")),

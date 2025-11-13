@@ -153,13 +153,15 @@ mod_data_entry_form_server <- function(id, table_name) {
         # render UI for selected table
         output$form_ui <- shiny::renderUI({
             tbl <- current_table()
-            if (is.null(tbl) || !tbl %in% names(cols)) {
+            tbl_name <- data_types_bw[[which(names(data_types_bw) == tbl)]]
+
+            if (is.null(tbl) || !tbl_name %in% names(cols)) {
                 return(shiny::tagList(shiny::p(
                     "Select a valid data type to show the form."
                 )))
             }
 
-            items <- cols[[tbl]]
+            items <- cols[[tbl_name]]
             ui_elems <- lapply(names(items), function(nm) {
                 type <- items[[nm]]
                 input_id <- nm
