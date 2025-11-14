@@ -162,14 +162,18 @@ mod_data_entry_form_server <- function(id, table_name) {
             }
 
             items <- cols[[tbl_name]]
-            ui_elems <- lapply(names(items), function(nm) {
-                type <- items[[nm]]
-                input_id <- nm
-                label <- gsub("_", " ", nm)
+            ui_elems <- lapply(names(items), function(column_name) {
+                type <- items[[column_name]]
+                input_id <- column_name
+                label <- ifelse(
+                    column_name %in% names(survey_questions),
+                    survey_questions[[column_name]],
+                    gsub("_", " ", column_name)
+                )
 
-                # choose widget by type or by name hints
+                # Choose type of input control by type or by name hints
                 if (
-                    nm %in%
+                    column_name %in%
                         c(
                             "survey_date",
                             "outfall_survey_date",
@@ -191,11 +195,43 @@ mod_data_entry_form_server <- function(id, table_name) {
                         value = NA_real_,
                         step = 0.01
                     )
-                } else if (grepl("photo|what_three_words|comment|other", nm)) {
+                } else if (
+                    grepl("photo|what_three_words|comment|other", column_name)
+                ) {
                     shiny::textAreaInput(
                         ns(input_id),
                         label = label,
                         value = ""
+                    )
+                } else if (
+                    # If this is a column with the specified abundance bins, use the selectInput
+                    column_name %in%
+                        c(
+                            names(riverfly_spp_bw),
+                            names(other_spp_bw),
+                            c("killer_demon_shrimp", "signal_crayfish")
+                        )
+                ) {
+                    shiny::selectInput(
+                        ns(input_id),
+                        label = label,
+                        choices = c("1-9", "10-99", "100 - 999", "1000+"),
+                        selected = NULL
+                    )
+                } else if (
+                    # If invasive flora, use present/abundant choices
+                    column_name %in%
+                        c(
+                            "himalayan_balsam",
+                            "japanese_knotweed",
+                            "giant_hogweed"
+                        )
+                ) {
+                    shiny::selectInput(
+                        ns(input_id),
+                        label = label,
+                        choices = c("Present (1-33%)", "Abundant (>33%)"),
+                        selected = NULL
                     )
                 } else {
                     shiny::textInput(ns(input_id), label = label, value = "")
@@ -221,9 +257,9 @@ mod_data_entry_form_server <- function(id, table_name) {
             if (is.null(tbl) || !tbl %in% names(cols)) {
                 return(NULL)
             }
-            nm <- names(cols[[tbl]])
-            out <- setNames(vector("list", length(nm)), nm)
-            for (n in nm) {
+            column_name <- names(cols[[tbl]])
+            out <- setNames(vector("list", length(column_name)), column_name)
+            for (n in column_name) {
                 out[[n]] <- input[[n]]
             }
             out

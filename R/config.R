@@ -63,7 +63,8 @@ palette_for_leaflet <- RColorBrewer::brewer.pal(n = 9, name = "Blues")
 
 #' plot_breaks
 #'
-#'
+#' These are the breaks used for plotting water quality and ARMI data.
+#' They define the bins for categorizing readings into different levels.
 plot_breaks <- data.frame(
     reading_type = c(
         rep("ARMI", 6),
@@ -119,4 +120,45 @@ plot_breaks <- data.frame(
         Inf
     ),
     bin = rep(1:6, 7)
+)
+
+#' Question wording for survey input form
+#' A named list mapping internal column names to human-readable question wording for use in the data entry form.
+#' This is used to provide clear labels for form fields when users are entering data.
+survey_questions <- list(
+    organisation = "Organisation Name",
+    survey_date = "Survey Date",
+    data_type = "Data Type",
+    sampling_site = "Sampling Site",
+    cased_caddisfly = "Cased caddisfly (Trichoptera) Count",
+    caseless_caddisfly = "Caseless caddisfly (Trichoptera) Count",
+    olive_mayfly = "Olive mayfly (Baetidae) Count",
+    blue_winged_olive_mayfly = "Blue-winged olive mayfly (Ephemerellidae) Count",
+    freshwater_shrimp = "Freshwater shrimp (Gammaridae) Count",
+    freshwater_hoglouse = "Freshwater hoglouse (Asellidae) Count",
+    blackfly_larvae = "Blackfly larvae (Simuliidae) Count",
+    freshwater_worm = "Freshwater worm (Oligochaeta) Count",
+    freshwater_leech = "Freshwater leech (Hirudinea) Count",
+    freshwater_snail = "Freshwater snail (Gastropoda) Count",
+    freshwater_beetle = "Freshwater beetle (Coleoptera) Count",
+    green_drake_mayfly = "Green drake mayfly (Ephemeridae) Count",
+    flat_bodied_stone_clinger_mayfly = "Flat-bodied stone clinger mayfly (Heptageniidae) Count",
+    stonefly_plecoptera = "Stonefly larvae (Plecoptera) Count",
+    other_chironomidae = "Non-biting midge larvae (Chironomidae) Count",
+    other_dicranota = "Cranefly larvae (Dicranota sp.) Count",
+    other_tipulidae = "Other cranefly larvae (Tipulidae) Count",
+    other_hydracarina = "Water mite (Hydracarina) Count",
+    other_hydropsychidae = "Net spinning (caseless) caddisfly (Hydropsychidae) Count",
+    other_rhyacophilidae = "Green sedge (caseless) caddisfly (Rhyacophilidae) Count",
+    other_planorbidae = "Ramshorn snail (Planorbidae) Count",
+    other_sphaeriidae = "Freshwater mollusc (Sphaeriidae) Count",
+    other_acroloxidae_ancylidae = "Freshwater limpet (Acroloxidae/Ancylidae) Count",
+    other_bullhead = "Bullhead (fish - Cottus gobio) Count",
+    conductivity_mS = "Conductivity (\u03BCS)",
+    temperature_C = "Temperature (\u00B0C)",
+    ammonia_ppm = "Ammonia (ppm)",
+    phosphate_ppm = "Phosphate (ppm)",
+    nitrate_ppm = "Nitrate (ppm)",
+    turbidity_NTU = "Turbidity (NTU)",
+    other_water_quality = "Other Water Quality Observations"
 )
