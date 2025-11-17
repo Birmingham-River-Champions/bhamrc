@@ -141,6 +141,30 @@ mod_data_entry_form_server <- function(id, table_name) {
             )
         )
 
+        con <-
+            DBI::dbConnect(
+                RSQLite::SQLite(),
+                "data.sqlite",
+                extended_types = TRUE
+            )
+        locations_tbl_riverfly <- dbReadTable(
+            con,
+            "riverfly_locs"
+        )
+
+        locations_tbl_outfall <- dbReadTable(
+            con,
+            "outfall_locs"
+        )
+
+        DBI::dbDisconnect(con)
+
+        organisation_choices <-
+            sort(unique(locations_tbl_riverfly$Organisation))
+
+        site_choices_riverfly <-
+            sort(unique(locations_tbl_riverfly$sampling_site))
+
         # helper to coerce table_name param to string
         current_table <- reactive({
             if (shiny::is.reactive(table_name)) {
@@ -181,6 +205,32 @@ mod_data_entry_form_server <- function(id, table_name) {
                         )
                 ) {
                     shiny::dateInput(ns(input_id), label = label, value = NULL)
+                } else if (column_name == "organisation") {
+                    shiny::selectInput(
+                        ns(input_id),
+                        label = label,
+                        choices = c(
+                            "Select organisation" = "",
+                            organisation_choices
+                        ),
+                        selected = NULL
+                    )
+                } else if (column_name == "sampling_site") {
+                    shiny::selectInput(
+                        ns(input_id),
+                        label = label,
+                        choices = c(
+                            "Select sampling site" = "",
+                            site_choices_riverfly
+                        )
+                    )
+                } else if (column_name == "data_type") {
+                    shiny::selectInput(
+                        ns(input_id),
+                        label = label,
+                        choices = names(data_types_bw),
+                        selected = tbl
+                    )
                 } else if (type == "INTEGER") {
                     shiny::numericInput(
                         ns(input_id),
