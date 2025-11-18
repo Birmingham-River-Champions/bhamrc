@@ -63,9 +63,9 @@ mod_data_entry_form_server <- function(id, table_name) {
                 conductivity_mS = "REAL",
                 temperature_C = "REAL",
                 ammonia_ppm = "REAL",
-                phosphate_ppm = "REAL",
-                nitrate_ppm = "REAL",
-                turbidity_NTU = "REAL",
+                phosphate_ppm = "TEXT",
+                nitrate_ppm = "TEXT",
+                turbidity_NTU = "TEXT",
                 other_water_quality = "TEXT"
             ),
             riverfly_locs = c(
@@ -165,6 +165,52 @@ mod_data_entry_form_server <- function(id, table_name) {
         site_choices_riverfly <-
             sort(unique(locations_tbl_riverfly$sampling_site))
 
+        choices_list <- list(
+            "Phosphate (ppm)" = c(
+                "Not measured",
+                0.02,
+                0.05,
+                0.1,
+                0.2,
+                0.5,
+                1
+            ),
+            "Nitrate (ppm)" = c(
+                "Not measured",
+                0.2,
+                0.5,
+                1,
+                2,
+                5,
+                10
+            ),
+            "Turbidity (NTU)" = c(
+                "Not measured",
+                14,
+                15,
+                17,
+                19,
+                21,
+                25,
+                30,
+                35,
+                40,
+                50,
+                75,
+                100,
+                150,
+                200,
+                240
+            )
+        )
+        abundance_choices <- c(
+            "0" = 0,
+            "1-9" = 1,
+            "10-99" = 2,
+            "100 - 999" = 3,
+            "1000+" = 4
+        )
+
         # helper to coerce table_name param to string
         current_table <- reactive({
             if (shiny::is.reactive(table_name)) {
@@ -186,6 +232,29 @@ mod_data_entry_form_server <- function(id, table_name) {
             }
 
             items <- cols[[tbl_name]]
+            shiny::tagList(
+                h1(tbl),
+                shiny::textInput(
+                    ns("email"),
+                    label = NULL,
+                    value = "Valid email"
+                )
+            )
+            if (tbl == "outfall_safari") {
+                shiny::tagList(
+                    p("Outfall Safari pollution examples"),
+                    img(
+                        src = paste0(
+                            "www/images/",
+                            "outfall_flow_options",
+                            ".png"
+                        ),
+                        width = 300,
+                        height = 200,
+                        alt = "Outfall flow options"
+                    )
+                )
+            }
             ui_elems <- lapply(names(items), function(column_name) {
                 type <- items[[column_name]]
                 input_id <- column_name
@@ -194,7 +263,6 @@ mod_data_entry_form_server <- function(id, table_name) {
                     survey_questions[[column_name]],
                     gsub("_", " ", column_name)
                 )
-
                 # Choose type of input control by type or by name hints
                 if (
                     column_name %in%
@@ -224,29 +292,17 @@ mod_data_entry_form_server <- function(id, table_name) {
                             site_choices_riverfly
                         )
                     )
-                } else if (column_name == "data_type") {
-                    shiny::selectInput(
-                        ns(input_id),
-                        label = label,
-                        choices = names(data_types_bw),
-                        selected = tbl
-                    )
-                } else if (type == "INTEGER") {
+                } else if (column_name == "data_type") {} else if (
+                    type == "INTEGER"
+                ) {
                     shiny::numericInput(
                         ns(input_id),
                         label = label,
                         value = NA_integer_,
                         step = 1
                     )
-                } else if (type == "REAL") {
-                    shiny::numericInput(
-                        ns(input_id),
-                        label = label,
-                        value = NA_real_,
-                        step = 0.01
-                    )
                 } else if (
-                    grepl("photo|what_three_words|comment|other", column_name)
+                    grepl("photo|what_three_words|comment", column_name)
                 ) {
                     shiny::textAreaInput(
                         ns(input_id),
@@ -258,15 +314,34 @@ mod_data_entry_form_server <- function(id, table_name) {
                     column_name %in%
                         c(
                             names(riverfly_spp_bw),
-                            names(other_spp_bw),
                             c("killer_demon_shrimp", "signal_crayfish")
                         )
                 ) {
-                    shiny::selectInput(
+                    shiny::tagList(
+                        img(
+                            src = paste0(
+                                "www/images/",
+                                column_name,
+                                ".png"
+                            ),
+                            width = 100,
+                            height = 100,
+                            alt = column_name
+                        ),
+                        shiny::selectInput(
+                            ns(input_id),
+                            label = label,
+                            choices = abundance_choices,
+                            selected = "0"
+                        )
+                    )
+                } else if (column_name %in% names(other_spp_bw)) {
+                    shiny::radioButtons(
                         ns(input_id),
                         label = label,
-                        choices = c("1-9", "10-99", "100 - 999", "1000+"),
-                        selected = NULL
+                        choices = abundance_choices,
+                        selected = "0",
+                        inline = TRUE
                     )
                 } else if (
                     # If invasive flora, use present/abundant choices
@@ -277,11 +352,71 @@ mod_data_entry_form_server <- function(id, table_name) {
                             "giant_hogweed"
                         )
                 ) {
-                    shiny::selectInput(
-                        ns(input_id),
-                        label = label,
-                        choices = c("Present (1-33%)", "Abundant (>33%)"),
-                        selected = NULL
+                    shiny::tagList(
+                        img(
+                            src = paste0(
+                                "www/images/",
+                                column_name,
+                                ".jpg"
+                            ),
+                            width = 100,
+                            height = 100,
+                            alt = column_name
+                        ),
+                        shiny::radioButtons(
+                            ns(input_id),
+                            label = label,
+                            choices = c("Present (1-33%)", "Abundant (>33%)"),
+                            selected = NULL
+                        )
+                    )
+                } else if (
+                    grepl(
+                        "phosphate_ppm|nitrate_ppm|turbidity_NTU",
+                        column_name
+                    )
+                ) {
+                    shiny::tagList(
+                        img(
+                            src = paste0(
+                                "www/images/",
+                                column_name,
+                                ".png"
+                            ),
+                            width = 100,
+                            height = 100,
+                            alt = column_name
+                        ),
+                        shiny::selectInput(
+                            ns(input_id),
+                            label = label,
+                            choices = choices_list[[label]],
+                            selected = "Not measured"
+                        )
+                    )
+                } else if (
+                    grepl(
+                        "conductivity_mS|temperature_C|ammonia_ppm",
+                        column_name
+                    )
+                ) {
+                    shiny::tagList(
+                        img(
+                            src = paste0(
+                                "www/images/",
+                                column_name,
+                                ".png"
+                            ),
+                            width = 100,
+                            height = 100,
+                            alt = column_name
+                        ),
+                        shiny::numericInput(
+                            ns(input_id),
+                            label = label,
+                            value = NA_real_,
+                            step = 0.01
+                        )
                     )
                 } else {
                     shiny::textInput(ns(input_id), label = label, value = "")

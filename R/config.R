@@ -126,10 +126,10 @@ plot_breaks <- data.frame(
 #' A named list mapping internal column names to human-readable question wording for use in the data entry form.
 #' This is used to provide clear labels for form fields when users are entering data.
 survey_questions <- list(
-    organisation = "Organisation Name",
-    survey_date = "Survey Date",
+    organisation = "Name of organisation",
+    survey_date = "Date of survey",
     data_type = "Data Type",
-    sampling_site = "Sampling Site",
+    sampling_site = "BRC sampling site ID",
     cased_caddisfly = "Number of cased caddisfly (Trichoptera) - leave blank if none observed",
     caseless_caddisfly = "Number of caseless caddisfly (Trichoptera) - leave blank if none observed",
     olive_mayfly = "Number of olive mayfly (Baetidae) - leave blank if none observed",
@@ -160,11 +160,17 @@ survey_questions <- list(
     phosphate_ppm = "Phosphate (ppm)",
     nitrate_ppm = "Nitrate (ppm)",
     turbidity_NTU = "Turbidity (NTU)",
-    other_water_quality = "Other water quality observations",
-    outfall_survey_date = "TEXT",
-    sampling_site = "TEXT",
+    other_water_quality = "Other comments on water quality",
+    outfall_survey_date = "Date of survey",
+    sampling_site = "Outfall ID",
     outfall_photo = "Have you uploaded a photo of the outfall here (please use the Outfall location ID as the picture caption)?",
     outfall_flow = "Flow from outfall",
     outfall_pollution_distance = "Pollution distance downstream from the outfall (meters)",
-    outfall_aesthetics = "Outfall aesthetics"
+    outfall_aesthetics = "Outfall aesthetics",
+    himalayan_balsam = "Himalayan balsam prevalence over a 10-metre cross-section (approx. 10 strides) - leave blank if not observed",
+    japanese_knotweed = "Japanese knotweed prevalence over a 10-metre cross-section (approx. 10 strides) - leave blank if not observed",
+    giant_hogweed = "Giant hogweed prevalence over a 10-metre cross-section (approx. 10 strides) - leave blank if not observed",
+    any_other_invasive_spp = "Note any invasive species or comments here (images of unidentifiable species should be emailed to birminghamriverchampions@gmail.com)",
+    what3words_location = "Outfall location - What.three.words (separate with period - e.g., \"above.awake.nature\"). If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified).
+     Click on other nearby squares if the GPS isn't accurate enough."
 )

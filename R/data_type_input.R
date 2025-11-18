@@ -6,11 +6,15 @@
 #'
 #' @noRd
 # UI
-data_type_input_ui <- function(id, which_data_types = c(1, 2, 3)) {
+data_type_input_ui <- function(
+    id,
+    question_string = "Select survey",
+    which_data_types = c(1, 2, 3)
+) {
     ns <- NS(id)
     selectInput(
         ns("data_type"),
-        "Select survey:",
+        question_string,
         choices = names(data_types_bw)[which_data_types],
         selected = "Urban Riverfly"
     )
