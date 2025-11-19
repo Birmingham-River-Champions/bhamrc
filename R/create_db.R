@@ -52,7 +52,7 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
             table_name,
             "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, outfall_survey_date TEXT,
             sampling_site TEXT, outfall_photo TEXT,
-            outfall_flow TEXT, outfall_pollution_distance TEXT, outfall_aesthetics TEXT)"
+            outfall_flow TEXT, outfall_pollution_distance TEXT, outfall_aesthetics TEXT, other_pollution_description TEXT)"
         ),
         "riverflytest" = paste(
             "CREATE TABLE",

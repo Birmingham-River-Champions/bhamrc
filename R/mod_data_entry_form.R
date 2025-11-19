@@ -78,7 +78,6 @@ mod_data_entry_form_server <- function(id, table_name) {
             ),
             invasive_species = c(
                 organisation = "TEXT",
-                survey_date = "TEXT",
                 data_type = "TEXT",
                 invasive_spp_sampling_date = "TEXT",
                 sampling_site = "TEXT",
@@ -92,14 +91,14 @@ mod_data_entry_form_server <- function(id, table_name) {
             ),
             outfall_safari = c(
                 organisation = "TEXT",
-                survey_date = "TEXT",
                 data_type = "TEXT",
                 outfall_survey_date = "TEXT",
                 sampling_site = "TEXT",
                 outfall_photo = "TEXT",
                 outfall_flow = "TEXT",
                 outfall_pollution_distance = "TEXT",
-                outfall_aesthetics = "TEXT"
+                outfall_aesthetics = "TEXT",
+                other_pollution_description = "TEXT"
             ),
             riverflytest = c(
                 organisation = "TEXT",
@@ -166,7 +165,7 @@ mod_data_entry_form_server <- function(id, table_name) {
             sort(unique(locations_tbl_riverfly$sampling_site))
 
         choices_list <- list(
-            "Phosphate (ppm)" = c(
+            phosphate_ppm = c(
                 "Not measured",
                 0.02,
                 0.05,
@@ -175,7 +174,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 0.5,
                 1
             ),
-            "Nitrate (ppm)" = c(
+            nitrate_ppm = c(
                 "Not measured",
                 0.2,
                 0.5,
@@ -184,7 +183,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 5,
                 10
             ),
-            "Turbidity (NTU)" = c(
+            turbidity_NTU = c(
                 "Not measured",
                 14,
                 15,
@@ -201,14 +200,35 @@ mod_data_entry_form_server <- function(id, table_name) {
                 150,
                 200,
                 240
+            ),
+            outfall_flow = c(
+                "No flow",
+                "Trickle: <0.1l/s, enough to fill a teacup in 1 minute",
+                "Low flow: 0.1 - 1 l/s, enough to fill a bucket in 1 minute",
+                "Moderate flow: 1 - 2 l/s, fills more than 1 bucket in 1 minute",
+                "High flow: >2 l/s, clearly fills more than a bathtub in 1 minute"
+            ),
+            outfall_pollution_distance = c(
+                "No visible effect",
+                "Impact within 2m of outfall",
+                "Impact 2m to 10m from outfall",
+                "Impact 10m to 30m from outfall",
+                "Impact greater than 30m from outfall"
+            ),
+            outfall_aesthetics = c(
+                "No odour or visible aesthetics",
+                "Faint smell, slight discolouration",
+                "Mild smell, mild discolouration, small coverage of grey fungus",
+                "Strong smell, strong discolouration, large coverage of grey fungus and/or litter",
+                "Gross smell, gross sewage"
             )
         )
         abundance_choices <- c(
-            "0" = 0,
-            "1-9" = 1,
-            "10-99" = 2,
-            "100 - 999" = 3,
-            "1000+" = 4
+            "0",
+            "1-9",
+            "10-99",
+            "100 - 999",
+            "1000+"
         )
 
         # helper to coerce table_name param to string
@@ -232,29 +252,7 @@ mod_data_entry_form_server <- function(id, table_name) {
             }
 
             items <- cols[[tbl_name]]
-            shiny::tagList(
-                h1(tbl),
-                shiny::textInput(
-                    ns("email"),
-                    label = NULL,
-                    value = "Valid email"
-                )
-            )
-            if (tbl == "outfall_safari") {
-                shiny::tagList(
-                    p("Outfall Safari pollution examples"),
-                    img(
-                        src = paste0(
-                            "www/images/",
-                            "outfall_flow_options",
-                            ".png"
-                        ),
-                        width = 300,
-                        height = 200,
-                        alt = "Outfall flow options"
-                    )
-                )
-            }
+
             ui_elems <- lapply(names(items), function(column_name) {
                 type <- items[[column_name]]
                 input_id <- column_name
@@ -301,9 +299,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         value = NA_integer_,
                         step = 1
                     )
-                } else if (
-                    grepl("photo|what_three_words|comment", column_name)
-                ) {
+                } else if (grepl("what_three_words|comment", column_name)) {
                     shiny::textAreaInput(
                         ns(input_id),
                         label = label,
@@ -418,6 +414,34 @@ mod_data_entry_form_server <- function(id, table_name) {
                             step = 0.01
                         )
                     )
+                } else if (column_name == "outfall_photo") {
+                    shiny::tagList(
+                        HTML(label),
+                        shiny::checkboxInput(
+                            ns(input_id),
+                            label = "Yes",
+                            value = FALSE
+                        ),
+                        shiny::checkboxInput(
+                            ns(input_id),
+                            label = "No",
+                            value = FALSE
+                        )
+                    )
+                } else if (
+                    column_name %in%
+                        c(
+                            "outfall_flow",
+                            "outfall_pollution_distance",
+                            "outfall_aesthetics"
+                        )
+                ) {
+                    shiny::radioButtons(
+                        ns(input_id),
+                        label = label,
+                        choices = choices_list[[column_name]],
+                        selected = NULL
+                    )
                 } else {
                     shiny::textInput(ns(input_id), label = label, value = "")
                 }
@@ -426,15 +450,43 @@ mod_data_entry_form_server <- function(id, table_name) {
             # assemble with submit button
             shiny::tagList(
                 shiny::wellPanel(
-                    ui_elems,
-                    shiny::actionButton(
-                        ns("submit"),
-                        "Submit",
-                        class = "btn-primary"
+                    shiny::tagList(
+                        tags$h1(tbl),
+                        shiny::textInput(
+                            ns("email"),
+                            label = "Email",
+                            value = NULL
+                        ),
+                        ui_elems,
+                        shiny::actionButton(
+                            ns("submit"),
+                            "Submit",
+                            class = "btn-primary"
+                        )
                     )
                 )
             )
         })
+
+        # observeEvent(input$data_type == "outfall", {
+        #     insertUI(
+        #if (tbl_name == "outfall_safari") {
+        #    shiny::tagList(
+        #        p("Outfall Safari pollution examples"),
+        #        img(
+        #            src = paste0(
+        #                "www/images/",
+        #                "outfall_flow_options",
+        #                ".png"
+        #            ),
+        #            width = 300,
+        #            height = 200,
+        #            alt = "Outfall flow options"
+        #        )
+        #    )
+        #}
+        #     )
+        # })
 
         # reactive that returns named list of inputs when requested
         values <- shiny::reactive({
@@ -443,11 +495,18 @@ mod_data_entry_form_server <- function(id, table_name) {
                 return(NULL)
             }
             column_name <- names(cols[[tbl]])
-            out <- setNames(vector("list", length(column_name)), column_name)
+            out <- setNames(
+                vector("list", length(column_name)),
+                column_name
+            )
             for (n in column_name) {
                 out[[n]] <- input[[n]]
             }
             out
+        })
+
+        observe({
+            shinyjs::toggleState("submit", !is.null(input$email))
         })
 
         list(values = values, submit = shiny::reactive(input$submit))
