@@ -1,6 +1,8 @@
 #' The application server-side
 #'
-#' @param input,output,session Internal parameters for {shiny}.
+#' @param input input from ui
+#' @param output output for ui
+#' @param session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @importFrom DBI dbConnect dbDisconnect dbExecute dbExistsTable dbGetQuery
