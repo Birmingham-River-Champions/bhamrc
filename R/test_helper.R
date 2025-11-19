@@ -1,3 +1,4 @@
+#' Helper function to create test fixture data for Riverfly tests
 #' @noRd
 test_fixture_riverfly <- function() {
     # Make a copy of the data for testing

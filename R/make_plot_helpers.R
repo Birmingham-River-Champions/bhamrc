@@ -1,7 +1,6 @@
 ## Helper functions for plot data processing
 
 #' Flip site names from "Site, Organisation" to "Organisation, Site"
-#' @noRd
 #' @param site_name A character string representing the site name.
 #' @return A character string with the site name flipped.
 flip_site_names <- function(site_name) {
@@ -10,7 +9,6 @@ flip_site_names <- function(site_name) {
 }
 
 #' Anonymise organisations based on sign-up sheet preferences
-#' @noRd
 #' @param data_frame A data frame containing an 'organisation' column.
 #' @return A data frame with specified organisations anonymised.
 anonymise_organisations <- function(data_frame) {
@@ -23,7 +21,6 @@ anonymise_organisations <- function(data_frame) {
 }
 
 #' Remove parenthesised organisations from site names
-#' @noRd
 #' @param data_frame A data frame containing a 'sampling_site' column.
 #' @return A data frame with parenthesised organisations removed from site names.
 remove_parenthesised_orgs <- function(data_frame) {

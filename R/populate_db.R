@@ -6,8 +6,6 @@
 #' @importFrom DBI dbConnect dbDisconnect dbWriteTable
 #'
 #' @return The return value, if any, from executing the function.
-#'
-#' @noRd
 populate_db <- function(data_to_insert, table_name) {
     # Connect to the SQLite database
     con <- dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)

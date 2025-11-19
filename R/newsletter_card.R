@@ -2,7 +2,7 @@
 #' set of text, image, and links
 #' @param title The title of the link
 #' @param description The description underneath the link
-#' @param alt_text Alternative text for the provided image
+#' @param alt_text Alternative text for the provided image, defaults to NULL
 #' @param url The URL that the header link should target
 #' @param image_src The location within the app of the image
 newsletter_card <- function(

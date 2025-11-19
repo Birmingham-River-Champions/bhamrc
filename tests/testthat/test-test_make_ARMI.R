@@ -88,12 +88,16 @@ armi_scores <- list(
   )
 )
 
-
 # Apply ARMI scores to test_df
 for (taxon in names(armi_scores)) {
+  test_df[is.na(test_df[[taxon]]), taxon]
   for (band in names(armi_scores[[taxon]])) {
+    filter(test_df, test_df[[taxon]] == band) |> select(all_of(taxon))
     if (length(test_df[(test_df[[taxon]] == band), taxon]) != 0) {
-      test_df[(test_df[[taxon]] == band), taxon] <- as.numeric(armi_scores[[
+      test_df[
+        (test_df[[taxon]] == band) & (!is.na(test_df[[taxon]])),
+        taxon
+      ] <- as.numeric(armi_scores[[
         taxon
       ]][band])
     }

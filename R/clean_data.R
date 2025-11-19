@@ -8,13 +8,11 @@
 #' @param col_name_start The starting column name for selecting relevant data.
 #' @param col_name_end The ending column name for selecting relevant data.
 #' @param sample_site Column in input_df that is used to filter out data uploads for this specific data type.
-#' @param acceptable_site_orgs Data frame containing valid sampling site locations and their associated organizations,
-#' used to filter out a row if the sampling site and organization don't match.
+#' @param locations_name The name of the locations table in the SQLite database.
 #' @param data_type_name A string indicating the type of data being processed (e.g
 #' "Urban Riverfly", "Water Quality", etc.) for warning messages.
 #' @return A cleaned data frame ready for analysis.
 #' @importFrom dplyr select filter mutate distinct
-#' @noRd
 clean_data <- function(
     input_df,
     col_name_start,
