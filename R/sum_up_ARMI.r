@@ -15,7 +15,7 @@ sum_up_ARMI <- function(Riverfly_ARMI) {
                         na.rm = TRUE
                     )
                 ) |> #,
-                ##Ntaxa = sum(c_across(matches("Number of")) > 0, na.rm = TRUE))|> THOUGHT IT WAS CALCULATED LIKE ASPT, BUT IS ACTUALLY LIKE BMWP
+                ##Ntaxa = sum(c_across(matches("Number of")) > 0, na.rm = TRUE))|> Calculated like bmwp (not aspt)
                 dplyr::select(-all_of(names(riverfly_spp_bw)))
         ) # Should replace this with name constant eventually)
     return(Riverfly_ARMI_Calc)
