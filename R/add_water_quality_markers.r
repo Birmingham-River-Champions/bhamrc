@@ -28,31 +28,17 @@ addWaterQualityMarkers <- function(
     wq_data <- wq_data |>
         filter(!is.na(value))
 
-    if (metric != "temperature_C") {
-        pal_name <- "Blues"
-        pal <- colorBin(
-            palette = pal_name,
-            pretty = FALSE,
-            bins = current_breaks,
-            reverse = FALSE
-        )
-        pal_values <- brewer.pal(
-            length(attr(pal, "colorArgs")$bins),
-            pal_name
-        )
-    } else {
-        pal_name = "RdBu"
-        pal <- colorBin(
-            palette = pal_name,
-            bins = current_breaks,
-            pretty = FALSE,
-            reverse = TRUE
-        )
-        pal_values <- rev(brewer.pal(
-            length(attr(pal, "colorArgs")$bins),
-            pal_name
-        ))
-    }
+    pal_name = "RdBu"
+    pal <- colorBin(
+        palette = pal_name,
+        bins = current_breaks,
+        pretty = FALSE,
+        reverse = TRUE
+    )
+    pal_values <- rev(brewer.pal(
+        length(attr(pal, "colorArgs")$bins),
+        pal_name
+    ))
 
     mapProxy |> clearPopups() |> clearGroup("points")
 
