@@ -3,7 +3,7 @@ library(shiny)
 
 test_that("UI contains expected uiOutput id", {
     ui <- mod_data_entry_form_ui("myid")
-    tags <- shiny::renderTags(ui)
+    tags <- shiny::renderUI(ui)
     html <- tags$html
     expect_true(grepl("myid-form_ui", html))
 })
