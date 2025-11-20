@@ -161,6 +161,10 @@ survey_questions <- list(
     nitrate_ppm = "Nitrate (ppm)",
     turbidity_NTU = "Turbidity (NTU)",
     other_water_quality = "Other comments on water quality",
+    invasive_spp_sampling_date = "Date of observation",
+    invasive_spp_wtw = "What.three.words location of invasive species seen 'out and about' - (separate with period - e.g., \"above.awake.nature\") If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified). Click on other nearby squares if the GPS isn't accurate enough.",
+    killer_demon_shrimp = "Number of killer / demon shrimp counted in a kick sample - leave blank if 0",
+    signal_crayfish = "Number of signal crayfish counted in a kick sample / observed on riverbed - leave blank if 0",
     outfall_survey_date = "Date of survey",
     sampling_site = "Outfall ID",
     outfall_photo = "Have you uploaded a photo of the outfall <a href = 'https://www.dropbox.com/request/J0BAKMCneqB698oF7xJD'>here</a> (please use the <b>outfall location ID</b> as the picture caption)?",
@@ -172,6 +176,6 @@ survey_questions <- list(
     japanese_knotweed = "Japanese knotweed prevalence over a 10-metre cross-section (approx. 10 strides) - leave blank if not observed",
     giant_hogweed = "Giant hogweed prevalence over a 10-metre cross-section (approx. 10 strides) - leave blank if not observed",
     any_other_invasive_spp = "Note any invasive species or comments here (images of unidentifiable species should be emailed to birminghamriverchampions@gmail.com)",
-    what3words_location = "Outfall location - What.three.words (separate with period - e.g., \"above.awake.nature\"). If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified).
+    outfall_location_wtw = "Outfall location - What.three.words (separate with period - e.g., \"above.awake.nature\"). If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified).
      Click on other nearby squares if the GPS isn't accurate enough."
 )

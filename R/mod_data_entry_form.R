@@ -81,13 +81,13 @@ mod_data_entry_form_server <- function(id, table_name) {
                 data_type = "TEXT",
                 invasive_spp_sampling_date = "TEXT",
                 sampling_site = "TEXT",
-                invasive_spp_what_three_words = "TEXT",
                 signal_crayfish = "TEXT",
                 killer_demon_shrimp = "TEXT",
                 himalayan_balsam = "TEXT",
                 japanese_knotweed = "TEXT",
                 giant_hogweed = "TEXT",
-                any_other_invasive_spp = "TEXT"
+                any_other_invasive_spp = "TEXT",
+                invasive_spp_wtw = "TEXT"
             ),
             outfall_safari = c(
                 organisation = "TEXT",
@@ -98,7 +98,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 outfall_flow = "TEXT",
                 outfall_pollution_distance = "TEXT",
                 outfall_aesthetics = "TEXT",
-                other_pollution_description = "TEXT"
+                other_pollution_description = "TEXT",
+                outfall_location_wtw = "TEXT"
             ),
             riverflytest = c(
                 organisation = "TEXT",
@@ -299,11 +300,19 @@ mod_data_entry_form_server <- function(id, table_name) {
                         value = NA_integer_,
                         step = 1
                     )
-                } else if (grepl("what_three_words|comment", column_name)) {
-                    shiny::textAreaInput(
-                        ns(input_id),
-                        label = label,
-                        value = ""
+                } else if (grepl("wtw", column_name)) {
+                    shiny::tagList(
+                        img(
+                            src = "www/images/whatthreewords.png",
+                            alt = "Image of what3words.com webpage showing a geolocate button",
+                            height = 200,
+                            width = 100
+                        ),
+                        shiny::textAreaInput(
+                            ns(input_id),
+                            label = label,
+                            value = ""
+                        )
                     )
                 } else if (
                     # If this is a column with the specified abundance bins, use the selectInput
@@ -362,7 +371,11 @@ mod_data_entry_form_server <- function(id, table_name) {
                         shiny::radioButtons(
                             ns(input_id),
                             label = label,
-                            choices = c("Present (1-33%)", "Abundant (>33%)"),
+                            choices = c(
+                                "Not observed",
+                                "Present (1-33%)",
+                                "Abundant (>33%)"
+                            ),
                             selected = NULL
                         )
                     )
@@ -452,6 +465,17 @@ mod_data_entry_form_server <- function(id, table_name) {
                 shiny::wellPanel(
                     shiny::tagList(
                         tags$h1(tbl),
+                        ifelse(
+                            tbl == "Urban Outfall Safari",
+                            p("Outfall Safari pollution examples"),
+                            img(
+                                src = "www/images/outfall.png",
+                                width = 300,
+                                height = 200,
+                                alt = "Outfall flow options"
+                            ),
+                            NULL
+                        ),
                         shiny::textInput(
                             ns("email"),
                             label = "Email",
@@ -468,26 +492,6 @@ mod_data_entry_form_server <- function(id, table_name) {
             )
         })
 
-        # observeEvent(input$data_type == "outfall", {
-        #     insertUI(
-        #if (tbl_name == "outfall_safari") {
-        #    shiny::tagList(
-        #        p("Outfall Safari pollution examples"),
-        #        img(
-        #            src = paste0(
-        #                "www/images/",
-        #                "outfall_flow_options",
-        #                ".png"
-        #            ),
-        #            width = 300,
-        #            height = 200,
-        #            alt = "Outfall flow options"
-        #        )
-        #    )
-        #}
-        #     )
-        # })
-
         # reactive that returns named list of inputs when requested
         values <- shiny::reactive({
             tbl <- current_table()
@@ -503,10 +507,6 @@ mod_data_entry_form_server <- function(id, table_name) {
                 out[[n]] <- input[[n]]
             }
             out
-        })
-
-        observe({
-            shinyjs::toggleState("submit", !is.null(input$email))
         })
 
         list(values = values, submit = shiny::reactive(input$submit))

@@ -23,7 +23,7 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
         ) |>
         dplyr::select(
             -id,
-            -invasive_spp_what_three_words,
+            -invasive_spp_wtw,
             -any_other_invasive_spp,
             -data_type
         )
