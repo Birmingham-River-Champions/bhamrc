@@ -24,6 +24,16 @@ mod_02_data_input_ui <- function(id) {
         p(
           "Choose a data type on the left to reveal form fields for that table."
         ),
+        shiny::conditionalPanel(
+          condition = "input.data_type == 'Urban Outfall Safari'",
+          tags$img(
+            src = "www/images/outfall.png",
+            width = 300,
+            height = 200,
+            alt = "Outfall flow options"
+          ),
+          ns = NS(id)
+        ),
         # embed the auto-generated form for the chosen table
         mod_data_entry_form_ui(
           ns("data_entry")

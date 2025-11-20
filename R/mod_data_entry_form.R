@@ -465,17 +465,6 @@ mod_data_entry_form_server <- function(id, table_name) {
                 shiny::wellPanel(
                     shiny::tagList(
                         tags$h1(tbl),
-                        ifelse(
-                            tbl == "Urban Outfall Safari",
-                            p("Outfall Safari pollution examples"),
-                            img(
-                                src = "www/images/outfall.png",
-                                width = 300,
-                                height = 200,
-                                alt = "Outfall flow options"
-                            ),
-                            NULL
-                        ),
                         shiny::textInput(
                             ns("email"),
                             label = "Email",
