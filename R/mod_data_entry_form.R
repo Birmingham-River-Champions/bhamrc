@@ -329,7 +329,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         shiny::selectInput(
                             ns(input_id),
                             label = label,
-                            choices = abundance_choices,
+                            choices = choices_list$abundance,
                             selected = "0"
                         )
                     )
@@ -337,7 +337,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                     shiny::radioButtons(
                         ns(input_id),
                         label = label,
-                        choices = abundance_choices,
+                        choices = choices_list$abundance,
                         selected = "0",
                         inline = TRUE
                     )
@@ -376,11 +376,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         shiny::radioButtons(
                             ns(input_id),
                             label = label,
-                            choices = c(
-                                "Not observed",
-                                "Present (1-33%)",
-                                "Abundant (>33%)"
-                            ),
+                            choices = choices_list$invasive_flora,
                             selected = NULL
                         )
                     )

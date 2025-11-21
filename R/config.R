@@ -181,6 +181,7 @@ survey_questions <- list(
     other_taxa_1 = "Additional taxa not in Urban Riverfly. If 'other taxa', please specify the name and abundance below."
 )
 
+#' Text for the choices for water quality, outfall, and abundance form inputs.
 choices_list <- list(
     phosphate_ppm = c(
         "Not measured",
@@ -238,12 +239,17 @@ choices_list <- list(
         "Mild smell, mild discolouration, small coverage of grey fungus",
         "Strong smell, strong discolouration, large coverage of grey fungus and/or litter",
         "Gross smell, gross sewage"
+    ),
+    abundance = c(
+        "0",
+        "1-9",
+        "10-99",
+        "100 - 999",
+        "1000+"
+    ),
+    invasive_flora = c(
+        "Not observed",
+        "Present (1-33%)",
+        "Abundant (>33%)"
     )
-)
-abundance_choices <- c(
-    "0",
-    "1-9",
-    "10-99",
-    "100 - 999",
-    "1000+"
 )
