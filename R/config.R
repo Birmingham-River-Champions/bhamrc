@@ -177,5 +177,73 @@ survey_questions <- list(
     giant_hogweed = "Giant hogweed prevalence over a 10-metre cross-section (approx. 10 strides) - leave blank if not observed",
     any_other_invasive_spp = "Note any invasive species or comments here (images of unidentifiable species should be emailed to birminghamriverchampions@gmail.com)",
     outfall_location_wtw = "Outfall location - What.three.words (separate with period - e.g., \"above.awake.nature\"). If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified).
-     Click on other nearby squares if the GPS isn't accurate enough."
+     Click on other nearby squares if the GPS isn't accurate enough.",
+    other_taxa_1 = "If 'other taxa' please specify the name and abundance below."
+)
+
+choices_list <- list(
+    phosphate_ppm = c(
+        "Not measured",
+        0.02,
+        0.05,
+        0.1,
+        0.2,
+        0.5,
+        1
+    ),
+    nitrate_ppm = c(
+        "Not measured",
+        0.2,
+        0.5,
+        1,
+        2,
+        5,
+        10
+    ),
+    turbidity_NTU = c(
+        "Not measured",
+        14,
+        15,
+        17,
+        19,
+        21,
+        25,
+        30,
+        35,
+        40,
+        50,
+        75,
+        100,
+        150,
+        200,
+        240
+    ),
+    outfall_flow = c(
+        "No flow",
+        "Trickle: <0.1l/s, enough to fill a teacup in 1 minute",
+        "Low flow: 0.1 - 1 l/s, enough to fill a bucket in 1 minute",
+        "Moderate flow: 1 - 2 l/s, fills more than 1 bucket in 1 minute",
+        "High flow: >2 l/s, clearly fills more than a bathtub in 1 minute"
+    ),
+    outfall_pollution_distance = c(
+        "No visible effect",
+        "Impact within 2m of outfall",
+        "Impact 2m to 10m from outfall",
+        "Impact 10m to 30m from outfall",
+        "Impact greater than 30m from outfall"
+    ),
+    outfall_aesthetics = c(
+        "No odour or visible aesthetics",
+        "Faint smell, slight discolouration",
+        "Mild smell, mild discolouration, small coverage of grey fungus",
+        "Strong smell, strong discolouration, large coverage of grey fungus and/or litter",
+        "Gross smell, gross sewage"
+    )
+)
+abundance_choices <- c(
+    "0",
+    "1-9",
+    "10-99",
+    "100 - 999",
+    "1000+"
 )
