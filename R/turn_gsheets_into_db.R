@@ -74,7 +74,7 @@ turn_gsheets_into_db <- function(
         "second_data_type",
         "invasive_spp_sampling_date",
         "invasive_spp_sampling_site",
-        "invasive_spp_what_three_words",
+        "invasive_spp_wtw",
         "signal_crayfish",
         "killer_demon_shrimp",
         "himalayan_balsam",

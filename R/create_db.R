@@ -43,7 +43,7 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
             table_name,
             "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, invasive_spp_sampling_date TEXT,
             sampling_site TEXT,
-            invasive_spp_what_three_words TEXT, signal_crayfish TEXT, killer_demon_shrimp TEXT,
+            invasive_spp_wtw TEXT, signal_crayfish TEXT, killer_demon_shrimp TEXT,
             himalayan_balsam TEXT, japanese_knotweed TEXT, giant_hogweed TEXT,
             any_other_invasive_spp TEXT)"
         ),
@@ -52,7 +52,7 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
             table_name,
             "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, outfall_survey_date TEXT,
             sampling_site TEXT, outfall_photo TEXT,
-            outfall_flow TEXT, outfall_pollution_distance TEXT, outfall_aesthetics TEXT)"
+            outfall_flow TEXT, outfall_pollution_distance TEXT, outfall_aesthetics TEXT, other_pollution_description TEXT)"
         ),
         "riverflytest" = paste(
             "CREATE TABLE",
