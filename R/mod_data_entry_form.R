@@ -455,7 +455,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                     "outfall_aesthetics"
                 )
             }
-
+        })
+        observe({
             mandatory_filled <-
                 vapply(
                     mandatory_fields,
