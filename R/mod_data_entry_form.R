@@ -53,7 +53,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 other_planorbidae = "TEXT",
                 other_sphaeriidae = "TEXT",
                 other_acroloxidae_ancylidae = "TEXT",
-                other_bullhead = "TEXT"
+                other_bullhead = "TEXT",
+                other_taxa_1 = "TEXT"
             ),
             water_quality = c(
                 organisation = "TEXT",
@@ -165,79 +166,71 @@ mod_data_entry_form_server <- function(id, table_name) {
         site_choices_riverfly <-
             sort(unique(locations_tbl_riverfly$sampling_site))
 
-        choices_list <- list(
-            phosphate_ppm = c(
-                "Not measured",
-                0.02,
-                0.05,
-                0.1,
-                0.2,
-                0.5,
-                1
-            ),
-            nitrate_ppm = c(
-                "Not measured",
-                0.2,
-                0.5,
-                1,
-                2,
-                5,
-                10
-            ),
-            turbidity_NTU = c(
-                "Not measured",
-                14,
-                15,
-                17,
-                19,
-                21,
-                25,
-                30,
-                35,
-                40,
-                50,
-                75,
-                100,
-                150,
-                200,
-                240
-            ),
-            outfall_flow = c(
-                "No flow",
-                "Trickle: <0.1l/s, enough to fill a teacup in 1 minute",
-                "Low flow: 0.1 - 1 l/s, enough to fill a bucket in 1 minute",
-                "Moderate flow: 1 - 2 l/s, fills more than 1 bucket in 1 minute",
-                "High flow: >2 l/s, clearly fills more than a bathtub in 1 minute"
-            ),
-            outfall_pollution_distance = c(
-                "No visible effect",
-                "Impact within 2m of outfall",
-                "Impact 2m to 10m from outfall",
-                "Impact 10m to 30m from outfall",
-                "Impact greater than 30m from outfall"
-            ),
-            outfall_aesthetics = c(
-                "No odour or visible aesthetics",
-                "Faint smell, slight discolouration",
-                "Mild smell, mild discolouration, small coverage of grey fungus",
-                "Strong smell, strong discolouration, large coverage of grey fungus and/or litter",
-                "Gross smell, gross sewage"
-            )
-        )
-        abundance_choices <- c(
-            "0",
-            "1-9",
-            "10-99",
-            "100 - 999",
-            "1000+"
-        )
-
         # helper to coerce table_name param to string
         current_table <- reactive({
             if (shiny::is.reactive(table_name)) {
                 table_name()
             } else {
                 as.character(table_name)
+            }
+        })
+
+        # Append additional extra taxa UI entries on each click of the namespaced "extra" button.
+        # Each appended block gets a unique wrapper id and its own remove button so users can
+        # remove any appended block individually.
+        extra_counter <- shiny::reactiveVal(0)
+        observeEvent(input$add_taxa, {
+            # increment counter
+            cnt <- extra_counter() + 1
+            extra_counter(cnt)
+
+            if (cnt < 8) {
+                # build ids (local id and namespaced wrapper id)
+                wrapper_local_id <- paste0("extra_wrapper_", cnt)
+                remove_btn_local_id <- paste0("remove_extra_", cnt)
+                wrapper_ns_id <- session$ns(wrapper_local_id)
+                container_sel <- paste0("#", session$ns("extra_container"))
+
+                # insert the new block at the end of the placeholder container
+                shiny::insertUI(
+                    selector = container_sel,
+                    where = "beforeEnd",
+                    ui = shiny::tags$div(
+                        id = wrapper_ns_id,
+                        extra_taxa_input_ui(
+                            ns(paste0("extra_taxa_", cnt)),
+                            label = survey_questions$other_taxa_1
+                        ),
+                        shiny::actionButton(
+                            ns(remove_btn_local_id),
+                            "Remove",
+                            class = "btn-danger btn-sm"
+                        )
+                    )
+                )
+            } else {
+                shiny::showNotification(
+                    "You cannot add any more taxa; please start a new entry if you have additional taxa to report.",
+                    type = "message"
+                )
+            }
+        })
+
+        # Single observer for all remove buttons
+        observe({
+            # Find all remove button ids currently present in input
+            remove_btn_ids <- grep("^remove_extra_", names(input), value = TRUE)
+            for (rid in remove_btn_ids) {
+                observeEvent(
+                    input[[rid]],
+                    {
+                        # Remove the corresponding UI block
+                        wid <- session$ns(sub("^remove_", "", rid))
+                        shiny::removeUI(selector = paste0("#", wid))
+                    },
+                    ignoreInit = TRUE,
+                    once = TRUE
+                )
             }
         })
 
@@ -347,6 +340,18 @@ mod_data_entry_form_server <- function(id, table_name) {
                         choices = abundance_choices,
                         selected = "0",
                         inline = TRUE
+                    )
+                } else if (column_name == "other_taxa_1") {
+                    shiny::tagList(
+                        extra_taxa_input_ui(
+                            ns("extra_taxa_1"),
+                            label = survey_questions$other_taxa_1
+                        ),
+                        shiny::actionButton(
+                            ns("add_taxa"),
+                            label = "Add another taxa observation",
+                            class = "btn-primary"
+                        )
                     )
                 } else if (
                     # If invasive flora, use present/abundant choices
@@ -471,6 +476,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                             value = NULL
                         ),
                         ui_elems,
+                        # placeholder container for inserted extra taxa UI (insertUI will target this)
+                        shiny::tags$div(id = ns("extra_container")),
                         shiny::actionButton(
                             ns("submit"),
                             "Submit",
@@ -498,6 +505,9 @@ mod_data_entry_form_server <- function(id, table_name) {
             out
         })
 
-        list(values = values, submit = shiny::reactive(input$submit))
+        list(
+            values = values,
+            submit = shiny::reactive(input$submit)
+        )
     })
 }
