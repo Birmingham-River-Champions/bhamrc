@@ -179,9 +179,7 @@ mod_data_entry_form_server <- function(id, table_name) {
         # Each appended block gets a unique wrapper id and its own remove button so users can
         # remove any appended block individually.
         extra_counter <- shiny::reactiveVal(0)
-        first_extra <- extra_taxa_input_server("extra_taxa_1")
-
-        observeEvent(first_extra(), {
+        observeEvent(input$add_taxa, {
             # increment counter
             cnt <- extra_counter() + 1
             extra_counter(cnt)
@@ -209,20 +207,24 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
                 )
             )
+        })
 
-            # create an observer to handle removal of this specific block when its Remove button is clicked
-            local({
-                rid <- remove_btn_local_id
-                wid <- wrapper_ns_id
+        # Single observer for all remove buttons
+        observe({
+            # Find all remove button ids currently present in input
+            remove_btn_ids <- grep("^remove_extra_", names(input), value = TRUE)
+            for (rid in remove_btn_ids) {
                 observeEvent(
                     input[[rid]],
                     {
+                        # Remove the corresponding UI block
+                        wid <- session$ns(sub("^remove_", "", rid))
                         shiny::removeUI(selector = paste0("#", wid))
                     },
                     ignoreInit = TRUE,
                     once = TRUE
                 )
-            })
+            }
         })
 
         # render UI for selected table
@@ -333,9 +335,16 @@ mod_data_entry_form_server <- function(id, table_name) {
                         inline = TRUE
                     )
                 } else if (column_name == "other_taxa_1") {
-                    extra_taxa_input_ui(
-                        ns("extra_taxa_1"),
-                        label = survey_questions$other_taxa_1
+                    shiny::tagList(
+                        extra_taxa_input_ui(
+                            ns("extra_taxa_1"),
+                            label = survey_questions$other_taxa_1
+                        ),
+                        shiny::actionButton(
+                            ns("add_taxa"),
+                            label = "Add another taxa observation",
+                            class = "btn-primary"
+                        )
                     )
                 } else if (
                     # If invasive flora, use present/abundant choices

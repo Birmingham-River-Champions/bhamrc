@@ -24,11 +24,6 @@ extra_taxa_input_ui <- function(
             choices = abundance_choices,
             selected = "0",
             inline = TRUE
-        ),
-        shiny::actionButton(
-            ns("add_taxa"),
-            label = "Add another taxa observation",
-            class = "btn-primary"
         )
     )
 }
@@ -36,8 +31,7 @@ extra_taxa_input_ui <- function(
 # Server
 extra_taxa_input_server <- function(id) {
     moduleServer(id, function(input, output, session) {
-        taxa_name <- reactive(input$taxa_text)
+        taxa_text <- reactive(input$taxa_text)
         taxa_abundance <- reactive(input$taxa_abundance)
-        taxa_button <- reactive(input$add_taxa)
     })
 }
