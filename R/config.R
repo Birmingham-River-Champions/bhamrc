@@ -59,7 +59,11 @@ data_types_bw <- list(
 setNames(names(riverfly_spp_bw), riverfly_spp_bw)
 setNames(names(other_spp_bw), other_spp_bw)
 
+#Palette to avoid duplication for blues plots
 palette_for_leaflet <- RColorBrewer::brewer.pal(n = 9, name = "Blues")
+
+# CSS to make required fields have a red star
+appCSS <- ".mandatory_star { color: red; }"
 
 #' plot_breaks
 #'
@@ -161,13 +165,11 @@ survey_questions <- list(
     nitrate_ppm = "Nitrate (ppm)",
     turbidity_NTU = "Turbidity (NTU)",
     other_water_quality = "Other comments on water quality",
-    invasive_spp_sampling_date = "Date of observation",
     invasive_spp_wtw = "What.three.words location of invasive species seen 'out and about' - (separate with period - e.g., \"above.awake.nature\") If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified). Click on other nearby squares if the GPS isn't accurate enough.",
     killer_demon_shrimp = "Number of killer / demon shrimp counted in a kick sample - leave blank if 0",
     signal_crayfish = "Number of signal crayfish counted in a kick sample / observed on riverbed - leave blank if 0",
-    outfall_survey_date = "Date of survey",
-    sampling_site = "Outfall ID",
-    outfall_photo = "Have you uploaded a photo of the outfall <a href = 'https://www.dropbox.com/request/J0BAKMCneqB698oF7xJD'>here</a> (please use the <b>outfall location ID</b> as the picture caption)?",
+    outfall_photo = "Have you uploaded a photo of the outfall <a href = 'https://www.dropbox.com/request/J0BAKMCneqB698oF7xJD'>here</a>
+     (please use the <b>outfall location ID</b> as the picture caption)? <font color='red'>*</font>",
     outfall_flow = "Flow from outfall",
     outfall_pollution_distance = "Pollution distance downstream from the outfall",
     outfall_aesthetics = "Outfall aesthetics",

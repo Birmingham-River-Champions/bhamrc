@@ -42,3 +42,12 @@ isValidEmail <- function(x) {
         ignore.case = TRUE
     )
 }
+
+#' Mimics Google form functionality for setting required fields
+#' @param label the label of the required form input
+label_mandatory <- function(label) {
+    tagList(
+        label,
+        span("*", class = "mandatory_star")
+    )
+}

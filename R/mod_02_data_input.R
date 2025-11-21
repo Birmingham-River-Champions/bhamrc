@@ -20,6 +20,8 @@ mod_02_data_input_ui <- function(id) {
         ))
       ),
       mainPanel(
+        shinyjs::useShinyjs(),
+        shinyjs::inlineCSS(appCSS),
         h3("Submit your entry using the form."),
         p(
           "Choose a data type on the left to reveal form fields for that table."

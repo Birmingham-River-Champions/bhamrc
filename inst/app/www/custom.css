@@ -591,80 +591,8 @@
   /* Ensure the X stays black */
 }
 
-/* Default: Full width for smaller devices (iPads, iPhones) */
-#armi-legend {
-  width: 100%;
-  display: block;
-  /* Ensures it's treated as a block element */
-  margin: 0 auto;
-  /* Center the image horizontally */
-}
-
-/* For larger screens like laptops, set width to 80% */
-@media (min-width: 992px) {
-  #armi-legend {
-    width: 80%;
-    margin: 0 auto;
-    /* Center the image horizontally */
-  }
-}
-
-/* Default: Full width for smaller devices (iPads, iPhones) */
-#species-legend {
-  width: 70%;
-  display: block;
-  /* Ensures it's treated as a block element */
-  margin: 0 auto;
-  /* Center the image horizontally */
-}
-
 /* For larger screens like laptops, set width to 40% */
 @media (min-width: 992px) {
-  #species-legend {
-    width: 40%;
-    margin-top: 2px;
-    /* Adjust this value */
-    margin: 0 auto;
-    /* Center the image horizontally */
-  }
-}
-
-/* Default: Full width for smaller devices (iPads, iPhones) */
-#invasive-fauna-legend {
-  width: 80%;
-  display: block;
-  /* Ensures it's treated as a block element */
-  margin: 0 auto;
-  /* Center the image horizontally */
-}
-
-/* For larger screens like laptops, set width to 40% */
-@media (min-width: 992px) {
-  #invasive-fauna-legend {
-    width: 40%;
-    margin-top: 2px;
-    /* Adjust this value */
-    margin: 0 auto;
-    /* Center the image horizontally */
-  }
-}
-
-/* Default: Full width for smaller devices (iPads, iPhones) */
-#invasive-flora-legend {
-  width: 80%;
-  display: block;
-  /* Ensures it's treated as a block element */
-  margin: 0 auto;
-  /* Center the image horizontally */
-}
-
-/* For larger screens like laptops, set width to 40% */
-@media (min-width: 992px) {
-  #invasive-flora-legend {
-    width: 40%;
-    margin: 0 auto;
-    /* Center the image horizontally */
-  }
 
   #yourdata-descriptor {
     text-align: center;

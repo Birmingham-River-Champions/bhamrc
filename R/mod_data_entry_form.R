@@ -80,7 +80,7 @@ mod_data_entry_form_server <- function(id, table_name) {
             invasive_species = c(
                 organisation = "TEXT",
                 data_type = "TEXT",
-                invasive_spp_sampling_date = "TEXT",
+                survey_date = "TEXT",
                 sampling_site = "TEXT",
                 signal_crayfish = "TEXT",
                 killer_demon_shrimp = "TEXT",
@@ -93,7 +93,7 @@ mod_data_entry_form_server <- function(id, table_name) {
             outfall_safari = c(
                 organisation = "TEXT",
                 data_type = "TEXT",
-                outfall_survey_date = "TEXT",
+                survey_date = "TEXT",
                 sampling_site = "TEXT",
                 outfall_photo = "TEXT",
                 outfall_flow = "TEXT",
@@ -197,24 +197,17 @@ mod_data_entry_form_server <- function(id, table_name) {
                     gsub("_", " ", column_name)
                 )
                 # Choose type of input control by type or by name hints
-                if (
-                    column_name %in%
-                        c(
-                            "survey_date",
-                            "outfall_survey_date",
-                            "invasive_spp_sampling_date"
-                        )
-                ) {
+                if (column_name == "survey_date") {
                     shiny::dateInput(
                         ns(input_id),
-                        label = label,
+                        label = label_mandatory(label),
                         value = NULL,
                         max = Sys.Date()
                     )
                 } else if (column_name == "organisation") {
                     shiny::selectInput(
                         ns(input_id),
-                        label = label,
+                        label = label_mandatory(label),
                         choices = c(
                             "Select organisation" = "",
                             organisation_choices
@@ -224,7 +217,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 } else if (column_name == "sampling_site") {
                     shiny::selectInput(
                         ns(input_id),
-                        label = label,
+                        label = label_mandatory(label),
                         choices = c(
                             "Select sampling site" = "",
                             site_choices_riverfly
@@ -244,8 +237,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                         img(
                             src = "www/images/whatthreewords.png",
                             alt = "Image of what3words.com webpage showing a geolocate button",
-                            height = 200,
-                            width = 100
+                            height = 300,
+                            width = 150
                         ),
                         shiny::textAreaInput(
                             ns(input_id),
@@ -315,8 +308,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                                 column_name,
                                 ".jpg"
                             ),
-                            width = 100,
-                            height = 100,
+                            width = 166,
+                            height = 250,
                             alt = column_name
                         ),
                         shiny::radioButtons(
@@ -339,8 +332,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                                 column_name,
                                 ".png"
                             ),
-                            width = 100,
-                            height = 100,
+                            width = 168,
+                            height = 120,
                             alt = column_name
                         ),
                         shiny::selectInput(
@@ -398,7 +391,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 ) {
                     shiny::radioButtons(
                         ns(input_id),
-                        label = label,
+                        label = label_mandatory(label),
                         choices = choices_list[[column_name]],
                         selected = NULL
                     )
@@ -415,7 +408,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         shiny::tags$div(id = ns("outfall_images")),
                         shiny::textInput(
                             ns("email"),
-                            label = "Email",
+                            label = label_mandatory("Email"),
                             value = NULL
                         ),
                         ui_elems,
@@ -431,6 +424,11 @@ mod_data_entry_form_server <- function(id, table_name) {
             )
         })
 
+        mandatory_fields <- c(
+            "organisation",
+            "sampling_site"
+        )
+
         # Add in the Urban Outfall Safari image if the outfall data type is selected
         observe({
             if (current_table() == "Urban Outfall Safari") {
@@ -440,15 +438,36 @@ mod_data_entry_form_server <- function(id, table_name) {
                     where = "beforeEnd",
                     ui = shiny::tags$div(
                         id = "outfall_image",
-                        img(
+                        tags$p("Outfall safari pollution examples"),
+                        tags$img(
                             src = "www/images/outfall.png",
-                            width = 300,
-                            height = 200,
+                            width = 417,
+                            height = 382,
                             alt = "Outfall flow options"
                         )
                     )
                 )
+
+                mandatory_fields <- c(
+                    mandatory_fields,
+                    "outfall_flow",
+                    "outfall_pollution_distance",
+                    "outfall_aesthetics"
+                )
             }
+
+            mandatory_filled <-
+                vapply(
+                    mandatory_fields,
+                    function(x) {
+                        !is.null(input[[x]]) && input[[x]] != ""
+                    },
+                    logical(1)
+                )
+
+            mandatory_filled <- all(mandatory_filled)
+
+            shinyjs::toggleState(id = "submit", condition = mandatory_filled)
         })
 
         # Append additional extra taxa UI entries on each click of the namespaced "extra" button.
