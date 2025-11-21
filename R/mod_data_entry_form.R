@@ -426,7 +426,9 @@ mod_data_entry_form_server <- function(id, table_name) {
 
         mandatory_fields <- c(
             "organisation",
-            "sampling_site"
+            "sampling_site",
+            "survey_date",
+            "email"
         )
 
         # Add in the Urban Outfall Safari image if the outfall data type is selected
@@ -447,7 +449,6 @@ mod_data_entry_form_server <- function(id, table_name) {
                         )
                     )
                 )
-
                 mandatory_fields <- c(
                     mandatory_fields,
                     "outfall_flow",
@@ -456,7 +457,20 @@ mod_data_entry_form_server <- function(id, table_name) {
                 )
             }
         })
-        observe({
+
+        lapply(
+            X = c(mandatory_fields, "02_data_input_1-data_type-data_type"),
+            FUN = function(i) {
+                observeEvent(input[[i]], {
+                    shinyjs::toggleState(
+                        id = "submit",
+                        condition = toggle_submit(mandatory_fields)
+                    )
+                })
+            }
+        )
+
+        toggle_submit <- function(mandatory_fields) {
             mandatory_filled <-
                 vapply(
                     mandatory_fields,
@@ -467,9 +481,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 )
 
             mandatory_filled <- all(mandatory_filled)
-
-            shinyjs::toggleState(id = "submit", condition = mandatory_filled)
-        })
+            return(mandatory_filled)
+        }
 
         # Append additional extra taxa UI entries on each click of the namespaced "extra" button.
         # Each appended block gets a unique wrapper id and its own remove button so users can
@@ -540,20 +553,41 @@ mod_data_entry_form_server <- function(id, table_name) {
                 )
             }
             if (
-                any(
-                    c(input$conductivity_mS < 200),
-                    (input$conductivity_mS > 800),
-                    (input$temperature_C < 0),
-                    (input$temperature_C > 35),
-                    (input$ammonia_ppm < 0),
-                    (input$ammonia_ppm > 2)
-                )
+                (!is.null(input$conductivity_mS) &&
+                    !is.na(input$conductivity_mS) &&
+                    (input$conductivity_mS < 200 ||
+                        input$conductivity_mS > 800)) ||
+                    (!is.null(input$temperature_C) &&
+                        !is.na(input$temperature_C) &&
+                        (input$temperature_C < 0 ||
+                            input$temperature_C > 35)) ||
+                    (!is.null(input$ammonia_ppm) &&
+                        !is.na(input$ammonia_ppm) &&
+                        (input$ammonia_ppm < 0 || input$ammonia_ppm > 2))
             ) {
                 shiny::showNotification(
                     "You have entered a value which we suspect may be an anomalous value. 
                     If you are confident this is correct, please proceed with the submission 
                     by leaving blank for now and email birminghamriverchampions@gmail.com.  
                     If  your conductivity meter says mS you can simply multiply your value by 1000",
+                    type = "warning"
+                )
+            }
+            if (input$organisation == "") {
+                shiny::showNotification(
+                    "You need to provide an organisation to submit this entry.",
+                    type = "warning"
+                )
+            }
+            if (input$sampling_site == "") {
+                shiny::showNotification(
+                    "You need to provide a sampling site to submit this entry.",
+                    type = "warning"
+                )
+            }
+            if (input$survey_date == Sys.Date()) {
+                shiny::showNotification(
+                    "You've submitted today's date as the sampling date. Is that correct?",
                     type = "warning"
                 )
             }

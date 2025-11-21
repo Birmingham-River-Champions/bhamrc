@@ -185,7 +185,7 @@ survey_questions <- list(
 
 #' Text for the choices for water quality, outfall, and abundance form inputs.
 choices_list <- list(
-    phosphate_ppm = c(
+    "Phosphate (ppm)" = c(
         "Not measured",
         0.02,
         0.05,
@@ -194,7 +194,7 @@ choices_list <- list(
         0.5,
         1
     ),
-    nitrate_ppm = c(
+    "Nitrate (ppm)" = c(
         "Not measured",
         0.2,
         0.5,
@@ -203,7 +203,7 @@ choices_list <- list(
         5,
         10
     ),
-    turbidity_NTU = c(
+    "Turbidity (NTU)" = c(
         "Not measured",
         14,
         15,
