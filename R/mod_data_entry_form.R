@@ -184,29 +184,36 @@ mod_data_entry_form_server <- function(id, table_name) {
             cnt <- extra_counter() + 1
             extra_counter(cnt)
 
-            # build ids (local id and namespaced wrapper id)
-            wrapper_local_id <- paste0("extra_wrapper_", cnt)
-            remove_btn_local_id <- paste0("remove_extra_", cnt)
-            wrapper_ns_id <- session$ns(wrapper_local_id)
-            container_sel <- paste0("#", session$ns("extra_container"))
+            if (cnt < 8) {
+                # build ids (local id and namespaced wrapper id)
+                wrapper_local_id <- paste0("extra_wrapper_", cnt)
+                remove_btn_local_id <- paste0("remove_extra_", cnt)
+                wrapper_ns_id <- session$ns(wrapper_local_id)
+                container_sel <- paste0("#", session$ns("extra_container"))
 
-            # insert the new block at the end of the placeholder container
-            shiny::insertUI(
-                selector = container_sel,
-                where = "beforeEnd",
-                ui = shiny::tags$div(
-                    id = wrapper_ns_id,
-                    extra_taxa_input_ui(
-                        ns(paste0("extra_taxa_", cnt)),
-                        label = survey_questions$other_taxa_1
-                    ),
-                    shiny::actionButton(
-                        ns(remove_btn_local_id),
-                        "Remove",
-                        class = "btn-danger btn-sm"
+                # insert the new block at the end of the placeholder container
+                shiny::insertUI(
+                    selector = container_sel,
+                    where = "beforeEnd",
+                    ui = shiny::tags$div(
+                        id = wrapper_ns_id,
+                        extra_taxa_input_ui(
+                            ns(paste0("extra_taxa_", cnt)),
+                            label = survey_questions$other_taxa_1
+                        ),
+                        shiny::actionButton(
+                            ns(remove_btn_local_id),
+                            "Remove",
+                            class = "btn-danger btn-sm"
+                        )
                     )
                 )
-            )
+            } else {
+                shiny::showNotification(
+                    "You cannot add any more taxa; please start a new entry if you have additional taxa to report.",
+                    type = "message"
+                )
+            }
         })
 
         # Single observer for all remove buttons

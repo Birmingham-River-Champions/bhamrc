@@ -178,7 +178,7 @@ survey_questions <- list(
     any_other_invasive_spp = "Note any invasive species or comments here (images of unidentifiable species should be emailed to birminghamriverchampions@gmail.com)",
     outfall_location_wtw = "Outfall location - What.three.words (separate with period - e.g., \"above.awake.nature\"). If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified).
      Click on other nearby squares if the GPS isn't accurate enough.",
-    other_taxa_1 = "If 'other taxa' please specify the name and abundance below."
+    other_taxa_1 = "Additional taxa not in Urban Riverfly. If 'other taxa', please specify the name and abundance below."
 )
 
 choices_list <- list(
