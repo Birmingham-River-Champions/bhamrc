@@ -31,3 +31,14 @@ remove_parenthesised_orgs <- function(data_frame) {
     )
     return(data_frame)
 }
+
+#' Check for a valid email address
+#' @param x entered string in the email address field
+#' @return boolean whether email address format is correct
+isValidEmail <- function(x) {
+    grepl(
+        "\\<[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\>",
+        as.character(x),
+        ignore.case = TRUE
+    )
+}

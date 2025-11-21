@@ -30,7 +30,6 @@ Imports:
     RSQLite,
     sf,
     shiny,
-    shinyjs,
     stringr,
     tidyr,
     yaml

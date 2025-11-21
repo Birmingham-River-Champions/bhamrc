@@ -175,65 +175,6 @@ mod_data_entry_form_server <- function(id, table_name) {
             }
         })
 
-        # Append additional extra taxa UI entries on each click of the namespaced "extra" button.
-        # Each appended block gets a unique wrapper id and its own remove button so users can
-        # remove any appended block individually.
-        extra_counter <- shiny::reactiveVal(0)
-        observeEvent(input$add_taxa, {
-            # increment counter
-            cnt <- extra_counter() + 1
-            extra_counter(cnt)
-
-            if (cnt < 8) {
-                # build ids (local id and namespaced wrapper id)
-                wrapper_local_id <- paste0("extra_wrapper_", cnt)
-                remove_btn_local_id <- paste0("remove_extra_", cnt)
-                wrapper_ns_id <- session$ns(wrapper_local_id)
-                container_sel <- paste0("#", session$ns("extra_container"))
-
-                # insert the new block at the end of the placeholder container
-                shiny::insertUI(
-                    selector = container_sel,
-                    where = "beforeEnd",
-                    ui = shiny::tags$div(
-                        id = wrapper_ns_id,
-                        extra_taxa_input_ui(
-                            ns(paste0("extra_taxa_", cnt)),
-                            label = survey_questions$other_taxa_1
-                        ),
-                        shiny::actionButton(
-                            ns(remove_btn_local_id),
-                            "Remove",
-                            class = "btn-danger btn-sm"
-                        )
-                    )
-                )
-            } else {
-                shiny::showNotification(
-                    "You cannot add any more taxa; please start a new entry if you have additional taxa to report.",
-                    type = "message"
-                )
-            }
-        })
-
-        # Single observer for all remove buttons
-        observe({
-            # Find all remove button ids currently present in input
-            remove_btn_ids <- grep("^remove_extra_", names(input), value = TRUE)
-            for (rid in remove_btn_ids) {
-                observeEvent(
-                    input[[rid]],
-                    {
-                        # Remove the corresponding UI block
-                        wid <- session$ns(sub("^remove_", "", rid))
-                        shiny::removeUI(selector = paste0("#", wid))
-                    },
-                    ignoreInit = TRUE,
-                    once = TRUE
-                )
-            }
-        })
-
         # render UI for selected table
         output$form_ui <- shiny::renderUI({
             tbl <- current_table()
@@ -264,7 +205,12 @@ mod_data_entry_form_server <- function(id, table_name) {
                             "invasive_spp_sampling_date"
                         )
                 ) {
-                    shiny::dateInput(ns(input_id), label = label, value = NULL)
+                    shiny::dateInput(
+                        ns(input_id),
+                        label = label,
+                        value = NULL,
+                        max = Sys.Date()
+                    )
                 } else if (column_name == "organisation") {
                     shiny::selectInput(
                         ns(input_id),
@@ -466,6 +412,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 shiny::wellPanel(
                     shiny::tagList(
                         tags$h1(tbl),
+                        shiny::tags$div(id = ns("outfall_images")),
                         shiny::textInput(
                             ns("email"),
                             label = "Email",
@@ -482,6 +429,114 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
                 )
             )
+        })
+
+        # Add in the Urban Outfall Safari image if the outfall data type is selected
+        observe({
+            if (current_table() == "Urban Outfall Safari") {
+                container_sel <- paste0("#", session$ns("outfall_images"))
+                shiny::insertUI(
+                    selector = container_sel,
+                    where = "beforeEnd",
+                    ui = shiny::tags$div(
+                        id = "outfall_image",
+                        img(
+                            src = "www/images/outfall.png",
+                            width = 300,
+                            height = 200,
+                            alt = "Outfall flow options"
+                        )
+                    )
+                )
+            }
+        })
+
+        # Append additional extra taxa UI entries on each click of the namespaced "extra" button.
+        # Each appended block gets a unique wrapper id and its own remove button so users can
+        # remove any appended block individually.
+        extra_counter <- shiny::reactiveVal(0)
+        observeEvent(input$add_taxa, {
+            # increment counter
+            cnt <- extra_counter() + 1
+            extra_counter(cnt)
+
+            if (cnt < 8) {
+                # build ids (local id and namespaced wrapper id)
+                wrapper_local_id <- paste0("extra_wrapper_", cnt)
+                remove_btn_local_id <- paste0("remove_extra_", cnt)
+                wrapper_ns_id <- session$ns(wrapper_local_id)
+                container_sel <- paste0("#", session$ns("extra_container"))
+
+                # insert the new block at the end of the placeholder container
+                shiny::insertUI(
+                    selector = container_sel,
+                    where = "beforeEnd",
+                    ui = shiny::tags$div(
+                        id = wrapper_ns_id,
+                        extra_taxa_input_ui(
+                            ns(paste0("extra_taxa_", cnt)),
+                            label = survey_questions$other_taxa_1
+                        ),
+                        shiny::actionButton(
+                            ns(remove_btn_local_id),
+                            "Remove",
+                            class = "btn-danger btn-sm"
+                        )
+                    )
+                )
+            } else {
+                shiny::showNotification(
+                    "You cannot add any more taxa; please start a new entry if you have additional taxa to report.",
+                    type = "message"
+                )
+            }
+        })
+
+        # Single observer for all remove buttons
+        observe({
+            # Find all remove button ids currently present in input
+            remove_btn_ids <- grep("^remove_extra_", names(input), value = TRUE)
+            for (rid in remove_btn_ids) {
+                observeEvent(
+                    input[[rid]],
+                    {
+                        # Remove the corresponding UI block
+                        wid <- session$ns(sub("^remove_", "", rid))
+                        shiny::removeUI(selector = paste0("#", wid))
+                    },
+                    ignoreInit = TRUE,
+                    once = TRUE
+                )
+            }
+        })
+
+        # Make sure entries are valid before submitting
+        # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
+        observeEvent(input$submit, {
+            if (!isValidEmail(input$email)) {
+                shiny::showNotification(
+                    "Please enter a valid email address.",
+                    type = "warning"
+                )
+            }
+            if (
+                any(
+                    c(input$conductivity_mS < 200),
+                    (input$conductivity_mS > 800),
+                    (input$temperature_C < 0),
+                    (input$temperature_C > 35),
+                    (input$ammonia_ppm < 0),
+                    (input$ammonia_ppm > 2)
+                )
+            ) {
+                shiny::showNotification(
+                    "You have entered a value which we suspect may be an anomalous value. 
+                    If you are confident this is correct, please proceed with the submission 
+                    by leaving blank for now and email birminghamriverchampions@gmail.com.  
+                    If  your conductivity meter says mS you can simply multiply your value by 1000",
+                    type = "warning"
+                )
+            }
         })
 
         # reactive that returns named list of inputs when requested
