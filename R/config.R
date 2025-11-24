@@ -255,3 +255,12 @@ choices_list <- list(
         "Abundant (>33%)"
     )
 )
+
+#' List that includes the y-axis for popupGraphs for the water chemistry plots
+wq_y_axes <- list(
+    phosphate_ppm = c(0.05, 0.5),
+    conductivity_mS = c(350, 650),
+    ammonia_ppm = c(0.05, 1),
+    nitrate_ppm = c(0.5, 5),
+    turbidity_NTU = c(14, 240)
+)

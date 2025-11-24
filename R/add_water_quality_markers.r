@@ -7,7 +7,7 @@
 #' @description This function adds water quality markers to a Leaflet map proxy with popups containing ggplot graphs.
 #' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend addPopups
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_brewer xlab ylab scale_x_date theme element_text ggtitle
+#' @importFrom ggplot2 ggplot aes geom_point theme_minimal scale_fill_brewer xlab ylab scale_x_date theme element_text ggtitle coord_cartesian
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
 addWaterQualityMarkers <- function(
@@ -94,6 +94,7 @@ addWaterQualityMarkers <- function(
                     )
                 )
             ) +
+                coord_cartesian(ylim = wq_y_axes[[metric]]) +
                 geom_point(
                     size = 5,
                     pch = 21,
@@ -106,7 +107,9 @@ addWaterQualityMarkers <- function(
                 ) +
                 theme_minimal() +
                 xlab("Survey Date") +
-                ylab(reading_type_name) +
+                ylab(
+                    reading_type_name
+                ) +
                 scale_x_date(
                     date_breaks = "1 month",
                     date_labels = "%b '%y",

@@ -71,6 +71,16 @@ clean_data <- function(
             .keep_all = TRUE
         )
 
+    #Figure out which values are outside of ylims
+    if (data_type_name == "Water Quality") {
+        check_lims <- function(x) {
+            (!is.na(x) &
+                (x > 100 |
+                    x < 400))
+        }
+        outside_Y_ranges <- deduped_df |>
+            filter(if_any(names(wq_y_axes), check_lims))
+    }
     if (nrow(deduped_df) != nrow(cleaned_df)) {
         # If any sampling sites have been associated with the wrong organisation, throw an error
         if (nrow(wrong_org) > 0) {

@@ -98,6 +98,16 @@ app_ui <- function(request) {
                 alt = "A photograph of volunteers holding their Urban Riverfly certification after receiving training"
               )
             )
+          ),
+          div(
+            HTML(
+              "Web app by <a href='https://www.birmingham.ac.uk/staff/profiles/gees/white-james'>J.C. White</a>, 
+          <a href='https://www.linkedin.com/in/charlotte-rush-773919216/'>C. Rush</a>, and the 
+          <a href='https://www.birmingham.ac.uk/research/arc/rsg/bear-software'>Research Software Group</a> at the 
+          <a href = 'https://www.birmingham.ac.uk/'>University of Birmingham."
+            ),
+            align = "right",
+            class = "welcome-text"
           )
         ),
         tabPanel(
