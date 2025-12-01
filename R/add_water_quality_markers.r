@@ -50,7 +50,7 @@ addWaterQualityMarkers <- function(
                 wq_data,
                 sampling_site == site_id
             )
-            organisation <- wq_data_recent_map$organisation[1]
+            organisation <- wq_data_recent_map$organisation[i]
             ##Some organisations don't sound right with "the" in front
             organisation <- if (
                 organisation != "Hall Green's Keepin' It Clean" &

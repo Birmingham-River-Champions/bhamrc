@@ -529,18 +529,18 @@ mod_data_entry_form_server <- function(id, table_name) {
         observe({
             # Find all remove button ids currently present in input
             remove_btn_ids <- grep("^remove_extra_", names(input), value = TRUE)
-            for (rid in remove_btn_ids) {
+            lapply(remove_btn_ids, function(x) {
                 observeEvent(
-                    input[[rid]],
+                    input[[x]],
                     {
                         # Remove the corresponding UI block
-                        wid <- session$ns(sub("^remove_", "", rid))
+                        wid <- session$ns(sub("^remove_", "", x))
                         shiny::removeUI(selector = paste0("#", wid))
                     },
                     ignoreInit = TRUE,
                     once = TRUE
                 )
-            }
+            })
         })
 
         # Make sure entries are valid before submitting
