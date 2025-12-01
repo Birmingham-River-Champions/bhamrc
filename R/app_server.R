@@ -21,16 +21,6 @@ app_server <- function(input, output, session) {
     output$survey <- renderText(table_name())
   })
 
-  # Application server logic
-  # Database setup
-  con <- dbConnect(RSQLite::SQLite(), "data.sqlite", extended_types = TRUE)
-  if (!dbExistsTable(con, "submissions")) {
-    dbExecute(
-      con,
-      "CREATE TABLE submissions (id INTEGER PRIMARY KEY, name TEXT, email TEXT, comment TEXT)"
-    )
-  }
-
   onStop(function() {
     dbDisconnect(con)
   })
