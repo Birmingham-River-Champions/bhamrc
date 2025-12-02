@@ -56,6 +56,18 @@ data_types_bw <- list(
     "Urban Outfall Safari" = "outfall_safari"
 )
 
+
+column_names <- list(
+    "riverfly" = c(
+        "Organisation",
+        "Survey Date",
+        "Data Type",
+        "Sampling Site",
+        riverfly_spp_bw,
+        other_spp_bw
+    )
+)
+
 setNames(names(riverfly_spp_bw), riverfly_spp_bw)
 setNames(names(other_spp_bw), other_spp_bw)
 
