@@ -16,6 +16,7 @@ mod_05_show_data_ui <- function(id) {
     mainPanel(
       textOutput(ns("survey")),
       textOutput(ns("table_name")),
+      downloadButton(ns("download_data"), "Download Data"),
       DT::DTOutput(ns("entries"))
     )
   )
@@ -46,23 +47,63 @@ mod_05_show_data_server <- function(id) {
         }
       )
     })
-
+    browser()
     # Display selected table name
     output$survey <- renderText({
       paste("Selected survey table:", survey())
     })
     output$table_name <- renderText(table_name())
 
-    output$entries <- DT::renderDT({
-      dbReadTable(
-        con,
-        survey()
-      )
-    })
+    output$entries <- DT::renderDT(
+      {
+        dbReadTable(
+          con,
+          survey()
+        )
+      },
+      editable = "cell"
+    )
 
     onStop(function() {
       dbDisconnect(con)
     })
+
+    output$download_data <- downloadHandler(
+      filename = function() {
+        paste0(survey(), "_data.csv")
+      },
+      content = function(file) {
+        data_to_download <- dbReadTable(
+          con,
+          survey()
+        )
+        write.csv(data_to_download, file, row.names = FALSE)
+      }
+    )
+
+    # observeEvent(
+    #   session$ns("entries"),
+    #   {
+    #     # Placeholder for future functionality when entries are edited
+
+    #     con <- dbConnect(
+    #       RSQLite::SQLite(),
+    #       "data.sqlite",
+    #       extended_types = TRUE
+    #     )
+    #     new_data <- dbReadTable(
+    #       con,
+    #       survey(),
+    #       editable = TRUE
+    #     )
+    #     dbDisconnect(con)
+    #     edited_row <- output$entries_cell_edit$row
+    #     edited_col <- output$entries_cell_edit$col
+    #     new_data[edited_row, edited_col] <- output$entries_cell_edit$value
+
+    #     populate_db(new_data, "riverflytest")
+    #   }
+    # )
   })
 }
 
