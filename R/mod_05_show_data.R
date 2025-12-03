@@ -11,7 +11,7 @@ mod_05_show_data_ui <- function(id) {
   ns <- NS(id)
   sidebarLayout(
     sidebarPanel(
-      data_type_input_ui(ns("data_type"), which_data_types = c(1, 2, 3, 4, 5))
+      data_type_input_ui(ns("data_type"), which_data_types = c(1, 2, 3, 5))
     ),
     mainPanel(
       textOutput(ns("survey")),
@@ -44,6 +44,9 @@ mod_05_show_data_server <- function(id) {
         },
         "Invasive Species" = {
           "invasive_species"
+        },
+        "Urban Outfall Safari" = {
+          "outfall_safari"
         }
       )
     })
@@ -57,13 +60,18 @@ mod_05_show_data_server <- function(id) {
     # Render the table from the SQL database
     output$entries <- DT::renderDT(
       {
+        # Retrieve data based on chosen survey
+        # Remove id column and convert date columns before displaying
+        # Fix column names for display
         dbReadTable(
           con,
           survey()
-        )
+        ) |>
+          select(-id) |>
+          mutate(survey_date = lubridate::dmy(survey_date)) |>
+          setNames(column_names[[survey()]])
       },
-      editable = "cell",
-      options = list("colnames" = column_names[[survey()]])
+      editable = "cell"
     )
 
     onStop(function() {
@@ -86,7 +94,8 @@ mod_05_show_data_server <- function(id) {
 
     # Watch for when the cells are edited
     observeEvent(
-      input[["mod_05_show_data_1-entries_cell_edit"]],
+      input[[ns("entries_cell_clicked")]],
+      ignoreInit = TRUE,
       {
         # Read the data from the database, update the edited cell, and write it back to the database
         output <- input[["mod_05_show_data_1-entries_cell_edit"]]
@@ -100,12 +109,11 @@ mod_05_show_data_server <- function(id) {
           survey(),
           editable = TRUE
         )
-        dbDisconnect(con)
         edited_row <- output$entries_cell_edit$row
         edited_col <- output$entries_cell_edit$col
         new_data[edited_row, edited_col] <- output$entries_cell_edit$value
 
-        populate_db(new_data, "riverflytest")
+        #populate_db(new_data, "riverflytest")
       }
     )
   })

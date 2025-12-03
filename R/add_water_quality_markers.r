@@ -94,7 +94,6 @@ addWaterQualityMarkers <- function(
                     )
                 )
             ) +
-                coord_cartesian(ylim = wq_y_axes[[metric]]) +
                 geom_point(
                     size = 5,
                     pch = 21,

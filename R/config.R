@@ -40,12 +40,12 @@ other_spp_bw <- list(
 )
 
 water_quality_bw <- list(
-    "Conductivity (\u03BCS)" = "conductivity_mS",
-    "Temperature (\u00B0C)" = "temperature_C",
-    "Ammonia (ppm)" = "ammonia_ppm",
-    "Phosphate (ppm)" = "phosphate_ppm",
-    "Nitrate (ppm)" = "nitrate_ppm",
-    "Turbidity (NTU)" = "turbidity_NTU"
+    "conductivity_mS" = "Conductivity (\u03BCS)",
+    "temperature_C" = "Temperature (\u00B0C)",
+    "ammonia_ppm" = "Ammonia (ppm)",
+    "phosphate_ppm" = "Phosphate (ppm)",
+    "nitrate_ppm" = "Nitrate (ppm)",
+    "turbidity_NTU" = "Turbidity (NTU)"
 )
 
 data_types_bw <- list(
@@ -56,20 +56,55 @@ data_types_bw <- list(
     "Urban Outfall Safari" = "outfall_safari"
 )
 
-
+# Custom column names for displaying data tables
 column_names <- list(
     "riverfly" = c(
-        "Organisation",
-        "Survey Date",
-        "Data Type",
-        "Sampling Site",
+        organisation = "Organisation",
+        survey_date = "Survey Date",
+        data_type = "Data Type",
+        sampling_site = "Sampling Site",
         riverfly_spp_bw,
         other_spp_bw
+    ),
+    "water_quality" = c(
+        organisation = "Organisation",
+        survey_date = "Survey Date",
+        data_type = "Data Type",
+        sampling_site = "Sampling Site",
+        water_quality_bw,
+        other_water_quality = "Other Water Quality Comments"
+    ),
+    "invasive_species" = c(
+        organisation = "Organisation",
+        survey_date = "Survey Date",
+        data_type = "Data Type",
+        invasive_spp_sampling_date = "Invasive Species Sampling Date",
+        sampling_site = "Sampling Site",
+        invasive_spp_wtw = "What3Words Location",
+        signal_crayfish = "Signal Crayfish Count",
+        killer_demon_shrimp = "Killer/Demon Shrimp Count",
+        himalayan_balsam = "Himalayan Balsam Prevalence",
+        japanese_knotweed = "Japanese Knotweed Prevalence",
+        giant_hogweed = "Giant Hogweed Prevalence",
+        any_other_invasive_spp = "Any Other Invasive Species"
+    ),
+    "outfall_safari" = c(
+        organisation = "Organisation",
+        survey_date = "Survey Date",
+        data_type = "Data Type",
+        outfall_survey_date = "Outfall Survey Date",
+        sampling_site = "Sampling Site",
+        outfall_photo = "Outfall Photo Uploaded",
+        outfall_flow = "Outfall Flow",
+        outfall_pollution_distance = "Outfall Pollution Distance",
+        outfall_aesthetics = "Outfall Aesthetics",
+        other_pollution_description = "Other Pollution Description"
     )
 )
 
 setNames(names(riverfly_spp_bw), riverfly_spp_bw)
 setNames(names(other_spp_bw), other_spp_bw)
+setNames(names(water_quality_bw), water_quality_bw)
 
 #Palette to avoid duplication for blues plots
 palette_for_leaflet <- RColorBrewer::brewer.pal(n = 9, name = "Blues")
@@ -266,13 +301,4 @@ choices_list <- list(
         "Present (1-33%)",
         "Abundant (>33%)"
     )
-)
-
-#' List that includes the y-axis for popupGraphs for the water chemistry plots
-wq_y_axes <- list(
-    phosphate_ppm = c(0.05, 0.5),
-    conductivity_mS = c(350, 650),
-    ammonia_ppm = c(0.05, 1),
-    nitrate_ppm = c(0.5, 5),
-    turbidity_NTU = c(14, 240)
 )
