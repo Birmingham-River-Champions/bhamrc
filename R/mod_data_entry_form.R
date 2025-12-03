@@ -200,14 +200,14 @@ mod_data_entry_form_server <- function(id, table_name) {
                 if (column_name == "survey_date") {
                     shiny::dateInput(
                         ns(input_id),
-                        label = label_mandatory(label),
+                        label = with_red_star(label),
                         value = NULL,
                         max = Sys.Date()
                     )
                 } else if (column_name == "organisation") {
                     shiny::selectInput(
                         ns(input_id),
-                        label = label_mandatory(label),
+                        label = with_red_star(label),
                         choices = c(
                             "Select organisation" = "",
                             organisation_choices
@@ -217,7 +217,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 } else if (column_name == "sampling_site") {
                     shiny::selectInput(
                         ns(input_id),
-                        label = label_mandatory(label),
+                        label = with_red_star(label),
                         choices = c(
                             "Select sampling site" = "",
                             site_choices_riverfly
@@ -391,7 +391,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 ) {
                     shiny::radioButtons(
                         ns(input_id),
-                        label = label_mandatory(label),
+                        label = with_red_star(label),
                         choices = choices_list[[column_name]],
                         selected = NULL
                     )
@@ -408,7 +408,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         shiny::tags$div(id = ns("outfall_images")),
                         shiny::textInput(
                             ns("email"),
-                            label = label_mandatory("Email"),
+                            label = with_red_star("Email"),
                             value = NULL
                         ),
                         ui_elems,

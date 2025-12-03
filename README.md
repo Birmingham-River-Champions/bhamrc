@@ -1,6 +1,4 @@
 # Birmingham River Champions Shiny App
-[![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/nmfs-ost/ghactions4r/refs/heads/badges/coverage-badge.json)](https://github.com/Birmingham-River-Champions/bhamrc/tree/badges)
-
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/nmfs-ost/ghactions4r/refs/heads/badges/coverage-badge.json)](https://github.com/Birmingham-River-Champions/bhamrc/tree/badges)
@@ -21,7 +19,7 @@ This is an R Shiny app with a lightweight SQLite database and a dynamic input fo
    - RSQLite
 2. Install the package in RStudio:
 
-```{r}
+```r
 install.packages("remotes")
 remotes::install_github("Birmingham-River-Champions/bhamrc")
 library(bhamrc)
