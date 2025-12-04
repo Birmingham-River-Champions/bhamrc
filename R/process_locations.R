@@ -1,6 +1,6 @@
 #' process_locations
 #'
-#' @description A fct function
+#' @description Processes the locations from the Google Sheets and creates location data frames
 #'
 #' @return The return value, if any, from executing the function.
 #' @importFrom dplyr bind_cols rename rename_with select contains
