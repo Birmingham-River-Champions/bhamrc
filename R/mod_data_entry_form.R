@@ -676,7 +676,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         break
                     }
                 } else if (colname == "data_type") {
-                    newrow[1, colname] <- tbl
+                    new_row[1, colname] <- tbl
                 } else {
                     shiny::showNotification(
                         paste0(

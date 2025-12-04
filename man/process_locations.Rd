@@ -15,5 +15,5 @@ process_locations(
 The return value, if any, from executing the function.
 }
 \description{
-A fct function
+Processes the locations from the Google Sheets and creates location data frames
 }

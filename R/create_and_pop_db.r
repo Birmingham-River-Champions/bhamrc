@@ -26,7 +26,7 @@ db_create_and_pop <- function(
             data_type == "Urban Outfall Safari" ~ "outfall_survey_date"
         ),
         col_name_end = case_when(
-            data_type == "Urban Riverfly" ~ "other_bullhead",
+            data_type == "Urban Riverfly" ~ "names_of_other_taxa",
             data_type == "Water Quality" ~ "turbidity_NTU",
             data_type == "Invasive Species" ~ "any_other_invasive_spp",
             data_type == "Urban Outfall Safari" ~ "other_pollution_description"
