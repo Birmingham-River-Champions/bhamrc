@@ -80,7 +80,7 @@ mod_data_entry_form_server <- function(id, table_name) {
             invasive_species = c(
                 organisation = "TEXT",
                 data_type = "TEXT",
-                invasive_spp_sampling_date = "TEXT",
+                survey_date = "TEXT",
                 sampling_site = "TEXT",
                 signal_crayfish = "TEXT",
                 killer_demon_shrimp = "TEXT",
@@ -93,7 +93,7 @@ mod_data_entry_form_server <- function(id, table_name) {
             outfall_safari = c(
                 organisation = "TEXT",
                 data_type = "TEXT",
-                outfall_survey_date = "TEXT",
+                survey_date = "TEXT",
                 sampling_site = "TEXT",
                 outfall_photo = "TEXT",
                 outfall_flow = "TEXT",
@@ -159,10 +159,10 @@ mod_data_entry_form_server <- function(id, table_name) {
         )
 
         DBI::dbDisconnect(con)
-
+        # Get the organisation choices for riverfly for drop down list
         organisation_choices <-
             sort(unique(locations_tbl_riverfly$Organisation))
-
+        # Get the sampling site choices for riverfly for drop down list
         site_choices_riverfly <-
             sort(unique(locations_tbl_riverfly$sampling_site))
 
@@ -175,78 +175,26 @@ mod_data_entry_form_server <- function(id, table_name) {
             }
         })
 
-        # Append additional extra taxa UI entries on each click of the namespaced "extra" button.
-        # Each appended block gets a unique wrapper id and its own remove button so users can
-        # remove any appended block individually.
-        extra_counter <- shiny::reactiveVal(0)
-        observeEvent(input$add_taxa, {
-            # increment counter
-            cnt <- extra_counter() + 1
-            extra_counter(cnt)
-
-            if (cnt < 8) {
-                # build ids (local id and namespaced wrapper id)
-                wrapper_local_id <- paste0("extra_wrapper_", cnt)
-                remove_btn_local_id <- paste0("remove_extra_", cnt)
-                wrapper_ns_id <- session$ns(wrapper_local_id)
-                container_sel <- paste0("#", session$ns("extra_container"))
-
-                # insert the new block at the end of the placeholder container
-                shiny::insertUI(
-                    selector = container_sel,
-                    where = "beforeEnd",
-                    ui = shiny::tags$div(
-                        id = wrapper_ns_id,
-                        extra_taxa_input_ui(
-                            ns(paste0("extra_taxa_", cnt)),
-                            label = survey_questions$other_taxa_1
-                        ),
-                        shiny::actionButton(
-                            ns(remove_btn_local_id),
-                            "Remove",
-                            class = "btn-danger btn-sm"
-                        )
-                    )
-                )
-            } else {
-                shiny::showNotification(
-                    "You cannot add any more taxa; please start a new entry if you have additional taxa to report.",
-                    type = "message"
-                )
-            }
-        })
-
-        # Single observer for all remove buttons
-        observe({
-            # Find all remove button ids currently present in input
-            remove_btn_ids <- grep("^remove_extra_", names(input), value = TRUE)
-            for (rid in remove_btn_ids) {
-                observeEvent(
-                    input[[rid]],
-                    {
-                        # Remove the corresponding UI block
-                        wid <- session$ns(sub("^remove_", "", rid))
-                        shiny::removeUI(selector = paste0("#", wid))
-                    },
-                    ignoreInit = TRUE,
-                    once = TRUE
-                )
-            }
-        })
-
         # render UI for selected table
         output$form_ui <- shiny::renderUI({
+            # Get the reactive value of the currently-selected table
             tbl <- current_table()
+
+            # Get the programmatic table name from the human-readable name
             tbl_name <- data_types_bw[[which(names(data_types_bw) == tbl)]]
 
+            # If an invalid table is selected, show a message
             if (is.null(tbl) || !tbl_name %in% names(cols)) {
                 return(shiny::tagList(shiny::p(
                     "Select a valid data type to show the form."
                 )))
             }
 
+            # Create a list of form inputs that matches the specified columns for each table
             items <- cols[[tbl_name]]
 
+            # For each item in the columns, create the appropriate input control
+            # Get its type, ID, and label. Use the column name without underscores as a fallback column name.
             ui_elems <- lapply(names(items), function(column_name) {
                 type <- items[[column_name]]
                 input_id <- column_name
@@ -255,20 +203,19 @@ mod_data_entry_form_server <- function(id, table_name) {
                     survey_questions[[column_name]],
                     gsub("_", " ", column_name)
                 )
+
                 # Choose type of input control by type or by name hints
-                if (
-                    column_name %in%
-                        c(
-                            "survey_date",
-                            "outfall_survey_date",
-                            "invasive_spp_sampling_date"
-                        )
-                ) {
-                    shiny::dateInput(ns(input_id), label = label, value = NULL)
+                if (column_name == "survey_date") {
+                    shiny::dateInput(
+                        ns(input_id),
+                        label = with_red_star(label),
+                        value = NULL,
+                        max = Sys.Date()
+                    )
                 } else if (column_name == "organisation") {
                     shiny::selectInput(
                         ns(input_id),
-                        label = label,
+                        label = with_red_star(label),
                         choices = c(
                             "Select organisation" = "",
                             organisation_choices
@@ -278,7 +225,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 } else if (column_name == "sampling_site") {
                     shiny::selectInput(
                         ns(input_id),
-                        label = label,
+                        label = with_red_star(label),
                         choices = c(
                             "Select sampling site" = "",
                             site_choices_riverfly
@@ -298,8 +245,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                         img(
                             src = "www/images/whatthreewords.png",
                             alt = "Image of what3words.com webpage showing a geolocate button",
-                            height = 200,
-                            width = 100
+                            height = 300,
+                            width = 150
                         ),
                         shiny::textAreaInput(
                             ns(input_id),
@@ -329,7 +276,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         shiny::selectInput(
                             ns(input_id),
                             label = label,
-                            choices = abundance_choices,
+                            choices = choices_list$abundance,
                             selected = "0"
                         )
                     )
@@ -337,7 +284,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                     shiny::radioButtons(
                         ns(input_id),
                         label = label,
-                        choices = abundance_choices,
+                        choices = choices_list$abundance,
                         selected = "0",
                         inline = TRUE
                     )
@@ -369,18 +316,14 @@ mod_data_entry_form_server <- function(id, table_name) {
                                 column_name,
                                 ".jpg"
                             ),
-                            width = 100,
-                            height = 100,
+                            width = 166,
+                            height = 250,
                             alt = column_name
                         ),
                         shiny::radioButtons(
                             ns(input_id),
                             label = label,
-                            choices = c(
-                                "Not observed",
-                                "Present (1-33%)",
-                                "Abundant (>33%)"
-                            ),
+                            choices = choices_list$invasive_flora,
                             selected = NULL
                         )
                     )
@@ -397,8 +340,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                                 column_name,
                                 ".png"
                             ),
-                            width = 100,
-                            height = 100,
+                            width = 168,
+                            height = 120,
                             alt = column_name
                         ),
                         shiny::selectInput(
@@ -456,7 +399,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 ) {
                     shiny::radioButtons(
                         ns(input_id),
-                        label = label,
+                        label = with_red_star(label),
                         choices = choices_list[[column_name]],
                         selected = NULL
                     )
@@ -470,9 +413,11 @@ mod_data_entry_form_server <- function(id, table_name) {
                 shiny::wellPanel(
                     shiny::tagList(
                         tags$h1(tbl),
+                        # Placeholder div for pollution image, not shown for other tabs
+                        shiny::tags$div(id = ns("outfall_images")),
                         shiny::textInput(
                             ns("email"),
-                            label = "Email",
+                            label = with_red_star("Email"),
                             value = NULL
                         ),
                         ui_elems,
@@ -485,6 +430,215 @@ mod_data_entry_form_server <- function(id, table_name) {
                         )
                     )
                 )
+            )
+        })
+
+        # List fields that should require the form to be greyed out if not completed.
+        mandatory_fields <- c(
+            "organisation",
+            "sampling_site",
+            "survey_date",
+            "email"
+        )
+
+        # Add in the Urban Outfall Safari image if the outfall data type is selected
+        # Use observe rather than observeEvent to catch changes in table selection
+        observe({
+            if (current_table() == "Urban Outfall Safari") {
+                container_sel <- paste0("#", session$ns("outfall_images"))
+                shiny::insertUI(
+                    selector = container_sel,
+                    where = "beforeEnd",
+                    ui = shiny::tags$div(
+                        id = "outfall_image",
+                        tags$p("Outfall safari pollution examples"),
+                        tags$img(
+                            src = "www/images/outfall.png",
+                            width = 417,
+                            height = 382,
+                            alt = "Outfall flow options"
+                        )
+                    )
+                )
+                mandatory_fields <- c(
+                    mandatory_fields,
+                    "outfall_flow",
+                    "outfall_pollution_distance",
+                    "outfall_aesthetics"
+                )
+            }
+        })
+
+        lapply(
+            X = c(mandatory_fields, "02_data_input_1-data_type-data_type"),
+            FUN = function(i) {
+                observeEvent(input[[i]], {
+                    shinyjs::toggleState(
+                        id = "submit",
+                        condition = toggle_submit(mandatory_fields)
+                    )
+                })
+            }
+        )
+
+        # Helper function to determine if all mandatory fields are filled
+        toggle_submit <- function(mandatory_fields) {
+            mandatory_filled <-
+                vapply(
+                    mandatory_fields,
+                    function(x) {
+                        !is.null(input[[x]]) && input[[x]] != ""
+                    },
+                    logical(1)
+                )
+
+            mandatory_filled <- all(mandatory_filled)
+            return(mandatory_filled)
+        }
+
+        # Append additional extra taxa UI entries on each click of the namespaced "extra" button.
+        # Each appended block gets a unique wrapper id and its own remove button so users can
+        # remove any appended block individually.
+        extra_counter <- shiny::reactiveVal(0)
+        observeEvent(input$add_taxa, {
+            # increment counter
+            cnt <- extra_counter() + 1
+            extra_counter(cnt)
+
+            if (cnt < 8) {
+                # build ids (local id and namespaced wrapper id)
+                wrapper_local_id <- paste0("extra_wrapper_", cnt)
+                remove_btn_local_id <- paste0("remove_extra_", cnt)
+                wrapper_ns_id <- session$ns(wrapper_local_id)
+                container_sel <- paste0("#", session$ns("extra_container"))
+
+                # insert the new block at the end of the placeholder container
+                shiny::insertUI(
+                    selector = container_sel,
+                    where = "beforeEnd",
+                    ui = shiny::tags$div(
+                        id = wrapper_ns_id,
+                        extra_taxa_input_ui(
+                            ns(paste0("extra_taxa_", cnt)),
+                            label = survey_questions$other_taxa_1
+                        ),
+                        shiny::actionButton(
+                            ns(remove_btn_local_id),
+                            "Remove",
+                            class = "btn-danger btn-sm"
+                        )
+                    )
+                )
+
+                # create an observer to handle removal of this specific block when its Remove button is clicked
+                local({
+                    rid <- remove_btn_local_id
+                    wid <- wrapper_ns_id
+                    observeEvent(
+                        input[[rid]],
+                        {
+                            shiny::removeUI(selector = paste0("#", wid))
+                        },
+                        ignoreInit = TRUE,
+                        once = TRUE
+                    )
+                })
+            } else {
+                shiny::showNotification(
+                    "You cannot add any more taxa; please start a new entry if you have additional taxa to report.",
+                    type = "message"
+                )
+            }
+        })
+
+        # Make sure entries are valid before submitting
+        # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
+        observeEvent(input$submit, {
+            if (!isValidEmail(input$email)) {
+                shiny::showNotification(
+                    "Please enter a valid email address.",
+                    type = "warning"
+                )
+                break
+            }
+            if (
+                (!is.null(input$conductivity_mS) &&
+                    !is.na(input$conductivity_mS) &&
+                    (input$conductivity_mS < 200 ||
+                        input$conductivity_mS > 800)) ||
+                    (!is.null(input$temperature_C) &&
+                        !is.na(input$temperature_C) &&
+                        (input$temperature_C < 0 ||
+                            input$temperature_C > 35)) ||
+                    (!is.null(input$ammonia_ppm) &&
+                        !is.na(input$ammonia_ppm) &&
+                        (input$ammonia_ppm < 0 || input$ammonia_ppm > 2))
+            ) {
+                shiny::showNotification(
+                    "You have entered a value which we suspect may be an anomalous value. 
+                    If you are confident this is correct, please proceed with the submission 
+                    by leaving blank for now and email birminghamriverchampions@gmail.com.  
+                    If  your conductivity meter says mS you can simply multiply your value by 1000",
+                    type = "warning"
+                )
+                break
+            }
+            if (input$organisation == "") {
+                shiny::showNotification(
+                    "You need to provide an organisation to submit this entry.",
+                    type = "warning"
+                )
+                break
+            }
+            if (input$sampling_site == "") {
+                shiny::showNotification(
+                    "You need to provide a sampling site to submit this entry.",
+                    type = "warning"
+                )
+                break
+            }
+            if (input$survey_date == Sys.Date()) {
+                shiny::showNotification(
+                    "You've submitted today's date as the sampling date. Is that correct?",
+                    type = "warning"
+                )
+            }
+
+            # Check that the input data is valid and then submit if so
+            values <- shiny::isolate(values())
+            con <- DBI::dbConnect(
+                RSQLite::SQLite(),
+                "data.sqlite",
+                extended_types = TRUE
+            )
+            tbl <- current_table()
+            tbl_name <- data_types_bw[[which(names(data_types_bw) == tbl)]]
+
+            existing_data <- DBI::dbReadTable(con, tbl_name)
+
+            if (ncol(existing_data) == length(values)) {
+                # Ensure the new data has the same columns as the existing table
+                names(values) <- names(existing_data)
+                DBI::dbWriteTable(
+                    con,
+                    tbl,
+                    as.data.frame(values),
+                    append = TRUE
+                )
+            } else {
+                shiny::showNotification(
+                    "The data could not be submitted because the database structure has changed. Please contact the administrator.",
+                    type = "error"
+                )
+                break
+            }
+
+            DBI::dbDisconnect(con)
+
+            # If all checks pass, show a confirmation notification
+            shiny::showNotification(
+                "Your data has been submitted successfully. Thank you!",
+                type = "message"
             )
         })
 

@@ -11,6 +11,7 @@ An object of class \code{data.frame} with 42 rows and 3 columns.
 plot_breaks
 }
 \description{
-plot_breaks
+These are the breaks used for plotting water quality and ARMI data.
+They define the bins for categorizing readings into different levels.
 }
 \keyword{datasets}

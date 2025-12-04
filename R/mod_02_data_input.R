@@ -20,19 +20,11 @@ mod_02_data_input_ui <- function(id) {
         ))
       ),
       mainPanel(
+        shinyjs::useShinyjs(),
+        shinyjs::inlineCSS(appCSS),
         h3("Submit your entry using the form."),
         p(
           "Choose a data type on the left to reveal form fields for that table."
-        ),
-        shiny::conditionalPanel(
-          condition = "input.data_type == 'Urban Outfall Safari'",
-          tags$img(
-            src = "www/images/outfall.png",
-            width = 300,
-            height = 200,
-            alt = "Outfall flow options"
-          ),
-          ns = NS(id)
         ),
         # embed the auto-generated form for the chosen table
         mod_data_entry_form_ui(
@@ -58,12 +50,11 @@ mod_02_data_input_server <- function(id) {
 
     # when the form is submitted, get the values and show a brief notification
     observeEvent(form$submit(), {
-      vals <- form$values()
+      vals <- form$values
       if (is.null(vals)) {
         shiny::showNotification("No values to submit.", type = "warning")
         return()
       }
-
       # simple feedback - show how many fields submitted
       n <- length(vals)
       shiny::showNotification(

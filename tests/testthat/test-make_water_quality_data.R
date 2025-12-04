@@ -21,7 +21,7 @@ test_that("make_water_quality_data works", {
         LONG,
         LAT,
         sampling_site,
-        one_of(unlist(water_quality_bw)),
+        one_of(names(water_quality_bw)),
     ) |>
         pivot_longer(
             -c(

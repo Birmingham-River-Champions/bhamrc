@@ -4,7 +4,7 @@
 \alias{make_water_quality_plot_data}
 \title{make_water_quality_plot_data}
 \usage{
-make_water_quality_plot_data(water_quality_data, sampling_locs, plot_palette)
+make_water_quality_plot_data(water_quality_data, sampling_locs)
 }
 \arguments{
 \item{water_quality_data}{The cleaned water quality data}
