@@ -100,7 +100,7 @@ Documentation for all exported functions is included in the `man` folder in the 
 - `tests/testthat/` files:
 
 ### `golem` files
-This package was developed using `golem` and includes several files containing the name `golem` that were not modified. For more information on `golem`, see its documentation (here)[https://engineering-shiny.org/golem.html].
+This package was developed using `golem` and includes several files containing the name `golem` that were not modified. For more information on `golem`, see its documentation [here](https://engineering-shiny.org/golem.html).
 
 The `dev` folder contains three `R` scripts that document the process of creating the app from initialising it, developing the contents, and deploying it. 
 
