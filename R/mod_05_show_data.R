@@ -70,8 +70,7 @@ mod_05_show_data_server <- function(id) {
           select(-id) |>
           mutate(survey_date = lubridate::dmy(survey_date)) |>
           setNames(column_names[[survey()]])
-      },
-      editable = "cell"
+      }
     )
 
     onStop(function() {
@@ -89,31 +88,6 @@ mod_05_show_data_server <- function(id) {
           survey()
         )
         write.csv(data_to_download, file, row.names = FALSE)
-      }
-    )
-
-    # Watch for when the cells are edited
-    observeEvent(
-      input[[ns("entries_cell_clicked")]],
-      ignoreInit = TRUE,
-      {
-        # Read the data from the database, update the edited cell, and write it back to the database
-        output <- input[["mod_05_show_data_1-entries_cell_edit"]]
-        con <- dbConnect(
-          RSQLite::SQLite(),
-          "data.sqlite",
-          extended_types = TRUE
-        )
-        new_data <- dbReadTable(
-          con,
-          survey(),
-          editable = TRUE
-        )
-        edited_row <- output$entries_cell_edit$row
-        edited_col <- output$entries_cell_edit$col
-        new_data[edited_row, edited_col] <- output$entries_cell_edit$value
-
-        #populate_db(new_data, "riverflytest")
       }
     )
   })
