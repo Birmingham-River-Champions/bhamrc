@@ -17,7 +17,7 @@ Imports:
     DT,
     ggplot2,
     golem,
-    gsheet,
+    googlesheets4,
     hms,
     htmlwidgets,
     leaflet,
