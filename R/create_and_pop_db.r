@@ -54,9 +54,9 @@ db_create_and_pop <- function(
     populate_db(processed_data, table_name)
 
     # Put the created data into Google Sheets as well
-    googlesheets4::sheet_write(
-        ss = google_sheet_id,
-        data = processed_data,
-        sheet = data_type
-    )
+    # googlesheets4::sheet_write(
+    #     ss = google_sheet_id,
+    #     data = processed_data,
+    #     sheet = data_type
+    # )
 }

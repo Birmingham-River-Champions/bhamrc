@@ -2,8 +2,9 @@ Package: bhamrc
 Title: Birmingham River Champions
 Version: 0.0.0.9000
 Authors@R: c(
-    person("James", "White", , "AUTHOR@MAIL.COM", role = c("aut", "cre")),
-    person("Christine", "Stawitz", , "c.c.stawitz@bham.ac.uk", role = "aut")
+    person("James", "White", , "j.c.white.1@bham.ac.uk", role = c("aut", "cre")),
+    person("Christine", "Stawitz", , "c.c.stawitz@bham.ac.uk", role = "aut"),
+    person("Charlotte", "Rush", role = "aut")
   )
 Description: Birmingham River Champions is a package containing a Shiny application
   that allows users to upload and view citizen science data. These data include
@@ -18,13 +19,10 @@ Imports:
     ggplot2,
     golem,
     googlesheets4,
-    hms,
     htmlwidgets,
     leaflet,
     leafpop,
     lubridate,
-    markdown,
-    pkgload,
     purrr,
     RColorBrewer,
     RSQLite,
