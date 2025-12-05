@@ -177,7 +177,12 @@ mod_data_entry_form_server <- function(id, table_name) {
             sort(unique(locations_tbl_riverfly$sampling_site))
 
         # Columns in the riverfly table that should not have inputs created
-        cols_to_not_create <- c("id", "data_type", paste0("other_taxa_", 2:8))
+        cols_to_not_create <- c(
+            "id",
+            "data_type",
+            paste0("other_taxa_", 2:8),
+            "names_of_other_taxa"
+        )
 
         # List fields that should require the form to be greyed out if not completed.
         mandatory_fields <- c(
@@ -665,30 +670,32 @@ mod_data_entry_form_server <- function(id, table_name) {
                             new_row[1, colname] <- input[[colname]]
                         }
                     } else {
-                        shiny::showNotification(
-                            paste0(
-                                "The data could not be submitted because ",
-                                colname,
-                                " is not in the database. Please contact the administrator."
-                            ),
-                            type = "error"
-                        )
-                        break
+                        if (colname %not_in% cols_to_not_create) {
+                            browser()
+                            shiny::showNotification(
+                                paste0(
+                                    "The data could not be submitted because ",
+                                    colname,
+                                    " is not in the database. Please contact the administrator."
+                                ),
+                                type = "error"
+                            )
+                            break
+                        }
                     }
                 } else if (colname == "data_type") {
                     new_row[1, colname] <- tbl
                 } else {
                     shiny::showNotification(
                         paste0(
-                            "The data could not be submitted because ",
                             colname,
                             " is missing. Please contact the administrator."
                         ),
-                        type = "error"
+                        type = "warning"
                     )
                 }
             }
-
+            browser()
             if (ncol(existing_data) == length(new_row)) {
                 # Ensure the new data has the same columns as the existing table
                 names(new_row) <- names(existing_data)
@@ -697,6 +704,19 @@ mod_data_entry_form_server <- function(id, table_name) {
                     tbl,
                     new_row,
                     append = TRUE
+                )
+
+                # Put the data in the Google Sheet as well
+                googlesheets4::sheet_append(
+                    ss = google_sheet_id,
+                    data = as.data.frame(select(new_row, -id)),
+                    sheet = tbl
+                )
+
+                # If all checks pass, show a confirmation notification
+                shiny::showNotification(
+                    "Your data has been submitted successfully. Thank you!",
+                    type = "message"
                 )
             } else {
                 shiny::showNotification(
@@ -707,20 +727,7 @@ mod_data_entry_form_server <- function(id, table_name) {
             }
 
             DBI::dbDisconnect(con)
-
-            googlesheets4::sheet_append(
-                ss = google_sheet_id,
-                data = as.data.frame(new_row),
-                sheet = tbl_name
-            )
-
-            # If all checks pass, show a confirmation notification
-            shiny::showNotification(
-                "Your data has been submitted successfully. Thank you!",
-                type = "message"
-            )
         })
-
         list(
             values = values,
             submit = shiny::reactive(input$submit)
