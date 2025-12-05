@@ -54,7 +54,15 @@ mod_data_entry_form_server <- function(id, table_name) {
                 other_sphaeriidae = "TEXT",
                 other_acroloxidae_ancylidae = "TEXT",
                 other_bullhead = "TEXT",
-                other_taxa_1 = "TEXT"
+                other_taxa_1 = "TEXT",
+                other_taxa_2 = "TEXT",
+                other_taxa_3 = "TEXT",
+                other_taxa_4 = "TEXT",
+                other_taxa_5 = "TEXT",
+                other_taxa_6 = "TEXT",
+                other_taxa_7 = "TEXT",
+                other_taxa_8 = "TEXT",
+                names_of_other_taxa = "TEXT"
             ),
             water_quality = c(
                 organisation = "TEXT",
@@ -159,12 +167,30 @@ mod_data_entry_form_server <- function(id, table_name) {
         )
 
         DBI::dbDisconnect(con)
+
         # Get the organisation choices for riverfly for drop down list
         organisation_choices <-
             sort(unique(locations_tbl_riverfly$Organisation))
+
         # Get the sampling site choices for riverfly for drop down list
         site_choices_riverfly <-
             sort(unique(locations_tbl_riverfly$sampling_site))
+
+        # Columns in the riverfly table that should not have inputs created
+        cols_to_not_create <- c(
+            "id",
+            "data_type",
+            paste0("other_taxa_", 2:8),
+            "names_of_other_taxa"
+        )
+
+        # List fields that should require the form to be greyed out if not completed.
+        mandatory_fields <- c(
+            "organisation",
+            "sampling_site",
+            "survey_date",
+            "email"
+        )
 
         # helper to coerce table_name param to string
         current_table <- reactive({
@@ -231,7 +257,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                             site_choices_riverfly
                         )
                     )
-                } else if (column_name == "data_type") {} else if (
+                } else if (column_name %in% cols_to_not_create) {} else if (
                     type == "INTEGER"
                 ) {
                     shiny::numericInput(
@@ -433,14 +459,6 @@ mod_data_entry_form_server <- function(id, table_name) {
             )
         })
 
-        # List fields that should require the form to be greyed out if not completed.
-        mandatory_fields <- c(
-            "organisation",
-            "sampling_site",
-            "survey_date",
-            "email"
-        )
-
         # Add in the Urban Outfall Safari image if the outfall data type is selected
         # Use observe rather than observeEvent to catch changes in table selection
         observe({
@@ -551,6 +569,25 @@ mod_data_entry_form_server <- function(id, table_name) {
             }
         })
 
+        # reactive that returns named list of inputs when requested
+        values <- shiny::reactive({
+            tbl <- current_table()
+            if (is.null(tbl) || !tbl %in% names(cols)) {
+                return(NULL)
+            }
+
+            tbl_name <- data_types_bw[[which(names(data_types_bw) == tbl)]]
+            column_name <- names(cols[[tbl_name]])
+            out <- setNames(
+                vector("list", length(column_name)),
+                column_name
+            )
+            for (n in column_name) {
+                out[[n]] <- input[[n]]
+            }
+            out
+        })
+
         # Make sure entries are valid before submitting
         # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
         observeEvent(input$submit, {
@@ -616,49 +653,104 @@ mod_data_entry_form_server <- function(id, table_name) {
 
             existing_data <- DBI::dbReadTable(con, tbl_name)
 
-            if (ncol(existing_data) == length(values)) {
+            if (tbl_name == "outfall_safari") {
+                locations_data <- DBI::dbReadTable(con, "outfall_locs")
+            } else {
+                locations_data <- DBI::dbReadTable(con, "riverfly_locs")
+            }
+
+            # Check if the sampling site exists for the selected organisation
+            site_orgs <- paste(
+                input$organisation,
+                input$sampling_site
+            )
+            acceptable_site_orgs <- acceptable_locs(locations_data)
+            if (!(site_orgs %in% acceptable_site_orgs$identifiers)) {
+                shiny::showNotification(
+                    "The selected sampling site does not match the selected organisation. Please correct this before submitting.",
+                    type = "error"
+                )
+                DBI::dbDisconnect(con)
+                break
+            }
+
+            #Create an empty row to populate
+            new_row <- existing_data[0, ]
+            for (colname in names(cols[[tbl_name]])) {
+                if (not_null(input[[colname]])) {
+                    # Put entered value into new row at the appropriate column
+                    if (colname %in% names(existing_data)) {
+                        if (colname == "survey_date") {
+                            # If input is a date, convert to the desired format
+                            new_row[1, colname] <- paste(
+                                lubridate::day(input[[colname]]),
+                                lubridate::month(input[[colname]]),
+                                lubridate::year(input[[colname]]),
+                                sep = "/"
+                            )
+                        } else {
+                            new_row[1, colname] <- input[[colname]]
+                        }
+                    } else {
+                        if (colname %not_in% cols_to_not_create) {
+                            shiny::showNotification(
+                                paste0(
+                                    "The data could not be submitted because ",
+                                    colname,
+                                    " is not in the database. Please contact the administrator."
+                                ),
+                                type = "error"
+                            )
+
+                            break
+                        }
+                    }
+                } else if (colname == "data_type") {
+                    new_row[1, colname] <- tbl
+                } else if (colname %not_in% cols_to_not_create) {
+                    shiny::showNotification(
+                        paste0(
+                            colname,
+                            " is missing. Please contact the administrator."
+                        ),
+                        type = "warning"
+                    )
+                }
+            }
+
+            if (ncol(existing_data) == length(new_row)) {
                 # Ensure the new data has the same columns as the existing table
-                names(values) <- names(existing_data)
+                names(new_row) <- names(existing_data)
                 DBI::dbWriteTable(
                     con,
                     tbl,
-                    as.data.frame(values),
+                    new_row,
                     append = TRUE
+                )
+
+                # Put the data in the Google Sheet as well
+                googlesheets4::sheet_append(
+                    ss = google_sheet_id,
+                    data = as.data.frame(select(new_row, -id)),
+                    sheet = tbl
+                )
+
+                # If all checks pass, show a confirmation notification
+                shiny::showNotification(
+                    "Your data has been submitted successfully. Thank you!",
+                    type = "message"
                 )
             } else {
                 shiny::showNotification(
                     "The data could not be submitted because the database structure has changed. Please contact the administrator.",
                     type = "error"
                 )
+                DBI::dbDisconnect(con)
                 break
             }
 
             DBI::dbDisconnect(con)
-
-            # If all checks pass, show a confirmation notification
-            shiny::showNotification(
-                "Your data has been submitted successfully. Thank you!",
-                type = "message"
-            )
         })
-
-        # reactive that returns named list of inputs when requested
-        values <- shiny::reactive({
-            tbl <- current_table()
-            if (is.null(tbl) || !tbl %in% names(cols)) {
-                return(NULL)
-            }
-            column_name <- names(cols[[tbl]])
-            out <- setNames(
-                vector("list", length(column_name)),
-                column_name
-            )
-            for (n in column_name) {
-                out[[n]] <- input[[n]]
-            }
-            out
-        })
-
         list(
             values = values,
             submit = shiny::reactive(input$submit)

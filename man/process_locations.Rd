@@ -11,9 +11,14 @@ process_locations(
     "https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0"
 )
 }
+\arguments{
+\item{sampling_locs_url}{URL of the Google Sheet containing sampling locations.}
+
+\item{outfall_locs_url}{URL of the Google Sheet containing outfall locations.}
+}
 \value{
 The return value, if any, from executing the function.
 }
 \description{
-A fct function
+Processes the locations from the Google Sheets and creates location data frames
 }

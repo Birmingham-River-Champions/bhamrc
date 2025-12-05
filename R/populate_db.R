@@ -12,12 +12,10 @@ populate_db <- function(data_to_insert, table_name) {
 
     # Insert data into the table_name table
     # Assuming `data_to_insert` is a data frame with the appropriate columns
-    dbWriteTable(
-        con,
-        table_name,
-        data_to_insert,
-        append = TRUE,
-        row.names = FALSE
+    dbAppendTable(
+        conn = con,
+        name = table_name,
+        value = data.frame(data_to_insert)
     )
 
     # Disconnect from the database

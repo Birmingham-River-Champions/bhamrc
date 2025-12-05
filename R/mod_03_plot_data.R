@@ -178,6 +178,7 @@ mod_03_plot_data_server <- function(id) {
     updateMap <- function(input, output, session) {
       mapProxy <- leafletProxy("map")
       zoomLevel <- input$map_zoom
+
       clearMapLayers(mapProxy)
       mapProxy |> clearGroup("points")
       addPolygonsAndLines(mapProxy, zoomLevel)
@@ -256,14 +257,11 @@ mod_03_plot_data_server <- function(id) {
     observeEvent(
       {
         input$metric
-        input$tabs
         input$invasiveType
         input$readingType
-        input$score
         input$riverfly
         input$riverflySpecies
         input$otherSpecies
-        input$map_zoom
       },
       {
         updateMap(input, output, session)
