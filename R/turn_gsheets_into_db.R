@@ -23,7 +23,7 @@ turn_gsheets_into_db <- function(
         "outfall_safari",
         "invasive_species"
     ),
-    col_indices = c(4, 4, 5, 5)
+    col_indices = c(6, 6, 7, 7)
 ) {
     # Function to create the SQLite database and tables if they don't exist
     full_form_url <- "https://docs.google.com/spreadsheets/d/1458OWr2_x3vdM_LGAQaf0lcOWitO9LtnRm2GsAF_pys/edit?usp=sharing"

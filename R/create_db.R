@@ -14,7 +14,7 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
         "riverfly" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT,
+            "(id INTEGER PRIMARY KEY, email_address TEXT, timestamp TEXT, organisation TEXT, survey_date TEXT, data_type TEXT,
             sampling_site TEXT, cased_caddisfly TEXT, caseless_caddisfly TEXT,
             olive_mayfly TEXT, blue_winged_olive_mayfly TEXT,
             freshwater_shrimp TEXT, freshwater_hoglouse TEXT, blackfly_larvae TEXT, 
@@ -30,7 +30,7 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
         "water_quality" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, sampling_site TEXT, 
+            "(id INTEGER PRIMARY KEY, email_address TEXT, timestamp TEXT, organisation TEXT, survey_date TEXT, data_type TEXT, sampling_site TEXT, 
             conductivity_mS REAL, temperature_C REAL, ammonia_ppm REAL, phosphate_ppm REAL, 
             nitrate_ppm REAL, turbidity_NTU REAL, other_water_quality TEXT)"
         ),
@@ -43,7 +43,7 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
         "invasive_species" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, invasive_spp_sampling_date TEXT,
+            "(id INTEGER PRIMARY KEY, email_address TEXT, timestamp TEXT, organisation TEXT, survey_date TEXT, data_type TEXT, invasive_spp_sampling_date TEXT,
             sampling_site TEXT,
             invasive_spp_wtw TEXT, signal_crayfish TEXT, killer_demon_shrimp TEXT,
             himalayan_balsam TEXT, japanese_knotweed TEXT, giant_hogweed TEXT,
@@ -52,14 +52,14 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
         "outfall_safari" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT, outfall_survey_date TEXT,
+            "(id INTEGER PRIMARY KEY, email_address TEXT, timestamp TEXT, organisation TEXT, survey_date TEXT, data_type TEXT, outfall_survey_date TEXT,
             sampling_site TEXT, outfall_photo TEXT,
             outfall_flow TEXT, outfall_pollution_distance TEXT, outfall_aesthetics TEXT, other_pollution_description TEXT)"
         ),
         "riverflytest" = paste(
             "CREATE TABLE",
             table_name,
-            "(id INTEGER PRIMARY KEY, organisation TEXT, survey_date TEXT, data_type TEXT,
+            "(id INTEGER PRIMARY KEY, email_address TEXT, timestamp TEXT, organisation TEXT, survey_date TEXT, data_type TEXT,
             sampling_site TEXT, cased_caddisfly TEXT, caseless_caddisfly TEXT,
             olive_mayfly TEXT, blue_winged_olive_mayfly TEXT,
             freshwater_shrimp TEXT, freshwater_hoglouse TEXT, blackfly_larvae TEXT, 

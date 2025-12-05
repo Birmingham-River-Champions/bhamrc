@@ -19,7 +19,7 @@ db_create_and_pop <- function(
 ) {
     processed_data <- clean_data(
         input_df = full_form,
-        col_name_start = case_when(
+        case_when(
             data_type == "Urban Riverfly" ~ "data_type",
             data_type == "Water Quality" ~ "wq_sampling_site",
             data_type == "Invasive Species" ~ "invasive_spp_sampling_date",

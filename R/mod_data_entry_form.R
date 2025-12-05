@@ -652,6 +652,28 @@ mod_data_entry_form_server <- function(id, table_name) {
             tbl_name <- data_types_bw[[which(names(data_types_bw) == tbl)]]
 
             existing_data <- DBI::dbReadTable(con, tbl_name)
+
+            if (tbl_name == "outfall_safari") {
+                locations_data <- DBI::dbReadTable(con, "outfall_locs")
+            } else {
+                locations_data <- DBI::dbReadTable(con, "riverfly_locs")
+            }
+
+            # Check if the sampling site exists for the selected organisation
+            site_orgs <- paste(
+                input$organisation,
+                input$sampling_site
+            )
+            acceptable_site_orgs <- acceptable_locs(locations_data)
+            if (!(site_orgs %in% acceptable_site_orgs$identifiers)) {
+                shiny::showNotification(
+                    "The selected sampling site does not match the selected organisation. Please correct this before submitting.",
+                    type = "error"
+                )
+                DBI::dbDisconnect(con)
+                break
+            }
+
             #Create an empty row to populate
             new_row <- existing_data[0, ]
             for (colname in names(cols[[tbl_name]])) {
@@ -671,7 +693,6 @@ mod_data_entry_form_server <- function(id, table_name) {
                         }
                     } else {
                         if (colname %not_in% cols_to_not_create) {
-                            browser()
                             shiny::showNotification(
                                 paste0(
                                     "The data could not be submitted because ",
@@ -680,12 +701,13 @@ mod_data_entry_form_server <- function(id, table_name) {
                                 ),
                                 type = "error"
                             )
+
                             break
                         }
                     }
                 } else if (colname == "data_type") {
                     new_row[1, colname] <- tbl
-                } else {
+                } else if (colname %not_in% cols_to_not_create) {
                     shiny::showNotification(
                         paste0(
                             colname,
@@ -695,7 +717,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
                 }
             }
-            browser()
+
             if (ncol(existing_data) == length(new_row)) {
                 # Ensure the new data has the same columns as the existing table
                 names(new_row) <- names(existing_data)
@@ -723,6 +745,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                     "The data could not be submitted because the database structure has changed. Please contact the administrator.",
                     type = "error"
                 )
+                DBI::dbDisconnect(con)
                 break
             }
 

@@ -11,7 +11,7 @@ mod_05_show_data_ui <- function(id) {
   ns <- NS(id)
   sidebarLayout(
     sidebarPanel(
-      data_type_input_ui(ns("data_type"), which_data_types = c(1, 2, 3, 5))
+      data_type_input_ui(ns("data_type"), which_data_types = c(1, 2)) # To add more data types, change the vector here (add 3 for invasive species, add 5 for outfall safari)
     ),
     mainPanel(
       textOutput(ns("survey")),
@@ -56,7 +56,6 @@ mod_05_show_data_server <- function(id) {
       paste("Selected survey table:", survey())
     })
     output$table_name <- renderText(table_name())
-
     # Render the table from the SQL database
     output$entries <- DT::renderDT(
       {
@@ -67,7 +66,7 @@ mod_05_show_data_server <- function(id) {
           con,
           survey()
         ) |>
-          select(-id) |>
+          select(-id, -timestamp, -email_address) |>
           mutate(survey_date = lubridate::dmy(survey_date)) |>
           setNames(column_names[[survey()]])
       }
