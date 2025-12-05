@@ -27,7 +27,7 @@ db_create_and_pop <- function(
         ),
         col_name_end = case_when(
             data_type == "Urban Riverfly" ~ "names_of_other_taxa",
-            data_type == "Water Quality" ~ "turbidity_NTU",
+            data_type == "Water Quality" ~ "other_water_quality",
             data_type == "Invasive Species" ~ "any_other_invasive_spp",
             data_type == "Urban Outfall Safari" ~ "other_pollution_description"
         ),
@@ -52,4 +52,11 @@ db_create_and_pop <- function(
 
     # Populate the database tables with the cleaned data
     populate_db(processed_data, table_name)
+
+    # Put the created data into Google Sheets as well
+    googlesheets4::sheet_write(
+        ss = google_sheet_id,
+        data = processed_data,
+        sheet = data_type
+    )
 }

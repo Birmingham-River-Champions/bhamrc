@@ -695,7 +695,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 DBI::dbWriteTable(
                     con,
                     tbl,
-                    as.data.frame(values),
+                    new_row,
                     append = TRUE
                 )
             } else {
@@ -707,6 +707,12 @@ mod_data_entry_form_server <- function(id, table_name) {
             }
 
             DBI::dbDisconnect(con)
+
+            googlesheets4::sheet_append(
+                ss = google_sheet_id,
+                data = as.data.frame(new_row),
+                sheet = tbl_name
+            )
 
             # If all checks pass, show a confirmation notification
             shiny::showNotification(

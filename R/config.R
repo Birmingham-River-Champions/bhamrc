@@ -309,3 +309,7 @@ choices_list <- list(
         "Abundant (>33%)"
     )
 )
+
+# This is the ID for the new sheet with four separate tables
+google_sheet_id <-
+    "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?pli=1&gid=2035392267#gid=2035392267"
