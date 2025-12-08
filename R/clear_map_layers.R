@@ -4,13 +4,15 @@
 
 #' This function clears the map layers
 #' @param mapProxy A leaflet map proxy object.
-#' @importFrom leaflet clearMarkers clearControls clearGroup addPolygons addPolylines addCircleMarkers addPopups popupOptions pathOptions
+#' @importFrom leaflet clearMarkers clearControls clearGroup addPolygons addPolylines addCircleMarkers addPopups popupOptions pathOptions hideGroup
 #' @noRd
 clearMapLayers <- function(mapProxy) {
     mapProxy |>
-        clearMarkers() |>
         clearControls() |>
-        clearGroup("polygons") |>
-        clearGroup("lines") |>
-        clearGroup("points")
+        hideGroup("Riverfly points") |>
+        hideGroup("Invasive points") |>
+        hideGroup("Other spp points") |>
+        hideGroup("ARMI points") |>
+        hideGroup("Water Quality points")
+    print("Map layers cleared")
 }

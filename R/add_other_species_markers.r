@@ -10,7 +10,7 @@ addOtherSpeciesMarkers <- function(mapProxy, fullData, otherSpecies) {
         domain = levels(fullData$abundance),
         ordered = TRUE
     ) ##Abundance levels in opposite order here
-    mapProxy |> clearGroup("points") ##Did it this way originally for the legend so higher abundances were on top, but scrapped the legend as it covered plots for other input
+    mapProxy |> clearGroup("Other spp points") ##Did it this way originally for the legend so higher abundances were on top, but scrapped the legend as it covered plots for other input
     data <- fullData |>
         filter(!is.na(abundance))
     if (!(is.null(data)) && (nrow(data) > 0)) {
@@ -55,7 +55,7 @@ addOtherSpeciesMarkers <- function(mapProxy, fullData, otherSpecies) {
                 opacity = 0.5,
                 fill = TRUE,
                 fillOpacity = 1,
-                group = "points",
+                group = "Other spp points",
                 options = pathOptions(zIndex = 2)
             ) |>
             addLegend(
@@ -64,7 +64,7 @@ addOtherSpeciesMarkers <- function(mapProxy, fullData, otherSpecies) {
                 values = data$abundance,
                 title = "Abundance",
                 opacity = 0.75,
-                group = "points"
+                group = "Other spp points"
             )
     }
 }

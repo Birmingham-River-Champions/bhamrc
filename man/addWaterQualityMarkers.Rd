@@ -4,7 +4,7 @@
 \alias{addWaterQualityMarkers}
 \title{Add water quality markers to a Leaflet map proxy}
 \usage{
-addWaterQualityMarkers(mapProxy, wq_data_recent, wq_data, input)
+addWaterQualityMarkers(mapProxy, wq_data_recent, wq_data, metric, screen_width)
 }
 \arguments{
 \item{mapProxy}{A leaflet map proxy object.}

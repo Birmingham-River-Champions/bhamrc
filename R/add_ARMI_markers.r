@@ -3,12 +3,12 @@
 #' @param data A data frame containing the site-averaged recent ARMI data to be plotted.
 #' @param riverflyARMIData A data frame containing all ARMI data for generating the ggplot graphs.
 #' @param input The Shiny input object to access screen width for responsive popup sizing.
-#' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend
+#' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend showGroup
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot aes geom_point geom_line theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
-addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
+addARMIMarkers <- function(mapProxy, data, riverflyARMIData, screen_width) {
     breaks_vector <- filter(plot_breaks, reading_type == "ARMI") |>
         select(bin_breaks) |>
         unlist()
@@ -26,7 +26,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
         pal_name
     )
 
-    mapProxy |> clearGroup("points")
+    mapProxy |> clearGroup("ARMI points")
 
     if (!is.null(data) && nrow(data) > 0) {
         plotPopups <- function(i, popup_width) {
@@ -113,65 +113,63 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, input) {
         }
 
         # Adjust plot size based on screen width
-        observe({
-            if (!is.null(input$screen_width)) {
-                if (input$screen_width <= 480) {
-                    # For small screens like iPhones
-                    popup_width <- 300
-                    popup_height <- 250
-                } else if (input$screen_width <= 768) {
-                    # For tablets
-                    popup_width <- 400
-                    popup_height <- 275
-                } else {
-                    # For larger screens
-                    popup_width <- 600
-                    popup_height <- 350
-                }
+        if (!is.null(screen_width)) {
+            if (screen_width <= 480) {
+                # For small screens like iPhones
+                popup_width <- 300
+                popup_height <- 250
+            } else if (screen_width <= 768) {
+                # For tablets
+                popup_width <- 400
+                popup_height <- 275
             } else {
+                # For larger screens
                 popup_width <- 600
                 popup_height <- 350
             }
+        } else {
+            popup_width <- 600
+            popup_height <- 350
+        }
 
-            plots <- lapply(1:nrow(data), function(i) {
-                plotPopups(i, popup_width)
-            })
-
-            mapProxy |>
-                addCircleMarkers(
-                    data = data,
-                    lng = ~LONG,
-                    lat = ~LAT,
-                    radius = 6,
-                    weight = 2,
-                    fillColor = ~ pal(ARMI),
-                    color = "black",
-                    stroke = TRUE,
-                    opacity = 0.5,
-                    fill = TRUE,
-                    fillOpacity = 1,
-                    group = "points",
-                    popup = popupGraph(
-                        plots,
-                        width = popup_width,
-                        height = popup_height
-                    )
-                ) |>
-                addLegend(
-                    position = "topright",
-                    values = data$ARMI,
-                    colors = rev(pal_values[-length(pal_values)]),
-                    labels = rev(c(
-                        paste0("<", breaks_vector[2]),
-                        paste0(breaks_vector[2], " - ", breaks_vector[3]),
-                        paste0(breaks_vector[3], " - ", breaks_vector[4]),
-                        paste0(breaks_vector[4], " - ", breaks_vector[5]),
-                        paste0(">", breaks_vector[5])
-                    )),
-                    title = "ARMI Score",
-                    group = "points",
-                    opacity = 0.75
-                )
+        plots <- lapply(1:nrow(data), function(i) {
+            plotPopups(i, popup_width)
         })
+
+        mapProxy |>
+            addCircleMarkers(
+                data = data,
+                lng = ~LONG,
+                lat = ~LAT,
+                radius = 6,
+                weight = 2,
+                fillColor = ~ pal(ARMI),
+                color = "black",
+                stroke = TRUE,
+                opacity = 0.5,
+                fill = TRUE,
+                fillOpacity = 1,
+                group = "ARMI points",
+                popup = popupGraph(
+                    plots,
+                    width = popup_width,
+                    height = popup_height
+                )
+            ) |>
+            addLegend(
+                position = "topright",
+                values = data$ARMI,
+                colors = rev(pal_values[-length(pal_values)]),
+                labels = rev(c(
+                    paste0("<", breaks_vector[2]),
+                    paste0(breaks_vector[2], " - ", breaks_vector[3]),
+                    paste0(breaks_vector[3], " - ", breaks_vector[4]),
+                    paste0(breaks_vector[4], " - ", breaks_vector[5]),
+                    paste0(">", breaks_vector[5])
+                )),
+                title = "ARMI Score",
+                group = "ARMI points",
+                opacity = 0.75
+            )
     }
 }

@@ -14,9 +14,11 @@ addRiverflySpeciesMarkers <- function(
     data,
     riverflyspeciesData,
     taxaType,
-    input
+    screen_width
 ) {
-    mapProxy |> clearPopups() |> clearGroup("points")
+    mapProxy |>
+        clearPopups() |>
+        clearGroup("Riverfly points")
 
     riverflyspeciesData_Recent_Map <- data |>
         filter(taxa == taxaType) |>
@@ -29,8 +31,6 @@ addRiverflySpeciesMarkers <- function(
         ),
         domain = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
     )
-    # Clear existing points before adding new ones
-    mapProxy |> clearGroup("points")
 
     # If no records for the specific taxaType, display popup message
     if (nrow(riverflyspeciesData_Recent_Map) == 0) {
@@ -166,67 +166,65 @@ addRiverflySpeciesMarkers <- function(
             return(p)
         }
 
-        observe({
-            if (!is.null(input$screen_width)) {
-                if (input$screen_width <= 480) {
-                    popup_width <- 300
-                    popup_height <- 250
-                } else if (input$screen_width <= 768) {
-                    popup_width <- 400
-                    popup_height <- 275
-                } else {
-                    popup_width <- 600
-                    popup_height <- 350
-                }
+        if (!is.null(screen_width)) {
+            if (screen_width <= 480) {
+                popup_width <- 300
+                popup_height <- 250
+            } else if (screen_width <= 768) {
+                popup_width <- 400
+                popup_height <- 275
             } else {
                 popup_width <- 600
                 popup_height <- 350
             }
+        } else {
+            popup_width <- 600
+            popup_height <- 350
+        }
 
-            # Generate a plot for each marker based on the filtered data
-            plots <- lapply(
-                1:nrow(riverflyspeciesData_Recent_Map),
-                function(i) {
-                    plotPopups(i, popup_width)
-                }
-            )
+        # Generate a plot for each marker based on the filtered data
+        plots <- lapply(
+            1:nrow(riverflyspeciesData_Recent_Map),
+            function(i) {
+                plotPopups(i, popup_width)
+            }
+        )
 
-            # Add markers to the map using riverflyspeciesData_Recent_Map for points
-            mapProxy |>
-                addCircleMarkers(
-                    data = riverflyspeciesData_Recent_Map,
-                    lng = ~LONG,
-                    lat = ~LAT,
-                    radius = 6,
-                    weight = 2,
-                    fillColor = ~ pal(Riverfly_Species_Colour),
-                    color = "black",
-                    stroke = TRUE,
-                    opacity = 0.5,
-                    fill = TRUE,
-                    fillOpacity = 1,
-                    group = "points",
-                    popup = popupGraph(
-                        plots,
-                        width = popup_width,
-                        height = popup_height
-                    )
-                ) |>
-                addLegend(
-                    position = "topright",
-                    values = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour,
-                    colors = rev(brewer.pal(5, "Greys")),
-                    labels = rev(c(
-                        "0",
-                        "1-9",
-                        "10-99",
-                        "100-999",
-                        ">1000"
-                    )),
-                    title = "Abundance",
-                    opacity = 0.75,
-                    group = "points"
+        # Add markers to the map using riverflyspeciesData_Recent_Map for points
+        mapProxy |>
+            addCircleMarkers(
+                data = riverflyspeciesData_Recent_Map,
+                lng = ~LONG,
+                lat = ~LAT,
+                radius = 6,
+                weight = 2,
+                fillColor = ~ pal(Riverfly_Species_Colour),
+                color = "black",
+                stroke = TRUE,
+                opacity = 0.5,
+                fill = TRUE,
+                fillOpacity = 1,
+                group = "Riverfly points",
+                popup = popupGraph(
+                    plots,
+                    width = popup_width,
+                    height = popup_height
                 )
-        })
+            ) |>
+            addLegend(
+                position = "topright",
+                values = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour,
+                colors = rev(brewer.pal(5, "Greys")),
+                labels = rev(c(
+                    "0",
+                    "1-9",
+                    "10-99",
+                    "100-999",
+                    ">1000"
+                )),
+                title = "Abundance",
+                opacity = 0.75,
+                group = "Riverfly points"
+            )
     }
 }
