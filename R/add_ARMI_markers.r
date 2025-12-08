@@ -8,7 +8,7 @@
 #' @importFrom ggplot2 ggplot aes geom_point geom_line theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
-addARMIMarkers <- function(mapProxy, data, riverflyARMIData, screen_width) {
+addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
     breaks_vector <- filter(plot_breaks, reading_type == "ARMI") |>
         select(bin_breaks) |>
         unlist()
@@ -16,7 +16,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, screen_width) {
     pal_name <- "Blues"
     pal <- colorBin(
         palette = pal_name,
-        domain = data$ARMI,
+        domain = map_data$ARMI,
         bins = breaks_vector,
         pretty = FALSE
     )
@@ -28,16 +28,15 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, screen_width) {
 
     mapProxy |> clearGroup("ARMI points")
 
-    if (!is.null(data) && nrow(data) > 0) {
+    if (!is.null(map_data) && nrow(map_data) > 0) {
         plotPopups <- function(i, popup_width) {
-            site_id <- data$sampling_site[i]
-            organisation <- data$organisation[i]
+            site_id <- map_data$sampling_site[i]
+            organisation <- map_data$organisation[i]
 
-            riverflyARMIData_SiteID <- filter(
-                riverflyARMIData,
-                sampling_site == site_id
-            )
-            ##Some organisations don't sound right with "the" in front
+            # Get all ARMI data for this specific site
+            riverflyARMIData_SiteID <- popup_data[[site_id]]
+
+            # Some organisations don't sound right with "the" in front
             organisation <- if (
                 organisation != "Hall Green's Keepin' It Clean" &
                     organisation != "Birmingham Conservation Society"
@@ -132,13 +131,14 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, screen_width) {
             popup_height <- 350
         }
 
-        plots <- lapply(1:nrow(data), function(i) {
+        # Loop through the site-averaged map points and create a popup ggplot for each
+        plots <- lapply(1:nrow(map_data), function(i) {
             plotPopups(i, popup_width)
         })
 
         mapProxy |>
             addCircleMarkers(
-                data = data,
+                data = map_data,
                 lng = ~LONG,
                 lat = ~LAT,
                 radius = 6,
@@ -158,7 +158,7 @@ addARMIMarkers <- function(mapProxy, data, riverflyARMIData, screen_width) {
             ) |>
             addLegend(
                 position = "topright",
-                values = data$ARMI,
+                values = map_data$ARMI,
                 colors = rev(pal_values[-length(pal_values)]),
                 labels = rev(c(
                     paste0("<", breaks_vector[2]),

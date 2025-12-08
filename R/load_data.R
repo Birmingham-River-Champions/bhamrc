@@ -43,8 +43,8 @@ load_data <- function() {
         Riverfly_Species_Plot_Recent = Riverfly_Species_Plot_All[[2]],
         Riverfly_Other_Species_Plot = Riverfly_Species_Plot_All[[3]],
         Riverfly_Other_Species_Plot_Recent = Riverfly_Species_Plot_All[[4]],
-        riverflyARMISiteAv = riverflyARMIDataList[[2]],
-        Riverfly_ARMI_Plot = riverflyARMIDataList[[1]],
+        riverflyARMIMap = riverflyARMIDataList[[2]],
+        Riverfly_ARMI_Popups = riverflyARMIDataList[[1]],
         Unique_BRC_Sampling_Locs = Unique_BRC_Sampling_Locs,
         WQ_plot_data = WQ_plot_data
     ))

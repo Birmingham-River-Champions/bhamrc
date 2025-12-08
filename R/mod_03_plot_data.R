@@ -169,8 +169,8 @@ mod_03_plot_data_server <- function(id) {
         print("adding ARMI markers")
         mapProxy |>
           addARMIMarkers(
-            data = riverflyARMISiteAv,
-            riverflyARMIData = Riverfly_ARMI_Plot,
+            map_data = riverflyARMIMap,
+            popup_data = Riverfly_ARMI_Popups,
             screen_width = screen_width()
           ) |>
           showGroup("ARMI points")
