@@ -56,6 +56,11 @@ data_types_bw <- list(
     "Urban Outfall Safari" = "outfall_safari"
 )
 
+unspecified_bw <- setNames(
+    paste0("Other Unspecified ", 1:8),
+    paste0("other_unspecified_", 1:8)
+)
+
 # Custom column names for displaying data tables
 column_names <- list(
     "riverfly" = c(
@@ -64,7 +69,9 @@ column_names <- list(
         data_type = "Data Type",
         sampling_site = "Sampling Site",
         riverfly_spp_bw,
-        other_spp_bw
+        other_spp_bw,
+        unspecified_bw,
+        names_of_other_taxa = "Names of Other Taxa"
     ),
     "water_quality" = c(
         organisation = "Organisation",
@@ -303,3 +310,7 @@ choices_list <- list(
         "Abundant (>33%)"
     )
 )
+
+# This is the ID for the new sheet with four separate tables
+google_sheet_id <-
+    "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?pli=1&gid=2035392267#gid=2035392267"
