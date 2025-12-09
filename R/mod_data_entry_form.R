@@ -54,14 +54,14 @@ mod_data_entry_form_server <- function(id, table_name) {
                 other_sphaeriidae = "TEXT",
                 other_acroloxidae_ancylidae = "TEXT",
                 other_bullhead = "TEXT",
-                other_taxa_1 = "TEXT",
-                other_taxa_2 = "TEXT",
-                other_taxa_3 = "TEXT",
-                other_taxa_4 = "TEXT",
-                other_taxa_5 = "TEXT",
-                other_taxa_6 = "TEXT",
-                other_taxa_7 = "TEXT",
-                other_taxa_8 = "TEXT",
+                other_unspecified_1 = "TEXT",
+                other_unspecified_2 = "TEXT",
+                other_unspecified_3 = "TEXT",
+                other_unspecified_4 = "TEXT",
+                other_unspecified_5 = "TEXT",
+                other_unspecified_6 = "TEXT",
+                other_unspecified_7 = "TEXT",
+                other_unspecified_8 = "TEXT",
                 names_of_other_taxa = "TEXT"
             ),
             water_quality = c(
@@ -180,7 +180,7 @@ mod_data_entry_form_server <- function(id, table_name) {
         cols_to_not_create <- c(
             "id",
             "data_type",
-            paste0("other_taxa_", 2:8),
+            paste0("other_unspecified_", 2:8),
             "names_of_other_taxa"
         )
 
@@ -314,11 +314,11 @@ mod_data_entry_form_server <- function(id, table_name) {
                         selected = "0",
                         inline = TRUE
                     )
-                } else if (column_name == "other_taxa_1") {
+                } else if (column_name == "other_unspecified_1") {
                     shiny::tagList(
                         extra_taxa_input_ui(
-                            ns("extra_taxa_1"),
-                            label = survey_questions$other_taxa_1
+                            ns("other_unspecified_1"),
+                            label = survey_questions$other_unspecified_1
                         ),
                         shiny::actionButton(
                             ns("add_taxa"),
@@ -517,13 +517,13 @@ mod_data_entry_form_server <- function(id, table_name) {
         # Append additional extra taxa UI entries on each click of the namespaced "extra" button.
         # Each appended block gets a unique wrapper id and its own remove button so users can
         # remove any appended block individually.
-        extra_counter <- shiny::reactiveVal(0)
+        extra_counter <- shiny::reactiveVal(1)
         observeEvent(input$add_taxa, {
             # increment counter
             cnt <- extra_counter() + 1
             extra_counter(cnt)
 
-            if (cnt < 8) {
+            if (cnt < 9) {
                 # build ids (local id and namespaced wrapper id)
                 wrapper_local_id <- paste0("extra_wrapper_", cnt)
                 remove_btn_local_id <- paste0("remove_extra_", cnt)
@@ -537,8 +537,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                     ui = shiny::tags$div(
                         id = wrapper_ns_id,
                         extra_taxa_input_ui(
-                            ns(paste0("extra_taxa_", cnt)),
-                            label = survey_questions$other_taxa_1
+                            ns(paste0("other_unspecified_", cnt)),
+                            label = survey_questions$other_unspecified_1
                         ),
                         shiny::actionButton(
                             ns(remove_btn_local_id),
@@ -598,7 +598,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                     "Please enter a valid email address.",
                     type = "warning"
                 )
-                allow_submit <- FALSE
+                allow_submit(FALSE)
             }
             if (
                 (!is.null(input$conductivity_mS) &&
@@ -620,21 +620,21 @@ mod_data_entry_form_server <- function(id, table_name) {
                     If  your conductivity meter says mS you can simply multiply your value by 1000",
                     type = "warning"
                 )
-                allow_submit <- FALSE
+                allow_submit(FALSE)
             }
             if (input$organisation == "") {
                 shiny::showNotification(
                     "You need to provide an organisation to submit this entry.",
                     type = "warning"
                 )
-                allow_submit <- FALSE
+                allow_submit(FALSE)
             }
             if (input$sampling_site == "") {
                 shiny::showNotification(
                     "You need to provide a sampling site to submit this entry.",
                     type = "warning"
                 )
-                allow_submit <- FALSE
+                allow_submit(FALSE)
             }
             if (input$survey_date == Sys.Date()) {
                 shiny::showNotification(
@@ -672,11 +672,14 @@ mod_data_entry_form_server <- function(id, table_name) {
                     "The selected sampling site does not match the selected organisation. Please correct this before submitting.",
                     type = "error"
                 )
-                allow_submit <- FALSE
+                allow_submit(FALSE)
             }
 
             #Create an empty row to populate
             new_row <- existing_data[0, ]
+            other_taxa_names <- c()
+
+            # Loop through the fields and add the data to new_row
             for (colname in names(cols[[tbl_name]])) {
                 if (not_null(input[[colname]])) {
                     # Put entered value into new row at the appropriate column
@@ -702,11 +705,31 @@ mod_data_entry_form_server <- function(id, table_name) {
                                 ),
                                 type = "error"
                             )
-                            allow_submit <- FALSE
+                            allow_submit(FALSE)
                         }
                     }
                 } else if (colname == "data_type") {
                     new_row[1, colname] <- tbl
+                } else if (grepl("other_unspecified", colname)) {
+                    # Handle extra taxa inputs
+                    other_input_id <- paste0(
+                        colname,
+                        "-taxa_abundance"
+                    )
+                    other_taxa_name <- paste0(
+                        colname,
+                        "-taxa_text"
+                    )
+                    if (not_null(input[[other_input_id]])) {
+                        new_row[1, colname] <- input[[other_input_id]]
+                    }
+                    if (not_null(input[[other_taxa_name]])) {
+                        other_taxa_names <- paste(
+                            input[[other_taxa_name]],
+                            other_taxa_names,
+                            sep = "; "
+                        )
+                    }
                 } else if (colname %not_in% cols_to_not_create) {
                     shiny::showNotification(
                         paste0(
@@ -717,7 +740,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
                 }
             }
-            if (allow_submit) {
+            if (allow_submit()) {
+                newrow$names_of_other_taxa <- other_taxa_names
                 if (ncol(existing_data) == length(new_row)) {
                     # Ensure the new data has the same columns as the existing table
                     names(new_row) <- names(existing_data)
@@ -745,7 +769,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         "The data could not be submitted because the database structure has changed. Please contact the administrator.",
                         type = "error"
                     )
-                    allow_submit <- FALSE
+                    allow_submit(FALSE)
                 }
 
                 DBI::dbDisconnect(con)
