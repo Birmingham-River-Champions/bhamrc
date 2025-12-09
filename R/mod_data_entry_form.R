@@ -588,6 +588,8 @@ mod_data_entry_form_server <- function(id, table_name) {
             out
         })
 
+        allow_submit <- shiny::reactiveVal(TRUE)
+
         # Make sure entries are valid before submitting
         # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
         observeEvent(input$submit, {
@@ -596,7 +598,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                     "Please enter a valid email address.",
                     type = "warning"
                 )
-                break
+                allow_submit <- FALSE
             }
             if (
                 (!is.null(input$conductivity_mS) &&
@@ -618,21 +620,21 @@ mod_data_entry_form_server <- function(id, table_name) {
                     If  your conductivity meter says mS you can simply multiply your value by 1000",
                     type = "warning"
                 )
-                break
+                allow_submit <- FALSE
             }
             if (input$organisation == "") {
                 shiny::showNotification(
                     "You need to provide an organisation to submit this entry.",
                     type = "warning"
                 )
-                break
+                allow_submit <- FALSE
             }
             if (input$sampling_site == "") {
                 shiny::showNotification(
                     "You need to provide a sampling site to submit this entry.",
                     type = "warning"
                 )
-                break
+                allow_submit <- FALSE
             }
             if (input$survey_date == Sys.Date()) {
                 shiny::showNotification(
@@ -670,8 +672,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                     "The selected sampling site does not match the selected organisation. Please correct this before submitting.",
                     type = "error"
                 )
-                DBI::dbDisconnect(con)
-                break
+                allow_submit <- FALSE
             }
 
             #Create an empty row to populate
@@ -701,8 +702,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                                 ),
                                 type = "error"
                             )
-
-                            break
+                            allow_submit <- FALSE
                         }
                     }
                 } else if (colname == "data_type") {
@@ -717,39 +717,39 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
                 }
             }
+            if (allow_submit) {
+                if (ncol(existing_data) == length(new_row)) {
+                    # Ensure the new data has the same columns as the existing table
+                    names(new_row) <- names(existing_data)
+                    DBI::dbWriteTable(
+                        con,
+                        tbl,
+                        new_row,
+                        append = TRUE
+                    )
 
-            if (ncol(existing_data) == length(new_row)) {
-                # Ensure the new data has the same columns as the existing table
-                names(new_row) <- names(existing_data)
-                DBI::dbWriteTable(
-                    con,
-                    tbl,
-                    new_row,
-                    append = TRUE
-                )
+                    # Put the data in the Google Sheet as well
+                    googlesheets4::sheet_append(
+                        ss = google_sheet_id,
+                        data = as.data.frame(select(new_row, -id)),
+                        sheet = tbl
+                    )
 
-                # Put the data in the Google Sheet as well
-                googlesheets4::sheet_append(
-                    ss = google_sheet_id,
-                    data = as.data.frame(select(new_row, -id)),
-                    sheet = tbl
-                )
+                    # If all checks pass, show a confirmation notification
+                    shiny::showNotification(
+                        "Your data has been submitted successfully. Thank you!",
+                        type = "message"
+                    )
+                } else {
+                    shiny::showNotification(
+                        "The data could not be submitted because the database structure has changed. Please contact the administrator.",
+                        type = "error"
+                    )
+                    allow_submit <- FALSE
+                }
 
-                # If all checks pass, show a confirmation notification
-                shiny::showNotification(
-                    "Your data has been submitted successfully. Thank you!",
-                    type = "message"
-                )
-            } else {
-                shiny::showNotification(
-                    "The data could not be submitted because the database structure has changed. Please contact the administrator.",
-                    type = "error"
-                )
                 DBI::dbDisconnect(con)
-                break
             }
-
-            DBI::dbDisconnect(con)
         })
         list(
             values = values,
