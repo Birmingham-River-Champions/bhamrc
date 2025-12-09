@@ -36,7 +36,7 @@ make_water_quality_plot_data <- function(
             LONG,
             LAT,
             sampling_site,
-            one_of(unlist(water_quality_bw))
+            one_of(names(water_quality_bw))
         ) |>
         tidyr::pivot_longer(
             cols = -c(organisation, survey_date, sampling_site, LONG, LAT)

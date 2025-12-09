@@ -40,12 +40,12 @@ other_spp_bw <- list(
 )
 
 water_quality_bw <- list(
-    "Conductivity (\u03BCS)" = "conductivity_mS",
-    "Temperature (\u00B0C)" = "temperature_C",
-    "Ammonia (ppm)" = "ammonia_ppm",
-    "Phosphate (ppm)" = "phosphate_ppm",
-    "Nitrate (ppm)" = "nitrate_ppm",
-    "Turbidity (NTU)" = "turbidity_NTU"
+    "conductivity_mS" = "Conductivity (\u03BCS)",
+    "temperature_C" = "Temperature (\u00B0C)",
+    "ammonia_ppm" = "Ammonia (ppm)",
+    "phosphate_ppm" = "Phosphate (ppm)",
+    "nitrate_ppm" = "Nitrate (ppm)",
+    "turbidity_NTU" = "Turbidity (NTU)"
 )
 
 data_types_bw <- list(
@@ -56,10 +56,68 @@ data_types_bw <- list(
     "Urban Outfall Safari" = "outfall_safari"
 )
 
+unspecified_bw <- setNames(
+    paste0("Other Unspecified ", 1:8),
+    paste0("other_unspecified_", 1:8)
+)
+
+# Custom column names for displaying data tables
+column_names <- list(
+    "riverfly" = c(
+        organisation = "Organisation",
+        survey_date = "Survey Date",
+        data_type = "Data Type",
+        sampling_site = "Sampling Site",
+        riverfly_spp_bw,
+        other_spp_bw,
+        unspecified_bw,
+        names_of_other_taxa = "Names of Other Taxa"
+    ),
+    "water_quality" = c(
+        organisation = "Organisation",
+        survey_date = "Survey Date",
+        data_type = "Data Type",
+        sampling_site = "Sampling Site",
+        water_quality_bw,
+        other_water_quality = "Other Water Quality Comments"
+    ),
+    "invasive_species" = c(
+        organisation = "Organisation",
+        survey_date = "Survey Date",
+        data_type = "Data Type",
+        invasive_spp_sampling_date = "Invasive Species Sampling Date",
+        sampling_site = "Sampling Site",
+        invasive_spp_wtw = "What3Words Location",
+        signal_crayfish = "Signal Crayfish Count",
+        killer_demon_shrimp = "Killer/Demon Shrimp Count",
+        himalayan_balsam = "Himalayan Balsam Prevalence",
+        japanese_knotweed = "Japanese Knotweed Prevalence",
+        giant_hogweed = "Giant Hogweed Prevalence",
+        any_other_invasive_spp = "Any Other Invasive Species"
+    ),
+    "outfall_safari" = c(
+        organisation = "Organisation",
+        survey_date = "Survey Date",
+        data_type = "Data Type",
+        outfall_survey_date = "Outfall Survey Date",
+        sampling_site = "Sampling Site",
+        outfall_photo = "Outfall Photo Uploaded",
+        outfall_flow = "Outfall Flow",
+        outfall_pollution_distance = "Outfall Pollution Distance",
+        outfall_aesthetics = "Outfall Aesthetics",
+        other_pollution_description = "Other Pollution Description"
+    )
+)
+
 setNames(names(riverfly_spp_bw), riverfly_spp_bw)
 setNames(names(other_spp_bw), other_spp_bw)
+setNames(names(water_quality_bw), water_quality_bw)
 
+#Palette to avoid duplication for blues plots
 palette_for_leaflet <- RColorBrewer::brewer.pal(n = 9, name = "Blues")
+
+# CSS to make required fields have a red star
+appCSS <- ".mandatory_star { color: red; }"
 
 #' plot_breaks
 #'
@@ -161,13 +219,11 @@ survey_questions <- list(
     nitrate_ppm = "Nitrate (ppm)",
     turbidity_NTU = "Turbidity (NTU)",
     other_water_quality = "Other comments on water quality",
-    invasive_spp_sampling_date = "Date of observation",
     invasive_spp_wtw = "What.three.words location of invasive species seen 'out and about' - (separate with period - e.g., \"above.awake.nature\") If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified). Click on other nearby squares if the GPS isn't accurate enough.",
     killer_demon_shrimp = "Number of killer / demon shrimp counted in a kick sample - leave blank if 0",
     signal_crayfish = "Number of signal crayfish counted in a kick sample / observed on riverbed - leave blank if 0",
-    outfall_survey_date = "Date of survey",
-    sampling_site = "Outfall ID",
-    outfall_photo = "Have you uploaded a photo of the outfall <a href = 'https://www.dropbox.com/request/J0BAKMCneqB698oF7xJD'>here</a> (please use the <b>outfall location ID</b> as the picture caption)?",
+    outfall_photo = "Have you uploaded a photo of the outfall <a href = 'https://www.dropbox.com/request/J0BAKMCneqB698oF7xJD'>here</a>
+     (please use the <b>outfall location ID</b> as the picture caption)? <font color='red'>*</font>",
     outfall_flow = "Flow from outfall",
     outfall_pollution_distance = "Pollution distance downstream from the outfall",
     outfall_aesthetics = "Outfall aesthetics",
@@ -181,8 +237,10 @@ survey_questions <- list(
     other_taxa_1 = "Additional taxa not in Urban Riverfly. If 'other taxa', please specify the name and abundance below."
 )
 
+
+#' Text for the choices for water quality, outfall, and abundance form inputs.
 choices_list <- list(
-    phosphate_ppm = c(
+    "Phosphate (ppm)" = c(
         "Not measured",
         0.02,
         0.05,
@@ -191,7 +249,7 @@ choices_list <- list(
         0.5,
         1
     ),
-    nitrate_ppm = c(
+    "Nitrate (ppm)" = c(
         "Not measured",
         0.2,
         0.5,
@@ -200,7 +258,7 @@ choices_list <- list(
         5,
         10
     ),
-    turbidity_NTU = c(
+    "Turbidity (NTU)" = c(
         "Not measured",
         14,
         15,
@@ -238,12 +296,21 @@ choices_list <- list(
         "Mild smell, mild discolouration, small coverage of grey fungus",
         "Strong smell, strong discolouration, large coverage of grey fungus and/or litter",
         "Gross smell, gross sewage"
+    ),
+    abundance = c(
+        "0",
+        "1-9",
+        "10-99",
+        "100 - 999",
+        "1000+"
+    ),
+    invasive_flora = c(
+        "Not observed",
+        "Present (1-33%)",
+        "Abundant (>33%)"
     )
 )
-abundance_choices <- c(
-    "0",
-    "1-9",
-    "10-99",
-    "100 - 999",
-    "1000+"
-)
+
+# This is the ID for the new sheet with four separate tables
+google_sheet_id <-
+    "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?pli=1&gid=2035392267#gid=2035392267"

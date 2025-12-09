@@ -41,6 +41,16 @@ golem::add_any_file("file.json")
 ## If you have data in your package
 usethis::use_data_raw(name = "data_20250922", open = FALSE)
 
+## Create Google Sheets tables
+googlesheets4::gs4_create(
+    name = "River Champions Data Entry",
+    sheets = c(
+        "Urban Riverfly",
+        "Water Quality",
+        "Invasive Species",
+        "Urban Outfall Safari"
+    )
+)
 
 ## Tests ----
 ## Add one line by test you want to create

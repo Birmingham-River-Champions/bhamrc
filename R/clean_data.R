@@ -29,6 +29,8 @@ clean_data <- function(
     cleaned_df <- input_df |>
         #First select columns from col_name_start -> col_name_end
         dplyr::select(
+            timestamp,
+            email_address,
             organisation,
             survey_date,
             data_type,

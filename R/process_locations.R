@@ -1,19 +1,26 @@
 #' process_locations
 #'
-#' @description A fct function
+#' @description Processes the locations from the Google Sheets and creates location data frames
 #'
+#' @param sampling_locs_url URL of the Google Sheet containing sampling locations.
+#' @param outfall_locs_url URL of the Google Sheet containing outfall locations.
 #' @return The return value, if any, from executing the function.
 #' @importFrom dplyr bind_cols rename rename_with select contains
+#' @importFrom sf st_as_sf st_transform st_coordinates
+#' @importFrom googlesheets4 read_sheet
+#' @export
 process_locations <- function(
     sampling_locs_url = 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing',
     outfall_locs_url = 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
 ) {
     #Then bring in the locations of all of the known eco/WQ sampling points - BRC project team can be used for any site
-    BRC_Sampling_Locs_raw <- as.data.frame(gsheet::gsheet2tbl(
+    BRC_Sampling_Locs_raw <- as.data.frame(googlesheets4::read_sheet(
         sampling_locs_url
     ))
     #And the same for Urban Outfall Safari locations - BRC project team can be used for any site
-    BRC_Outfall_Locs_raw <- as.data.frame(gsheet::gsheet2tbl(outfall_locs_url))
+    BRC_Outfall_Locs_raw <- as.data.frame(googlesheets4::read_sheet(
+        outfall_locs_url
+    ))
     ##Was going to do invasive species separate with what3words, but code was a nightmare. Use BRC sampling sites, and in future
     ##convert what3words manually on grid reference finder and then label this as something like "Sighting 'out and about'"
 
