@@ -59,3 +59,22 @@ rsconnect::deployApp(
   lint = FALSE,
   forceUpdate = TRUE
 )
+
+## authentication with gargle
+# You will need a .secrets folder in your working directory
+# containing the token for your Google account.
+options(gargle_oauth_cache = ".secrets")
+
+# This authenticates as your google account
+googlesheets4::gs4_auth()
+This
+authenticates
+using
+a
+service
+account
+JSON
+file
+googlesheets4::gs4_auth(
+  path = ".secrets/birminghamriverchampions-1b4a4b469009.json"
+)

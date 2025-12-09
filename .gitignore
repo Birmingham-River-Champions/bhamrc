@@ -4,6 +4,7 @@
 .httr-oauth
 .DS_Store
 .quarto
+.secrets
 *.png
 *.pdf
 *.jpg
@@ -20,3 +21,4 @@
 *.vscode
 .radian_profile
 data.sqlite
+.secrets

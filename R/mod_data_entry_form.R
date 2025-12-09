@@ -709,7 +709,10 @@ mod_data_entry_form_server <- function(id, table_name) {
                         }
                     }
                 } else if (colname == "data_type") {
-                    new_row[1, colname] <- tbl
+                    new_row[1, colname] <- paste(
+                        tbl,
+                        "(can access other surveys below if needed)"
+                    )
                 } else if (grepl("other_unspecified", colname)) {
                     # Handle extra taxa inputs
                     other_input_id <- paste0(
@@ -741,13 +744,13 @@ mod_data_entry_form_server <- function(id, table_name) {
                 }
             }
             if (allow_submit()) {
-                newrow$names_of_other_taxa <- other_taxa_names
+                new_row$names_of_other_taxa <- other_taxa_names
                 if (ncol(existing_data) == length(new_row)) {
                     # Ensure the new data has the same columns as the existing table
                     names(new_row) <- names(existing_data)
                     DBI::dbWriteTable(
                         con,
-                        tbl,
+                        tbl_name,
                         new_row,
                         append = TRUE
                     )
