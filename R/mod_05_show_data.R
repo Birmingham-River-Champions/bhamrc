@@ -11,11 +11,12 @@ mod_05_show_data_ui <- function(id) {
   ns <- NS(id)
   sidebarLayout(
     sidebarPanel(
-      data_type_input_ui(ns("data_type"), which_data_types = c(1, 2, 3, 4, 5))
+      data_type_input_ui(ns("data_type"), which_data_types = c(1, 2)) # To add more data types, change the vector here (add 3 for invasive species, add 5 for outfall safari)
     ),
     mainPanel(
       textOutput(ns("survey")),
       textOutput(ns("table_name")),
+      downloadButton(ns("download_data"), "Download Data"),
       DT::DTOutput(ns("entries"))
     )
   )
@@ -43,6 +44,9 @@ mod_05_show_data_server <- function(id) {
         },
         "Invasive Species" = {
           "invasive_species"
+        },
+        "Urban Outfall Safari" = {
+          "outfall_safari"
         }
       )
     })
@@ -52,17 +56,39 @@ mod_05_show_data_server <- function(id) {
       paste("Selected survey table:", survey())
     })
     output$table_name <- renderText(table_name())
-
-    output$entries <- DT::renderDT({
-      dbReadTable(
-        con,
-        survey()
-      )
-    })
+    # Render the table from the SQL database
+    output$entries <- DT::renderDT(
+      {
+        # Retrieve data based on chosen survey
+        # Remove id column and convert date columns before displaying
+        # Fix column names for display
+        dbReadTable(
+          con,
+          survey()
+        ) |>
+          select(-id, -timestamp, -email_address) |>
+          mutate(survey_date = lubridate::dmy(survey_date)) |>
+          setNames(column_names[[survey()]])
+      }
+    )
 
     onStop(function() {
       dbDisconnect(con)
     })
+
+    # Create download handler to download the data when clicked
+    output$download_data <- downloadHandler(
+      filename = function() {
+        paste0(survey(), "_data.csv")
+      },
+      content = function(file) {
+        data_to_download <- dbReadTable(
+          con,
+          survey()
+        )
+        write.csv(data_to_download, file, row.names = FALSE)
+      }
+    )
   })
 }
 

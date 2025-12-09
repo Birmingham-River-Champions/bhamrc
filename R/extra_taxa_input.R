@@ -21,7 +21,7 @@ extra_taxa_input_ui <- function(
         shiny::radioButtons(
             ns("taxa_abundance"),
             label = label,
-            choices = abundance_choices,
+            choices = choices_list$abundance,
             selected = "0",
             inline = TRUE
         )
