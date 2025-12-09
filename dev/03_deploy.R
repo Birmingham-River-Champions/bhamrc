@@ -67,14 +67,7 @@ options(gargle_oauth_cache = ".secrets")
 
 # This authenticates as your google account
 googlesheets4::gs4_auth()
-This
-authenticates
-using
-a
-service
-account
-JSON
-file
+# This authenticates using a service account JSON file
 googlesheets4::gs4_auth(
   path = ".secrets/birminghamriverchampions-1b4a4b469009.json"
 )

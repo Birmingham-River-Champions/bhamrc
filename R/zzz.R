@@ -2,8 +2,8 @@
     options(bhamrc.dbname = "data.sqlite")
 
     # Initialize and populate db when package is loaded
-    if (!rlang::is_interactive()) {
-        googlesheets4::gs4_deauth()
-    }
+    googlesheets4::gs4_auth(
+        path = ".secrets/birminghamriverchampions-1b4a4b469009.json"
+    )
     turn_gsheets_into_db()
 }
