@@ -128,7 +128,7 @@ addInvasiveSpeciesMarkers <- function(
                 values = data_filtered$abundance,
                 title = "Abundance",
                 opacity = 0.75,
-                group = "Invasive points"
+                group = "legend"
             )
     } else {
         # If no records, add a popup message in the center of the map

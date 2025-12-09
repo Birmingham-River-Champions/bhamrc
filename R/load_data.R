@@ -34,6 +34,13 @@ load_data <- function() {
         Unique_BRC_Sampling_Locs
     )
 
+    plot_palette <- brewer.pal(n = 9, name = "Blues")
+
+    BRCInvSpcs_Plot_Recent <- make_recent_inv_spp(
+        BRCInvSpcs,
+        BRC_locs,
+        plot_palette
+    )
     return(list(
         riverfly_data = riverfly_data,
         BRCInvSpcs = BRCInvSpcs,
@@ -46,6 +53,7 @@ load_data <- function() {
         riverflyARMIMap = riverflyARMIDataList[[2]],
         Riverfly_ARMI_Popups = riverflyARMIDataList[[1]],
         Unique_BRC_Sampling_Locs = Unique_BRC_Sampling_Locs,
-        WQ_plot_data = WQ_plot_data
+        WQ_plot_data = WQ_plot_data,
+        BRCInvSpcs_Plot_Recent = BRCInvSpcs_Plot_Recent
     ))
 }

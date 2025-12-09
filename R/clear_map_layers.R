@@ -9,10 +9,11 @@
 clearMapLayers <- function(mapProxy) {
     mapProxy |>
         clearControls() |>
-        hideGroup("Riverfly points") |>
-        hideGroup("Invasive points") |>
-        hideGroup("Other spp points") |>
-        hideGroup("ARMI points") |>
-        hideGroup("Water Quality points")
-    print("Map layers cleared")
+        leaflet::hideGroup("Riverfly points") |>
+        leaflet::hideGroup("Invasive points") |>
+        leaflet::hideGroup("Other spp points") |>
+        leaflet::hideGroup("ARMI points") |>
+        leaflet::hideGroup("Water Quality points") |>
+        leaflet::removeControl("legend")
+    print("Map layers cleared (used removeControl())")
 }

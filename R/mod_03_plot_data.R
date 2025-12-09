@@ -35,14 +35,14 @@ mod_03_plot_data_ui <- function(id) {
           )
         ),
         conditionalPanel(
-          condition = "input.riverfly == 'ARMI'",
+          condition = "input.riverfly == 'ARMI'&& input.metric == 'Urban Riverfly'",
           includeMarkdown(app_sys("app/www/text/ARMI_description.md")),
           ns = ns
         ),
         ns = ns
       ),
       conditionalPanel(
-        condition = "input.riverfly == 'Urban Riverfly species'",
+        condition = "input.riverfly == 'Urban Riverfly species'&& input.metric == 'Urban Riverfly'",
         radioButtons(
           ns("riverflySpecies"),
           "Urban Riverfly species",
@@ -51,7 +51,7 @@ mod_03_plot_data_ui <- function(id) {
         ns = ns
       ),
       conditionalPanel(
-        condition = "input.riverfly == 'Other species'",
+        condition = "input.riverfly == 'Other species'&& input.metric == 'Urban Riverfly'",
         radioButtons(
           ns("otherSpecies"),
           "Other species",
@@ -121,7 +121,6 @@ mod_03_plot_data_ui <- function(id) {
 mod_03_plot_data_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    plot_palette <- brewer.pal(n = 9, name = "Blues")
     print("STarting to load the data")
     # Load the data and assign to variables in the module environment
     data_plot_list <- load_data()
@@ -210,11 +209,6 @@ mod_03_plot_data_server <- function(id) {
           showGroup("Other spp points")
       } else if (selected_metric() == "Invasive Species") {
         # If the user chooses Invasive Species, plot presence/absence data
-        BRCInvSpcs_Plot_Recent <- make_recent_inv_spp(
-          BRCInvSpcs,
-          BRC_locs,
-          plot_palette
-        )
         mapProxy |>
           addInvasiveSpeciesMarkers(
             BRCInvSpcs_Plot_Recent,
@@ -237,7 +231,8 @@ mod_03_plot_data_server <- function(id) {
             wq_data_recent = wq_Recent_Map,
             metric = selected_reading_type(),
             screen_width = screen_width()
-          )
+          ) |>
+          showGroup("Water Quality points")
       }
       mapProxy |>
         addLayersControl(

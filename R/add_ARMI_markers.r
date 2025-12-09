@@ -168,7 +168,7 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
                     paste0(">", breaks_vector[5])
                 )),
                 title = "ARMI Score",
-                group = "ARMI points",
+                group = "legend",
                 opacity = 0.75
             )
     }

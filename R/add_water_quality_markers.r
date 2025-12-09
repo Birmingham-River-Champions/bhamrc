@@ -17,7 +17,9 @@ addWaterQualityMarkers <- function(
     metric,
     screen_width
 ) {
-    reading_type_name <- unlist(names(which(water_quality_bw == metric)))
+    reading_type_name <- water_quality_bw[[
+        (which(names(water_quality_bw) == metric))
+    ]]
     wq_data_recent_map <- wq_data_recent |>
         drop_na()
 
@@ -186,7 +188,7 @@ addWaterQualityMarkers <- function(
                 )),
                 values = wq_data_recent_map$value,
                 title = reading_type_name,
-                group = "Water Quality points",
+                group = "legend",
                 opacity = 0.75
             )
     } else {

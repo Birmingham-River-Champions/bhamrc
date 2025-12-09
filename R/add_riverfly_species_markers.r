@@ -224,7 +224,7 @@ addRiverflySpeciesMarkers <- function(
                 )),
                 title = "Abundance",
                 opacity = 0.75,
-                group = "Riverfly points"
+                group = "legend"
             )
     }
 }

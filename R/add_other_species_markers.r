@@ -64,7 +64,7 @@ addOtherSpeciesMarkers <- function(mapProxy, fullData, otherSpecies) {
                 values = data$abundance,
                 title = "Abundance",
                 opacity = 0.75,
-                group = "Other spp points"
+                group = "legend"
             )
     }
 }
