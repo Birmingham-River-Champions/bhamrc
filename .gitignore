@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .httr-oauth
+.secrets
 .DS_Store
 .quarto
 *.png
