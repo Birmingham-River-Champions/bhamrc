@@ -4,7 +4,7 @@
 \alias{addARMIMarkers}
 \title{This function adds ARMI markers to the map with popups containing ggplot graphs.}
 \usage{
-addARMIMarkers(mapProxy, data, riverflyARMIData, input)
+addARMIMarkers(mapProxy, data, riverflyARMIData, screen_width)
 }
 \arguments{
 \item{mapProxy}{A leaflet map proxy object.}

@@ -26,6 +26,8 @@ mod_data_entry_form_server <- function(id, table_name) {
         # Define columns and types for each table (matching create_db.R)
         cols <- list(
             riverfly = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 survey_date = "TEXT",
                 data_type = "TEXT",
@@ -54,17 +56,19 @@ mod_data_entry_form_server <- function(id, table_name) {
                 other_sphaeriidae = "TEXT",
                 other_acroloxidae_ancylidae = "TEXT",
                 other_bullhead = "TEXT",
-                other_taxa_1 = "TEXT",
-                other_taxa_2 = "TEXT",
-                other_taxa_3 = "TEXT",
-                other_taxa_4 = "TEXT",
-                other_taxa_5 = "TEXT",
-                other_taxa_6 = "TEXT",
-                other_taxa_7 = "TEXT",
-                other_taxa_8 = "TEXT",
+                other_unspecified_1 = "TEXT",
+                other_unspecified_2 = "TEXT",
+                other_unspecified_3 = "TEXT",
+                other_unspecified_4 = "TEXT",
+                other_unspecified_5 = "TEXT",
+                other_unspecified_6 = "TEXT",
+                other_unspecified_7 = "TEXT",
+                other_unspecified_8 = "TEXT",
                 names_of_other_taxa = "TEXT"
             ),
             water_quality = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 survey_date = "TEXT",
                 data_type = "TEXT",
@@ -78,6 +82,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 other_water_quality = "TEXT"
             ),
             riverfly_locs = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 sampling_site = "TEXT",
                 Organisation = "TEXT",
                 Easting = "INTEGER",
@@ -86,6 +92,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 LONG = "REAL"
             ),
             invasive_species = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 data_type = "TEXT",
                 survey_date = "TEXT",
@@ -99,6 +107,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 invasive_spp_wtw = "TEXT"
             ),
             outfall_safari = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 data_type = "TEXT",
                 survey_date = "TEXT",
@@ -111,6 +121,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 outfall_location_wtw = "TEXT"
             ),
             riverflytest = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 survey_date = "TEXT",
                 data_type = "TEXT",
@@ -180,8 +192,10 @@ mod_data_entry_form_server <- function(id, table_name) {
         cols_to_not_create <- c(
             "id",
             "data_type",
-            paste0("other_taxa_", 2:8),
-            "names_of_other_taxa"
+            paste0("other_unspecified_", 2:8),
+            "names_of_other_taxa",
+            "email_address",
+            "timestamp"
         )
 
         # List fields that should require the form to be greyed out if not completed.
@@ -189,7 +203,7 @@ mod_data_entry_form_server <- function(id, table_name) {
             "organisation",
             "sampling_site",
             "survey_date",
-            "email"
+            "email_address"
         )
 
         # helper to coerce table_name param to string
@@ -311,14 +325,14 @@ mod_data_entry_form_server <- function(id, table_name) {
                         ns(input_id),
                         label = label,
                         choices = choices_list$abundance,
-                        selected = "0",
+                        selected = "",
                         inline = TRUE
                     )
-                } else if (column_name == "other_taxa_1") {
+                } else if (column_name == "other_unspecified_1") {
                     shiny::tagList(
                         extra_taxa_input_ui(
-                            ns("extra_taxa_1"),
-                            label = survey_questions$other_taxa_1
+                            ns("other_unspecified_1"),
+                            label = survey_questions$other_unspecified_1
                         ),
                         shiny::actionButton(
                             ns("add_taxa"),
@@ -442,7 +456,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         # Placeholder div for pollution image, not shown for other tabs
                         shiny::tags$div(id = ns("outfall_images")),
                         shiny::textInput(
-                            ns("email"),
+                            ns("email_address"),
                             label = with_red_star("Email"),
                             value = NULL
                         ),
@@ -517,13 +531,13 @@ mod_data_entry_form_server <- function(id, table_name) {
         # Append additional extra taxa UI entries on each click of the namespaced "extra" button.
         # Each appended block gets a unique wrapper id and its own remove button so users can
         # remove any appended block individually.
-        extra_counter <- shiny::reactiveVal(0)
+        extra_counter <- shiny::reactiveVal(1)
         observeEvent(input$add_taxa, {
             # increment counter
             cnt <- extra_counter() + 1
             extra_counter(cnt)
 
-            if (cnt < 8) {
+            if (cnt < 9) {
                 # build ids (local id and namespaced wrapper id)
                 wrapper_local_id <- paste0("extra_wrapper_", cnt)
                 remove_btn_local_id <- paste0("remove_extra_", cnt)
@@ -537,8 +551,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                     ui = shiny::tags$div(
                         id = wrapper_ns_id,
                         extra_taxa_input_ui(
-                            ns(paste0("extra_taxa_", cnt)),
-                            label = survey_questions$other_taxa_1
+                            ns(paste0("other_unspecified_", cnt)),
+                            label = survey_questions$other_unspecified_1
                         ),
                         shiny::actionButton(
                             ns(remove_btn_local_id),
@@ -588,15 +602,17 @@ mod_data_entry_form_server <- function(id, table_name) {
             out
         })
 
+        allow_submit <- shiny::reactiveVal(TRUE)
+
         # Make sure entries are valid before submitting
         # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
         observeEvent(input$submit, {
-            if (!isValidEmail(input$email)) {
+            if (!isValidEmail(input$email_address)) {
                 shiny::showNotification(
                     "Please enter a valid email address.",
                     type = "warning"
                 )
-                break
+                allow_submit(FALSE)
             }
             if (
                 (!is.null(input$conductivity_mS) &&
@@ -618,21 +634,21 @@ mod_data_entry_form_server <- function(id, table_name) {
                     If  your conductivity meter says mS you can simply multiply your value by 1000",
                     type = "warning"
                 )
-                break
+                allow_submit(FALSE)
             }
             if (input$organisation == "") {
                 shiny::showNotification(
                     "You need to provide an organisation to submit this entry.",
                     type = "warning"
                 )
-                break
+                allow_submit(FALSE)
             }
             if (input$sampling_site == "") {
                 shiny::showNotification(
                     "You need to provide a sampling site to submit this entry.",
                     type = "warning"
                 )
-                break
+                allow_submit(FALSE)
             }
             if (input$survey_date == Sys.Date()) {
                 shiny::showNotification(
@@ -670,12 +686,14 @@ mod_data_entry_form_server <- function(id, table_name) {
                     "The selected sampling site does not match the selected organisation. Please correct this before submitting.",
                     type = "error"
                 )
-                DBI::dbDisconnect(con)
-                break
+                allow_submit(FALSE)
             }
 
             #Create an empty row to populate
             new_row <- existing_data[0, ]
+            other_taxa_names <- c()
+
+            # Loop through the fields and add the data to new_row
             for (colname in names(cols[[tbl_name]])) {
                 if (not_null(input[[colname]])) {
                     # Put entered value into new row at the appropriate column
@@ -701,55 +719,73 @@ mod_data_entry_form_server <- function(id, table_name) {
                                 ),
                                 type = "error"
                             )
-
-                            break
+                            allow_submit(FALSE)
                         }
                     }
                 } else if (colname == "data_type") {
-                    new_row[1, colname] <- tbl
-                } else if (colname %not_in% cols_to_not_create) {
-                    shiny::showNotification(
-                        paste0(
-                            colname,
-                            " is missing. Please contact the administrator."
-                        ),
-                        type = "warning"
+                    new_row[1, colname] <- paste(
+                        tbl,
+                        "(can access other surveys below if needed)"
                     )
+                } else if (grepl("other_unspecified", colname)) {
+                    # Handle extra taxa inputs
+                    other_input_id <- paste0(
+                        colname,
+                        "-taxa_abundance"
+                    )
+                    other_taxa_name <- paste0(
+                        colname,
+                        "-taxa_text"
+                    )
+                    if (not_null(input[[other_input_id]])) {
+                        new_row[1, colname] <- input[[other_input_id]]
+                    }
+                    if (not_null(input[[other_taxa_name]])) {
+                        other_taxa_names <- paste(
+                            input[[other_taxa_name]],
+                            other_taxa_names,
+                            sep = "; "
+                        )
+                    }
+                } else if (colname == "timestamp") {
+                    # Enter current timestamp
+                    new_row[1, colname] <- as.character(Sys.time())
                 }
             }
+            if (allow_submit()) {
+                new_row$names_of_other_taxa <- other_taxa_names
+                if (ncol(existing_data) == length(new_row)) {
+                    # Ensure the new data has the same columns as the existing table
+                    names(new_row) <- names(existing_data)
+                    DBI::dbWriteTable(
+                        con,
+                        tbl_name,
+                        new_row,
+                        append = TRUE
+                    )
 
-            if (ncol(existing_data) == length(new_row)) {
-                # Ensure the new data has the same columns as the existing table
-                names(new_row) <- names(existing_data)
-                DBI::dbWriteTable(
-                    con,
-                    tbl,
-                    new_row,
-                    append = TRUE
-                )
+                    # Put the data in the Google Sheet as well
+                    googlesheets4::sheet_append(
+                        ss = google_sheet_id,
+                        data = as.data.frame(select(new_row, -id)),
+                        sheet = tbl
+                    )
 
-                # Put the data in the Google Sheet as well
-                googlesheets4::sheet_append(
-                    ss = google_sheet_id,
-                    data = as.data.frame(select(new_row, -id)),
-                    sheet = tbl
-                )
+                    # If all checks pass, show a confirmation notification
+                    shiny::showNotification(
+                        "Your data has been submitted successfully. Thank you!",
+                        type = "message"
+                    )
+                } else {
+                    shiny::showNotification(
+                        "The data could not be submitted because the database structure has changed. Please contact the administrator.",
+                        type = "error"
+                    )
+                    allow_submit(FALSE)
+                }
 
-                # If all checks pass, show a confirmation notification
-                shiny::showNotification(
-                    "Your data has been submitted successfully. Thank you!",
-                    type = "message"
-                )
-            } else {
-                shiny::showNotification(
-                    "The data could not be submitted because the database structure has changed. Please contact the administrator.",
-                    type = "error"
-                )
                 DBI::dbDisconnect(con)
-                break
             }
-
-            DBI::dbDisconnect(con)
         })
         list(
             values = values,
