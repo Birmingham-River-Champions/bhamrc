@@ -298,7 +298,7 @@ choices_list <- list(
         "Gross smell, gross sewage"
     ),
     abundance = c(
-        "0",
+        "",
         "1-9",
         "10-99",
         "100 - 999",

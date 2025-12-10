@@ -26,6 +26,8 @@ mod_data_entry_form_server <- function(id, table_name) {
         # Define columns and types for each table (matching create_db.R)
         cols <- list(
             riverfly = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 survey_date = "TEXT",
                 data_type = "TEXT",
@@ -65,6 +67,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 names_of_other_taxa = "TEXT"
             ),
             water_quality = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 survey_date = "TEXT",
                 data_type = "TEXT",
@@ -78,6 +82,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 other_water_quality = "TEXT"
             ),
             riverfly_locs = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 sampling_site = "TEXT",
                 Organisation = "TEXT",
                 Easting = "INTEGER",
@@ -86,6 +92,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 LONG = "REAL"
             ),
             invasive_species = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 data_type = "TEXT",
                 survey_date = "TEXT",
@@ -99,6 +107,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 invasive_spp_wtw = "TEXT"
             ),
             outfall_safari = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 data_type = "TEXT",
                 survey_date = "TEXT",
@@ -111,6 +121,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 outfall_location_wtw = "TEXT"
             ),
             riverflytest = c(
+                email_address = "TEXT",
+                timestamp = "TEXT",
                 organisation = "TEXT",
                 survey_date = "TEXT",
                 data_type = "TEXT",
@@ -181,7 +193,9 @@ mod_data_entry_form_server <- function(id, table_name) {
             "id",
             "data_type",
             paste0("other_unspecified_", 2:8),
-            "names_of_other_taxa"
+            "names_of_other_taxa",
+            "email_address",
+            "timestamp"
         )
 
         # List fields that should require the form to be greyed out if not completed.
@@ -189,7 +203,7 @@ mod_data_entry_form_server <- function(id, table_name) {
             "organisation",
             "sampling_site",
             "survey_date",
-            "email"
+            "email_address"
         )
 
         # helper to coerce table_name param to string
@@ -311,7 +325,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         ns(input_id),
                         label = label,
                         choices = choices_list$abundance,
-                        selected = "0",
+                        selected = "",
                         inline = TRUE
                     )
                 } else if (column_name == "other_unspecified_1") {
@@ -442,7 +456,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         # Placeholder div for pollution image, not shown for other tabs
                         shiny::tags$div(id = ns("outfall_images")),
                         shiny::textInput(
-                            ns("email"),
+                            ns("email_address"),
                             label = with_red_star("Email"),
                             value = NULL
                         ),
@@ -593,7 +607,7 @@ mod_data_entry_form_server <- function(id, table_name) {
         # Make sure entries are valid before submitting
         # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
         observeEvent(input$submit, {
-            if (!isValidEmail(input$email)) {
+            if (!isValidEmail(input$email_address)) {
                 shiny::showNotification(
                     "Please enter a valid email address.",
                     type = "warning"
@@ -733,14 +747,9 @@ mod_data_entry_form_server <- function(id, table_name) {
                             sep = "; "
                         )
                     }
-                } else if (colname %not_in% cols_to_not_create) {
-                    shiny::showNotification(
-                        paste0(
-                            colname,
-                            " is missing. Please contact the administrator."
-                        ),
-                        type = "warning"
-                    )
+                } else if (colname == "timestamp") {
+                    # Enter current timestamp
+                    new_row[1, colname] <- as.character(Sys.time())
                 }
             }
             if (allow_submit()) {
