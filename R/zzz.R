@@ -3,7 +3,7 @@
 
     # Initialize and populate db when package is loaded
     googlesheets4::gs4_auth(
-        path = ".secrets/birminghamriverchampions-1b4a4b469009.json"
+        path = Sys.getenv("google_service_account")
     )
     turn_gsheets_into_db()
 }
