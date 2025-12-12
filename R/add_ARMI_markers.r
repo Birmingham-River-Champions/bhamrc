@@ -1,7 +1,7 @@
 #' This function adds ARMI markers to the map with popups containing ggplot graphs.
 #' @param mapProxy A leaflet map proxy object.
-#' @param data A data frame containing the site-averaged recent ARMI data to be plotted.
-#' @param riverflyARMIData A data frame containing all ARMI data for generating the ggplot graphs.
+#' @param map_data A data frame containing the site-averaged recent ARMI data to be plotted on the map.
+#' @param popup_data A data frame containing all ARMI data for generating the ggplot graphs.
 #' @param input The Shiny input object to access screen width for responsive popup sizing.
 #' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend showGroup
 #' @importFrom RColorBrewer brewer.pal
@@ -104,7 +104,8 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
                         size = 13,
                         face = "bold",
                         hjust = 0.5
-                    )
+                    ),
+                    axis.text.x = element_text(angle = 45, hjust = 1)
                 ) + ##Did have the text over the y-axis title, but changed to centre - ","
                 ggtitle(str_wrap(title_text, width = title_wrap_width)) # Wrap the title based on width
 

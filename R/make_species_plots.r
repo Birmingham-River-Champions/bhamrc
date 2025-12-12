@@ -98,6 +98,16 @@ species_plots <- function(riverfly_data, sampling_locs) {
             )
         )
 
+    # Split into a list by taxa and site ID
+    Riverfly_Species_Plot <- split(
+        Riverfly_Species_Plot,
+        list(Riverfly_Species_Plot$taxa, Riverfly_Species_Plot$sampling_site)
+    )
+
+    # Split into a list by taxa to avoid filtering later
+    Riverfly_Species_Plot_Recent <-
+        split(Riverfly_Species_Plot_Recent, Riverfly_Species_Plot_Recent$taxa)
+
     # Organise - this plot df not used in the end. Seemed off trying to plot inconsistently ID'd taxa. So did a pop up table of the most recent instead (like invasive)
     Riverfly_Other_Species_Plot <- Riverfly_Other_Species_Plot |>
         pivot_longer(
@@ -122,6 +132,16 @@ species_plots <- function(riverfly_data, sampling_locs) {
         group_by(sampling_site, taxa) |>
         slice_head(n = 1) |>
         ungroup()
+    # Split into a list by taxa to avoid filtering later
+    Riverfly_Other_Species_Plot <-
+        split(Riverfly_Other_Species_Plot, Riverfly_Other_Species_Plot$taxa)
+
+    # Split into a list by taxa to avoid filtering later
+    Riverfly_Other_Species_Plot_Recent <-
+        split(
+            Riverfly_Other_Species_Plot_Recent,
+            Riverfly_Other_Species_Plot_Recent$taxa
+        )
 
     return(list(
         Riverfly_Species_Plot,

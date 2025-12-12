@@ -1,7 +1,7 @@
 #' This function adds Urban Riverfly species markers to the map with popups containing ggplot graphs.
 #' @param mapProxy A leaflet map proxy object.
-#' @param data A data frame containing the Urban Riverfly species data to be plotted.
-#' @param riverflyspeciesData A data frame containing all Urban Riverfly species data for generating the ggplot graphs.
+#' @param map_data A data frame containing the Urban Riverfly species data to be plotted on the map.
+#' @param popup_data A data frame containing all Urban Riverfly species data for generating the ggplot graphs.
 #' @param taxaType The specific Urban Riverfly species to filter and plot.
 #' @param input The Shiny input object to access screen width for responsive popup sizing.
 #' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorFactor
@@ -11,8 +11,8 @@
 #' @importFrom leafpop popupGraph
 addRiverflySpeciesMarkers <- function(
     mapProxy,
-    data,
-    riverflyspeciesData,
+    map_data,
+    popup_data,
     taxaType,
     screen_width
 ) {
@@ -20,8 +20,7 @@ addRiverflySpeciesMarkers <- function(
         clearPopups() |>
         clearGroup("Riverfly points")
 
-    riverflyspeciesData_Recent_Map <- data |>
-        filter(taxa == taxaType) |>
+    riverflyspeciesData_Recent_Map <- map_data |>
         drop_na()
 
     current_breaks <- c(-Inf, 0:4)
@@ -61,16 +60,14 @@ addRiverflySpeciesMarkers <- function(
                 i
             ]
 
-            riverflyspeciesData_All_ggplot <- filter(
-                riverflyspeciesData,
-                sampling_site == site_id & taxa == taxaType
-            ) |>
-                mutate(
-                    abundance = case_when(
-                        is.na(abundance) ~ 0,
-                        .default = abundance
-                    )
-                )
+            # Get all Urban Riverfly species data for this specific site and taxa
+            # Turn NAs into 0s since these should be negative abundance observations, not lack of sampling
+            riverflyspeciesData_All_ggplot <- popup_data[[paste0(
+                taxaType,
+                ".",
+                site_id
+            )]] |>
+                mutate(abundance = tidyr::replace_na(abundance, 0))
 
             # Custom changing of some organisations (those ) for "Flat bodied stone clinger mayfly"
             organisation <- if (
@@ -113,7 +110,6 @@ addRiverflySpeciesMarkers <- function(
                 organisation,
                 "."
             )
-
             p <- ggplot(
                 riverflyspeciesData_All_ggplot,
                 aes(
@@ -159,7 +155,8 @@ addRiverflySpeciesMarkers <- function(
                         size = 13,
                         face = "bold",
                         hjust = 0.5
-                    )
+                    ),
+                    axis.text.x = element_text(angle = 45, hjust = 1)
                 ) + ##Did have the text over the y-axis title, but changed to centre - "","
                 ggtitle(str_wrap(title_text, width = title_wrap_width))
 

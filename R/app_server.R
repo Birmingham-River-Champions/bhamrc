@@ -20,8 +20,4 @@ app_server <- function(input, output, session) {
   observeEvent(input$submit_dt, {
     output$survey <- renderText(table_name())
   })
-
-  onStop(function() {
-    dbDisconnect(con)
-  })
 }

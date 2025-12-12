@@ -22,14 +22,9 @@ addWaterQualityMarkers <- function(
     ]]
     wq_data_recent_map <- wq_data_recent |>
         drop_na()
-
     current_breaks <- filter(plot_breaks, reading_type == metric) |>
         select(bin_breaks) |>
         unlist()
-
-    wq_data <- wq_data |>
-        filter(!is.na(value))
-
     pal_name = "RdBu"
     pal <- colorBin(
         palette = pal_name,
@@ -48,10 +43,8 @@ addWaterQualityMarkers <- function(
         plotPopups <- function(i, popup_width) {
             # Filter the data to include all observations only from the specific site
             site_id <- wq_data_recent_map$sampling_site[i]
-            wqdata_SiteID <- filter(
-                wq_data,
-                sampling_site == site_id
-            )
+            # Get the list element for this site and water quality reading type
+            wqdata_SiteID <- wq_data[[paste0(metric, ".", site_id)]]
             organisation <- wq_data_recent_map$organisation[i]
             ##Some organisations don't sound right with "the" in front
             organisation <- if (
@@ -92,7 +85,7 @@ addWaterQualityMarkers <- function(
                     fill = cut(
                         value,
                         breaks = current_breaks,
-                        labels = pal_values[-length(pal_values)]
+                        labels = pal_values[-1]
                     )
                 )
             ) +
@@ -125,10 +118,10 @@ addWaterQualityMarkers <- function(
                         size = 13,
                         face = "bold",
                         hjust = 0.5
-                    )
+                    ),
+                    axis.text.x = element_text(angle = 45, hjust = 1)
                 ) + ##Did have the text over the y-axis title, but changed to centre - ","
                 ggtitle(str_wrap(title_text, width = title_wrap_width)) # Wrap the title based on width
-
             return(p)
         }
 
@@ -151,7 +144,6 @@ addWaterQualityMarkers <- function(
             popup_width <- 600
             popup_height <- 350
         }
-
         # Loop through recent averaged data to create point popups
         plots <- lapply(1:nrow(wq_data_recent_map), function(i) {
             plotPopups(i, popup_width)
@@ -178,7 +170,7 @@ addWaterQualityMarkers <- function(
             ) |>
             addLegend(
                 position = "topright",
-                colors = rev(pal_values[-length(pal_values)]),
+                colors = rev(pal_values[-1]),
                 labels = rev(c(
                     paste0("<", current_breaks[2]),
                     paste0(current_breaks[2], " - ", current_breaks[3]),
@@ -203,7 +195,7 @@ addWaterQualityMarkers <- function(
             default_lng <- mean(wq_data_recent_map$LONG, na.rm = TRUE)
             default_lat <- mean(wq_data_recent_map$LAT, na.rm = TRUE)
         }
-
+        browser()
         mapProxy |>
             addPopups(
                 lng = default_lng,
@@ -211,7 +203,7 @@ addWaterQualityMarkers <- function(
                 popup = "<div style='text-align:center;'><strong>No project records currently</strong></div>",
                 options = popupOptions(
                     closeButton = TRUE,
-                    closeOnClick = FALSE
+                    closeOnClick = TRUE
                 )
             )
     }
