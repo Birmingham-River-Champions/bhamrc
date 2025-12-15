@@ -42,25 +42,33 @@ app_ui <- function(request) {
           ),
           # Right side: Smaller footer images, with EA logo slightly bigger
           div(
-            img(
-              src = "www/images/UoB logo.png",
-              class = "UOB-logo",
-              alt = "The logo of the University of Birmingham"
+            # UoB logo above the other three logos
+            div(
+              img(
+                src = "www/images/UoB logo.png",
+                class = "UOB-logo",
+                alt = "The logo of the University of Birmingham",
+              ),
             ),
-            img(
-              src = "www/images/EA logo.png",
-              class = "ea-logo",
-              alt = "The logo of the Environment Agency"
-            ),
-            img(
-              src = "www/images/BBCWT logo.png",
-              class = "footer-logo",
-              alt = "The logo of the Birmingham and Black Country Wildlife Trust"
-            ),
-            img(
-              src = "www/images/Severn Trent logo.png",
-              class = "ST-logo",
-              alt = "The logo of Severn Trent Water"
+            div(
+              img(
+                src = "www/images/EA logo.png",
+                class = "ea-logo",
+                alt = "The logo of the Environment Agency"
+              ),
+              img(
+                src = "www/images/BBCWT logo.png",
+                class = "footer-logo",
+                alt = paste(
+                  "The logo of the Birmingham and Black Country",
+                  "Wildlife Trust"
+                )
+              ),
+              img(
+                src = "www/images/Severn Trent logo.png",
+                class = "ST-logo",
+                alt = "The logo of Severn Trent Water"
+              )
             )
           )
         )
@@ -105,7 +113,7 @@ app_ui <- function(request) {
               "Web app by <a href='https://www.birmingham.ac.uk/staff/profiles/gees/white-james'>J.C. White</a>, 
           <a href='https://www.linkedin.com/in/charlotte-rush-773919216/'>C. Rush</a>, and the 
           <a href='https://www.birmingham.ac.uk/research/arc/rsg/bear-software'>Research Software Group</a> at the 
-          <a href = 'https://www.birmingham.ac.uk/'>University of Birmingham."
+          <a href = 'https://www.birmingham.ac.uk/'>University of Birmingham.</a>"
             ),
             align = "right",
             class = "welcome-text"
