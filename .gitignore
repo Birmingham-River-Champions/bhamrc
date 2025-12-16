@@ -19,5 +19,6 @@
 *.xml
 *.sr.lock
 *.vscode
+*.json
 .radian_profile
 data.sqlite
