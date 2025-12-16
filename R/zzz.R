@@ -8,7 +8,7 @@
             path = "./inst/extdata/birminghamriverchampions-433995c2fddf.json"
         )
     } else {
-        googlesheets4::gs_deauth()
+        googlesheets4::gs4_deauth()
     }
     turn_gsheets_into_db()
 }
