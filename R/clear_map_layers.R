@@ -15,5 +15,4 @@ clearMapLayers <- function(mapProxy) {
         leaflet::hideGroup("ARMI points") |>
         leaflet::hideGroup("Water Quality points") |>
         leaflet::removeControl("legend")
-    print("Map layers cleared (used removeControl())")
 }

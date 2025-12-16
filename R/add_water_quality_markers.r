@@ -85,7 +85,7 @@ addWaterQualityMarkers <- function(
                     fill = cut(
                         value,
                         breaks = current_breaks,
-                        labels = pal_values[-1]
+                        labels = c(rev(brewer.pal(n = 5, name = "RdBu")))
                     )
                 )
             ) +
@@ -96,7 +96,7 @@ addWaterQualityMarkers <- function(
                 ) +
                 scale_fill_manual(
                     name = reading_type_name,
-                    values = pal_values,
+                    values = rev(brewer.pal(n = 5, name = "RdBu")),
                     drop = FALSE
                 ) +
                 theme_minimal() +

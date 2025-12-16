@@ -16,7 +16,7 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
     pal_name <- "RdBu"
     pal <- colorBin(
         palette = pal_name,
-        domain = map_data$ARMI,
+        #domain = map_data$ARMI,
         bins = breaks_vector,
         pretty = FALSE
     )
@@ -77,7 +77,7 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
                     fill = cut(
                         ARMI,
                         breaks = breaks_vector,
-                        labels = c(brewer.pal(n = 5, name = "Blues"))
+                        labels = c(brewer.pal(n = 5, name = "RdBu"))
                     )
                 )
             ) +
@@ -85,7 +85,7 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
                 theme_minimal() +
                 scale_fill_manual(
                     name = "ARMI",
-                    values = brewer.pal(n = 6, name = "Blues"),
+                    values = brewer.pal(n = 6, name = "RdBu"),
                     drop = FALSE
                 ) +
                 xlab("Survey Date") +
