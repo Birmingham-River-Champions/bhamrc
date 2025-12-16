@@ -13,7 +13,7 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
         select(bin_breaks) |>
         unlist()
 
-    pal_name <- "Blues"
+    pal_name <- "RdBu"
     pal <- colorBin(
         palette = pal_name,
         domain = map_data$ARMI,
