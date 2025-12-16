@@ -1,3 +1,4 @@
+#' @importFrom googlesheets4 gs4_auth gs4_deauth
 .onLoad <- function(libname, pkgname) {
     options(bhamrc.dbname = "data.sqlite")
 
