@@ -14,5 +14,14 @@ on:
 permissions: {}
 
 jobs:
+  add-vars:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create and populate .Renviron file
+      run: 
+        echo "$GOOGLE_SERVICE_ACCOUNT" >> ~/.secrets/birminghamriverchampions-1b4a4b469009.json
   call-workflow:
-    uses: nmfs-ost/ghactions4r/.github/workflows/r-cmd-check.yml@main
+      uses: nmfs-ost/ghactions4r/.github/workflows/r-cmd-check.yml@main
+      secrets:
+        GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+  
