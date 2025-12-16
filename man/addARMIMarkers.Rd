@@ -4,14 +4,14 @@
 \alias{addARMIMarkers}
 \title{This function adds ARMI markers to the map with popups containing ggplot graphs.}
 \usage{
-addARMIMarkers(mapProxy, data, riverflyARMIData, screen_width)
+addARMIMarkers(mapProxy, map_data, popup_data, screen_width)
 }
 \arguments{
 \item{mapProxy}{A leaflet map proxy object.}
 
-\item{data}{A data frame containing the site-averaged recent ARMI data to be plotted.}
+\item{map_data}{A data frame containing the site-averaged recent ARMI data to be plotted on the map.}
 
-\item{riverflyARMIData}{A data frame containing all ARMI data for generating the ggplot graphs.}
+\item{popup_data}{A data frame containing all ARMI data for generating the ggplot graphs.}
 
 \item{input}{The Shiny input object to access screen width for responsive popup sizing.}
 }
