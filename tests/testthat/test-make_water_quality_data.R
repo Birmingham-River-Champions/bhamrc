@@ -52,13 +52,15 @@ test_that("make_water_quality_data works", {
         ) |>
         ungroup()
 
-    water_quality_test_full <- water_quality_test
+    water_quality_test_full <- split(
+        water_quality_test,
+        list(water_quality_test$reading_type, water_quality_test$sampling_site)
+    )
 
     actual_water_quality_plot_data <- make_water_quality_plot_data(
         water_quality_data = test_data,
         sampling_locs = test_locs
     )
-
     expect_equal(
         water_quality_test_full,
         actual_water_quality_plot_data$all_obs

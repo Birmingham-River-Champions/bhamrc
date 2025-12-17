@@ -11,37 +11,6 @@
 #### CURRENT FILE: DEPLOY SCRIPT #####
 ######################################
 
-# Test your app
-
-## Run checks ----
-## Check the package before sending to prod
-devtools::check()
-rhub::check_for_cran()
-
-# Deploy
-
-## Local, CRAN or Package Manager ----
-## This will build a tar.gz that can be installed locally,
-## sent to CRAN, or to a package manager
-devtools::build()
-
-## Docker ----
-## If you want to deploy via a generic Dockerfile
-golem::add_dockerfile_with_renv()
-## If you want to deploy to ShinyProxy
-golem::add_dockerfile_with_renv_shinyproxy()
-
-## Posit ----
-## If you want to deploy on Posit related platforms
-golem::add_positconnect_file()
-golem::add_shinyappsio_file()
-golem::add_shinyserver_file()
-
-## Deploy to Posit Connect or ShinyApps.io ----
-
-## Add/update manifest file (optional; for Git backed deployment on Posit )
-rsconnect::writeManifest()
-
 ## In command line.
 rsconnect::deployApp(
   appName = desc::desc_get_field("Package"),
@@ -58,16 +27,4 @@ rsconnect::deployApp(
   appId = rsconnect::deployments(".")$appID,
   lint = FALSE,
   forceUpdate = TRUE
-)
-
-## authentication with gargle
-# You will need a .secrets folder in your working directory
-# containing the token for your Google account.
-options(gargle_oauth_cache = ".secrets")
-
-# This authenticates as your google account
-googlesheets4::gs4_auth()
-# This authenticates using a service account JSON file
-googlesheets4::gs4_auth(
-  path = ".secrets/birminghamriverchampions-1b4a4b469009.json"
 )

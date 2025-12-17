@@ -86,7 +86,7 @@ mod_05_show_data_server <- function(id) {
           con,
           survey()
         )
-        write.csv(data_to_download, file, row.names = FALSE)
+        write_xlsx(data_to_download, file, row.names = FALSE)
       }
     )
   })
