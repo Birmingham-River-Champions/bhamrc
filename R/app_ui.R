@@ -3,6 +3,7 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @import bslib accordion accordionPanel
 #' @noRd
 app_ui <- function(request) {
   tagList(
@@ -118,6 +119,15 @@ app_ui <- function(request) {
           align = "left",
           class = "welcome-text"
         ),
+        accordion(
+          id = "acc",
+          accordion_panel(
+            title = "Accessibility statement",
+            id = "accessibility",
+            includeMarkdown(app_sys("app/www/text/Accessibility.md"))
+          ),
+          open = FALSE
+        ),
         div(
           HTML(
             "Web app by <a href='https://www.birmingham.ac.uk/staff/profiles/gees/white-james'>J.C. White</a>, 
@@ -149,10 +159,11 @@ app_ui <- function(request) {
           "Submission Form",
           mod_02_data_input_ui("02_data_input_1")
         ),
-        tabPanel(
-          HTML(paste(tags$span(style = "visibility:hidden", "accessibility"))),
-          includeMarkdown(app_sys("app/www/text/Accessibility.md"))
-        )
+        # tabPanel(
+        #   id = "accessibility",
+        #   HTML(paste(tags$span(style = "visibility:hidden", "accessibility"))),
+        #   includeMarkdown(app_sys("app/www/text/Accessibility.md"))
+        # )
       )
     )
   )

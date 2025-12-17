@@ -21,7 +21,5 @@ app_server <- function(input, output, session) {
     output$survey <- renderText(table_name())
   })
 
-  observeEvent(input$link_to_accessibility_statement, {
-    updateTabsetPanel(session, "panels", selected = "accessibility")
-  })
+  observeEvent(input$acc, {})
 }
