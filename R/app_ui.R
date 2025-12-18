@@ -3,7 +3,8 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @import shiny
-#' @import bslib accordion accordionPanel
+#' @import bslib
+#' @importFrom bslib accordion accordion_panel
 #' @noRd
 app_ui <- function(request) {
   tagList(

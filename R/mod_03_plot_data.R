@@ -14,7 +14,7 @@ mod_03_plot_data_ui <- function(id) {
     sidebarPanel(
       selectInput(
         ns("metric"),
-        "Select the survey from the drop down menu and click on each point to view extra details. Points on the map may take a few seconds to load:",
+        "Select the survey from the drop down menu:",
         choices = c(
           " ",
           "Urban Riverfly",
@@ -95,7 +95,7 @@ mod_03_plot_data_ui <- function(id) {
       div(
         id = "yourdata-descriptor",
         HTML(
-          "<b>Select the survey from the drop down menus and click on each point to view extra details</b>"
+          "<b>Select the survey from the drop down menus and click on each point to view extra details.</b> Points on the map may take a few seconds to load."
         )
       ),
       # Map: Use a separate class for the Leaflet map
