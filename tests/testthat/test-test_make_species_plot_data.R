@@ -124,12 +124,31 @@ riverfly_plot_test_recent <- riverfly_species_plot_test |>
     )
   )
 
+riverfly_species_plot_test <- split(
+  riverfly_species_plot_test,
+  list(
+    riverfly_species_plot_test$taxa,
+    riverfly_species_plot_test$sampling_site
+  )
+)
+
+riverfly_plot_test_recent <- split(
+  riverfly_plot_test_recent,
+  riverfly_plot_test_recent$taxa
+)
+
 other_plot_test_recent <- other_spp_plot_test |>
   filter(survey_date >= Sys.Date() - years(3)) |>
   arrange(sampling_site, taxa, abundance, desc(survey_date)) |>
   group_by(sampling_site, taxa) |>
   slice_head(n = 1) |>
   ungroup()
+
+other_spp_plot_test <- split(other_spp_plot_test, other_spp_plot_test$taxa)
+other_plot_test_recent <- split(
+  other_plot_test_recent,
+  other_plot_test_recent$taxa
+)
 
 test_plot <- list(
   riverfly_species_plot_test,

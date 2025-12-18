@@ -14,20 +14,17 @@ addWaterQualityMarkers <- function(
     mapProxy,
     wq_data_recent,
     wq_data,
-    input
+    metric,
+    screen_width
 ) {
-    metric <- input$readingType
-    reading_type_name <- unlist(names(which(water_quality_bw == metric)))
+    reading_type_name <- water_quality_bw[[
+        (which(names(water_quality_bw) == metric))
+    ]]
     wq_data_recent_map <- wq_data_recent |>
         drop_na()
-
     current_breaks <- filter(plot_breaks, reading_type == metric) |>
         select(bin_breaks) |>
         unlist()
-
-    wq_data <- wq_data |>
-        filter(!is.na(value))
-
     pal_name = "RdBu"
     pal <- colorBin(
         palette = pal_name,
@@ -46,10 +43,8 @@ addWaterQualityMarkers <- function(
         plotPopups <- function(i, popup_width) {
             # Filter the data to include all observations only from the specific site
             site_id <- wq_data_recent_map$sampling_site[i]
-            wqdata_SiteID <- filter(
-                wq_data,
-                sampling_site == site_id
-            )
+            # Get the list element for this site and water quality reading type
+            wqdata_SiteID <- wq_data[[paste0(metric, ".", site_id)]]
             organisation <- wq_data_recent_map$organisation[i]
             ##Some organisations don't sound right with "the" in front
             organisation <- if (
@@ -90,7 +85,7 @@ addWaterQualityMarkers <- function(
                     fill = cut(
                         value,
                         breaks = current_breaks,
-                        labels = pal_values[-length(pal_values)]
+                        labels = c(rev(brewer.pal(n = 5, name = "RdBu")))
                     )
                 )
             ) +
@@ -101,7 +96,7 @@ addWaterQualityMarkers <- function(
                 ) +
                 scale_fill_manual(
                     name = reading_type_name,
-                    values = pal_values,
+                    values = rev(brewer.pal(n = 5, name = "RdBu")),
                     drop = FALSE
                 ) +
                 theme_minimal() +
@@ -123,74 +118,71 @@ addWaterQualityMarkers <- function(
                         size = 13,
                         face = "bold",
                         hjust = 0.5
-                    )
+                    ),
+                    axis.text.x = element_text(angle = 45, hjust = 1)
                 ) + ##Did have the text over the y-axis title, but changed to centre - ","
                 ggtitle(str_wrap(title_text, width = title_wrap_width)) # Wrap the title based on width
-
             return(p)
         }
 
         # Adjust plot size based on screen width
-        observe({
-            if (!is.null(input$screen_width)) {
-                if (input$screen_width <= 480) {
-                    # For small screens like iPhones
-                    popup_width <- 300
-                    popup_height <- 250
-                } else if (input$screen_width <= 768) {
-                    # For tablets
-                    popup_width <- 400
-                    popup_height <- 275
-                } else {
-                    # For larger screens
-                    popup_width <- 600
-                    popup_height <- 350
-                }
+        if (!is.null(screen_width)) {
+            if (screen_width <= 480) {
+                # For small screens like iPhones
+                popup_width <- 300
+                popup_height <- 250
+            } else if (screen_width <= 768) {
+                # For tablets
+                popup_width <- 400
+                popup_height <- 275
             } else {
+                # For larger screens
                 popup_width <- 600
                 popup_height <- 350
             }
-
-            # Loop through recent averaged data to create point popups
-            plots <- lapply(1:nrow(wq_data_recent_map), function(i) {
-                plotPopups(i, popup_width)
-            })
-            mapProxy |>
-                addCircleMarkers(
-                    data = wq_data_recent_map,
-                    lng = ~LONG,
-                    lat = ~LAT,
-                    radius = 6,
-                    weight = 2,
-                    fillColor = ~ pal(value),
-                    color = "black",
-                    stroke = TRUE,
-                    opacity = 0.5,
-                    fill = TRUE,
-                    fillOpacity = 1,
-                    group = "points",
-                    popup = popupGraph(
-                        plots,
-                        width = popup_width,
-                        height = popup_height
-                    )
-                ) |>
-                addLegend(
-                    position = "topright",
-                    colors = rev(pal_values[-length(pal_values)]),
-                    labels = rev(c(
-                        paste0("<", current_breaks[2]),
-                        paste0(current_breaks[2], " - ", current_breaks[3]),
-                        paste0(current_breaks[3], " - ", current_breaks[4]),
-                        paste0(current_breaks[4], " - ", current_breaks[5]),
-                        paste0(">", current_breaks[5])
-                    )),
-                    values = wq_data_recent_map$value,
-                    title = reading_type_name,
-                    group = "points",
-                    opacity = 0.75
-                )
+        } else {
+            popup_width <- 600
+            popup_height <- 350
+        }
+        # Loop through recent averaged data to create point popups
+        plots <- lapply(1:nrow(wq_data_recent_map), function(i) {
+            plotPopups(i, popup_width)
         })
+        mapProxy |>
+            addCircleMarkers(
+                data = wq_data_recent_map,
+                lng = ~LONG,
+                lat = ~LAT,
+                radius = 6,
+                weight = 2,
+                fillColor = ~ pal(value),
+                color = "black",
+                stroke = TRUE,
+                opacity = 0.5,
+                fill = TRUE,
+                fillOpacity = 1,
+                group = "Water Quality points",
+                popup = popupGraph(
+                    plots,
+                    width = popup_width,
+                    height = popup_height
+                )
+            ) |>
+            addLegend(
+                position = "topright",
+                colors = rev(pal_values[-1]),
+                labels = rev(c(
+                    paste0("<", current_breaks[2]),
+                    paste0(current_breaks[2], " - ", current_breaks[3]),
+                    paste0(current_breaks[3], " - ", current_breaks[4]),
+                    paste0(current_breaks[4], " - ", current_breaks[5]),
+                    paste0(">", current_breaks[5])
+                )),
+                values = wq_data_recent_map$value,
+                title = reading_type_name,
+                group = "legend",
+                opacity = 0.75
+            )
     } else {
         # Handle no data case
         if (
@@ -203,7 +195,7 @@ addWaterQualityMarkers <- function(
             default_lng <- mean(wq_data_recent_map$LONG, na.rm = TRUE)
             default_lat <- mean(wq_data_recent_map$LAT, na.rm = TRUE)
         }
-
+        browser()
         mapProxy |>
             addPopups(
                 lng = default_lng,
@@ -211,10 +203,8 @@ addWaterQualityMarkers <- function(
                 popup = "<div style='text-align:center;'><strong>No project records currently</strong></div>",
                 options = popupOptions(
                     closeButton = TRUE,
-                    closeOnClick = FALSE
+                    closeOnClick = TRUE
                 )
             )
     }
-    # Clear existing points before adding new ones
-    mapProxy |> clearGroup("points")
 }

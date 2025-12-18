@@ -11,8 +11,6 @@ addInvasiveSpeciesMarkers <- function(
     invasiveType,
     plot_palette
 ) {
-    mapProxy |> clearPopups() |> clearGroup("points")
-
     # Define the color palette and domain
     invasivePalette <- c(
         plot_palette[1],
@@ -78,7 +76,7 @@ addInvasiveSpeciesMarkers <- function(
     }
 
     # Clear existing points before adding new ones
-    mapProxy |> clearGroup("points")
+    mapProxy |> clearGroup("Invasive points") |> clearControls()
 
     # Check if there is data to display
     if (!is.null(data_filtered) && nrow(data_filtered) > 0) {
@@ -120,7 +118,7 @@ addInvasiveSpeciesMarkers <- function(
                 opacity = 0.5,
                 fill = TRUE,
                 fillOpacity = 1,
-                group = "points",
+                group = "Invasive points",
                 options = pathOptions(zIndex = 2)
             ) |>
             addLegend(
@@ -130,7 +128,7 @@ addInvasiveSpeciesMarkers <- function(
                 values = data_filtered$abundance,
                 title = "Abundance",
                 opacity = 0.75,
-                group = "points"
+                group = "legend"
             )
     } else {
         # If no records, add a popup message in the center of the map

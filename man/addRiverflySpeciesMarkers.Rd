@@ -4,14 +4,20 @@
 \alias{addRiverflySpeciesMarkers}
 \title{This function adds Urban Riverfly species markers to the map with popups containing ggplot graphs.}
 \usage{
-addRiverflySpeciesMarkers(mapProxy, data, riverflyspeciesData, taxaType, input)
+addRiverflySpeciesMarkers(
+  mapProxy,
+  map_data,
+  popup_data,
+  taxaType,
+  screen_width
+)
 }
 \arguments{
 \item{mapProxy}{A leaflet map proxy object.}
 
-\item{data}{A data frame containing the Urban Riverfly species data to be plotted.}
+\item{map_data}{A data frame containing the Urban Riverfly species data to be plotted on the map.}
 
-\item{riverflyspeciesData}{A data frame containing all Urban Riverfly species data for generating the ggplot graphs.}
+\item{popup_data}{A data frame containing all Urban Riverfly species data for generating the ggplot graphs.}
 
 \item{taxaType}{The specific Urban Riverfly species to filter and plot.}
 

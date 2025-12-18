@@ -7,7 +7,6 @@ test_fixture_riverfly <- function() {
         "data.sqlite",
         extended_types = TRUE
     )
-    print(getwd())
     table_name <- c(
         "riverfly",
         "water_quality",

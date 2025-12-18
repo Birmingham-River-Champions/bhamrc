@@ -18,7 +18,7 @@ information_card <- function(
         class = "grid-item",
         img(src = image_src, alt = alt_text), # Image
         div(
-            class = "text-container",
+            #class = "text-container",
             h2(a(
                 href = url,
                 target = "_blank",

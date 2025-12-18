@@ -36,7 +36,8 @@ test_that("make_water_quality_data works", {
         mutate(survey_date = dmy(survey_date)) |>
         remove_parenthesised_orgs() |>
         mutate(across(sampling_site, flip_site_names)) |>
-        anonymise_organisations()
+        anonymise_organisations() |>
+        drop_na()
 
     recent_avg_wq <- water_quality_test |>
         group_by(sampling_site, reading_type) |>
@@ -52,7 +53,10 @@ test_that("make_water_quality_data works", {
         ) |>
         ungroup()
 
-    water_quality_test_full <- water_quality_test
+    water_quality_test_full <- split(
+        water_quality_test,
+        list(water_quality_test$reading_type, water_quality_test$sampling_site)
+    )
 
     actual_water_quality_plot_data <- make_water_quality_plot_data(
         water_quality_data = test_data,

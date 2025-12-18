@@ -22,8 +22,7 @@ mod_04_information_ui <- function(id) {
 
     # Grid layout for left (summary) and right (news post)
     div(
-      id = "projects",
-      class = "project-grid",
+      id = "project-grid",
       purrr::map(
         information_data,
         ~ information_card(
