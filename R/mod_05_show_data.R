@@ -26,6 +26,7 @@ mod_05_show_data_ui <- function(id) {
 #' @importFrom DBI dbConnect dbDisconnect dbGetQuery
 #' @importFrom RSQLite SQLite
 #' @importFrom DT renderDT DTOutput
+#' @importFrom writexl write_xlsx
 #' @noRd
 mod_05_show_data_server <- function(id) {
   moduleServer(id, function(input, output, session) {
@@ -79,14 +80,14 @@ mod_05_show_data_server <- function(id) {
     # Create download handler to download the data when clicked
     output$download_data <- downloadHandler(
       filename = function() {
-        paste0(survey(), "_data.csv")
+        paste0(survey(), "_data.xlsx")
       },
       content = function(file) {
         data_to_download <- dbReadTable(
           con,
           survey()
         )
-        write_xlsx(data_to_download, file, row.names = FALSE)
+        writexl::write_xlsx(data_to_download, path = file)
       }
     )
   })

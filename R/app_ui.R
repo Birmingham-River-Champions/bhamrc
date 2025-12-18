@@ -12,6 +12,7 @@ app_ui <- function(request) {
     shinyjs::useShinyjs(),
     # Your application UI logic
     fluidPage(
+      theme = bs_theme(version = 5, bootswatch = "lumen"),
       tags$head(
         HTML("<html lang='en'>"),
         # Css stylesheet
@@ -110,32 +111,7 @@ app_ui <- function(request) {
               )
             )
           ),
-          div(
-            actionLink(
-              "link_to_accessibility_statement",
-              "Accessibility statement"
-            )
-          ),
           align = "left",
-          class = "welcome-text"
-        ),
-        accordion(
-          id = "acc",
-          accordion_panel(
-            title = "Accessibility statement",
-            id = "accessibility",
-            includeMarkdown(app_sys("app/www/text/Accessibility.md"))
-          ),
-          open = FALSE
-        ),
-        div(
-          HTML(
-            "Web app by <a href='https://www.birmingham.ac.uk/staff/profiles/gees/white-james'>J.C. White</a>, 
-          <a href='https://www.linkedin.com/in/charlotte-rush-773919216/'>C. Rush</a>, and the 
-          <a href='https://www.birmingham.ac.uk/research/arc/rsg/bear-software'>Research Software Group</a> at the 
-          <a href = 'https://www.birmingham.ac.uk/'>University of Birmingham.</a>"
-          ),
-          align = "right",
           class = "welcome-text"
         ),
         tabPanel(
@@ -158,12 +134,26 @@ app_ui <- function(request) {
         tabPanel(
           "Submission Form",
           mod_02_data_input_ui("02_data_input_1")
+        )
+      ),
+      div(
+        HTML(
+          "Web app by <a href='https://www.birmingham.ac.uk/staff/profiles/gees/white-james'>J.C. White</a>, 
+          <a href='https://www.linkedin.com/in/charlotte-rush-773919216/'>C. Rush</a>, and the 
+          <a href='https://www.birmingham.ac.uk/research/arc/rsg/bear-software'>Research Software Group</a> at the 
+          <a href = 'https://www.birmingham.ac.uk/'>University of Birmingham.</a>"
         ),
-        # tabPanel(
-        #   id = "accessibility",
-        #   HTML(paste(tags$span(style = "visibility:hidden", "accessibility"))),
-        #   includeMarkdown(app_sys("app/www/text/Accessibility.md"))
-        # )
+        align = "right",
+        class = "welcome-text"
+      ),
+      bslib::accordion(
+        id = "acc",
+        bslib::accordion_panel(
+          title = "Accessibility statement",
+          id = "accessibility",
+          includeMarkdown(app_sys("app/www/text/Accessibility.md"))
+        ),
+        open = FALSE
       )
     )
   )

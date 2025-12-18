@@ -14,7 +14,7 @@ mod_03_plot_data_ui <- function(id) {
     sidebarPanel(
       selectInput(
         ns("metric"),
-        "Select survey:",
+        "Select the survey from the drop down menu and click on each point to view extra details. Points on the map may take a few seconds to load:",
         choices = c(
           " ",
           "Urban Riverfly",
