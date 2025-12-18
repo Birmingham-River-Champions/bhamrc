@@ -21,7 +21,5 @@ app_server <- function(input, output, session) {
     output$survey <- renderText(table_name())
   })
 
-  onStop(function() {
-    dbDisconnect(con)
-  })
+  observeEvent(input$acc, {})
 }

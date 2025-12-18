@@ -31,6 +31,7 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
     # Now also flip the names around so the RIVER comes after the Site
 
     # Code was from ChatGPT initially designed for multiple columns, but works fine.
+    # This is the individual site data for plotting the time series in the popups
     Riverfly_ARMI_Plot <- Riverfly_ARMI_Plot |>
         mutate(across(c(sampling_site), flip_site_names)) |>
         dplyr::select(-c(Easting, Northing)) |>
@@ -39,6 +40,7 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
         anonymise_organisations()
 
     # Now get average value for plotting purposes - in time I want to only select the last 12 months
+    # This is for the points on the map
     Riverfly_ARMI_Plot_SiteAv <- Riverfly_ARMI_Plot |>
         select(sampling_site, ARMI, organisation) |>
         group_by(sampling_site, organisation) |>
@@ -50,5 +52,12 @@ make_ARMI_plot_data <- function(Riverfly_ARMI_Calc, Unique_BRC_Sampling_Locs) {
         unique(Riverfly_ARMI_Plot[, c("sampling_site", "LAT", "LONG")]),
         multiple = "first"
     )
-    return(list(Riverfly_ARMI_Plot, Riverfly_ARMI_Plot_SiteAv))
+
+    # Make the popups data as a list split by site ID
+    # Moving into this function helps speed up rendering of Riverfly ARMI map
+    Riverfly_ARMI_Popups <- split(
+        Riverfly_ARMI_Plot,
+        f = Riverfly_ARMI_Plot$sampling_site
+    )
+    return(list(Riverfly_ARMI_Popups, Riverfly_ARMI_Plot_SiteAv))
 }

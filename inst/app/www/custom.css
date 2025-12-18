@@ -48,17 +48,14 @@
 }
 
 .title-panel img.UOB-logo {
-  height: 40px;
+  height: 80px;
   /* Slightly smaller size for the UOB logo */
-  margin-left: 10px;
-  /* Add spacing between logos */
 }
 
 .title-panel img.ea-logo {
   height: 40px;
   /* Slightly bigger size for the EA logo */
   margin-left: 10px;
-  /* Add spacing between logos */
 }
 
 .title-panel img.ST-logo {
