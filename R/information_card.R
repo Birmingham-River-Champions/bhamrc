@@ -10,7 +10,8 @@ information_card <- function(
     description,
     alt_text = NULL,
     url,
-    image_src
+    image_src,
+    ns
 ) {
     # Use alt_text if provided, otherwise fall back to title for accessibility
     alt_attribute <- if (!is.null(alt_text)) alt_text else title
@@ -18,13 +19,13 @@ information_card <- function(
         class = "grid-item",
         img(src = image_src, alt = alt_text), # Image
         div(
-            #class = "text-container",
-            h2(a(
-                href = url,
-                target = "_blank",
-                title
+            class = "text-container",
+            h4(actionLink(
+                inputId = ns(title),
+                label = title,
+                onclick = url # url is the action to open a window to the URL unless this is a link to the Submission form panel
             )),
-            h4(HTML(description))
+            h5(HTML(description))
         )
     )
 }
