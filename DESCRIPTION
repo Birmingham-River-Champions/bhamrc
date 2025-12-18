@@ -12,6 +12,7 @@ Description: Birmingham River Champions is a package containing a Shiny applicat
   from Birmingham waterways.
 License: MIT + file LICENSE
 Imports: 
+    bslib,
     config,
     DBI,
     dplyr,
@@ -33,6 +34,7 @@ Imports:
     shinyjs,
     stringr,
     tidyr,
+    writexl,
     yaml
 Encoding: UTF-8
 LazyData: true
