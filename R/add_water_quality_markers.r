@@ -195,6 +195,7 @@ addWaterQualityMarkers <- function(
             default_lng <- mean(wq_data_recent_map$LONG, na.rm = TRUE)
             default_lat <- mean(wq_data_recent_map$LAT, na.rm = TRUE)
         }
+
         mapProxy |>
             addPopups(
                 lng = default_lng,

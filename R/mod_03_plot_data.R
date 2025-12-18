@@ -231,6 +231,20 @@ mod_03_plot_data_server <- function(id) {
         mapProxy |>
           showGroup("Water Quality points")
       }
+      # mapProxy |>
+      #   addLayersControl(
+      #     overlayGroups = c(
+      #       "Riverfly points",
+      #       "Invasive points",
+      #       "Other spp points",
+      #       "ARMI points",
+      #       "Water Quality points"
+      #     ),
+      #     options = layersControlOptions(
+      #       collapsed = FALSE,
+      #       position = "topright"
+      #     )
+      #   )
     }
 
     observeEvent(
