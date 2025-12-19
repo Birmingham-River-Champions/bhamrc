@@ -4,7 +4,7 @@
 
     # Initialize and populate db when package is loaded
     #googlesheets4::gs4_auth(
-    #    path = "./inst/extdata/birminghamriverchampions-433995c2fddf.json"
+    #    path = "./inst/extdata/birminghamriverchampions-36c3c5598be5.json"
     #)
     googlesheets4::gs4_deauth()
     turn_gsheets_into_db()
