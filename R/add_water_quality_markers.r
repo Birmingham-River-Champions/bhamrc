@@ -37,7 +37,7 @@ addWaterQualityMarkers <- function(
         pal_name
     ))
 
-    mapProxy |> clearPopups() |> clearGroup("points")
+    mapProxy |> clearPopups() |> clearGroup("legend")
 
     if (!is.null(wq_data_recent_map) && nrow(wq_data_recent_map) > 0) {
         plotPopups <- function(i, popup_width) {
@@ -195,7 +195,7 @@ addWaterQualityMarkers <- function(
             default_lng <- mean(wq_data_recent_map$LONG, na.rm = TRUE)
             default_lat <- mean(wq_data_recent_map$LAT, na.rm = TRUE)
         }
-        browser()
+
         mapProxy |>
             addPopups(
                 lng = default_lng,

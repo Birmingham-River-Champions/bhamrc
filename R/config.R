@@ -222,7 +222,7 @@ survey_questions <- list(
     invasive_spp_wtw = "What.three.words location of invasive species seen 'out and about' - (separate with period - e.g., \"above.awake.nature\") If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified). Click on other nearby squares if the GPS isn't accurate enough.",
     killer_demon_shrimp = "Number of killer / demon shrimp counted in a kick sample - leave blank if 0",
     signal_crayfish = "Number of signal crayfish counted in a kick sample / observed on riverbed - leave blank if 0",
-    outfall_photo = "Have you uploaded a photo of the outfall <a href = 'https://www.dropbox.com/request/J0BAKMCneqB698oF7xJD'>here</a>
+    outfall_photo = "Have you uploaded a photo of the outfall <a href = 'https://www.dropbox.com/request/J0BAKMCneqB698oF7xJD' target = '_blank'>here</a>
      (please use the <b>outfall location ID</b> as the picture caption)? <font color='red'>*</font>",
     outfall_flow = "Flow from outfall",
     outfall_pollution_distance = "Pollution distance downstream from the outfall",
