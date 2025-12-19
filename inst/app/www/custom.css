@@ -552,39 +552,39 @@
 }
 
 /* Styles for the leaflet popup close button */
-#map .leaflet-popup-close-button {
+.leaflet-popup-close-button {
   position: absolute;
-  top: 2px;
+  top: 2px !important;
   /* Adjust the distance from the top */
-  right: 2px;
+  right: 2px !important;
   /* Adjust the distance from the right */
   background: transparent;
-  border-radius: 25%;
+  border-radius: 25% !important;
   /* Make the button circular */
-  width: 25px;
+  width: 25px !important;
   /* Adjust width */
-  height: 25px;
+  height: 25px !important;
   /* Adjust height */
-  z-index: 1000;
+  z-index: 1000 !important;
   /* Ensure it is above other content */
-  border: none;
+  border: none !important;
   /* Remove any border */
-  color: black;
+  color: black !important;
   /* Change the X symbol to black */
-  font-size: 18px;
+  font-size: 18px !important;
   /* Adjust font size */
-  line-height: 25px;
+  line-height: 25px !important;
   /* Center the X vertically */
-  text-align: center;
+  text-align: center !important;
   /* Center the X horizontally */
 }
 
 /* Hover effect for the close button */
-#map .leaflet-popup-close-button:hover {
-  cursor: pointer;
-  background-color: lightgray;
+.leaflet-popup-close-button:hover {
+  cursor: pointer !important;
+  background-color: lightgray !important;
   /* Optional: change background color on hover */
-  color: black;
+  color: black !important;
   /* Ensure the X stays black */
 }
 
