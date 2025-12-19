@@ -5,6 +5,7 @@
 #' @param alt_text Alternative text for the provided image, defaults to NULL
 #' @param url The URL that the header link should target
 #' @param image_src The location within the app of the image
+#' @param ns the Shiny namespace that the title of the link is stored in
 information_card <- function(
     title,
     description,

@@ -17,6 +17,8 @@ information_card(title, description, alt_text = NULL, url, image_src, ns)
 \item{url}{The URL that the header link should target}
 
 \item{image_src}{The location within the app of the image}
+
+\item{ns}{the Shiny namespace that the title of the link is stored in}
 }
 \description{
 This function creates information cards on the page for a given
