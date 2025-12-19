@@ -21,7 +21,7 @@ information_card <- function(
         img(src = image_src, alt = alt_text), # Image
         div(
             class = "text-container",
-            h4(actionLink(
+            h3(actionLink(
                 inputId = ns(title),
                 label = title,
                 onclick = url # url is the action to open a window to the URL unless this is a link to the Submission form panel
