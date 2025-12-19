@@ -159,15 +159,13 @@ mod_03_plot_data_server <- function(id) {
         clearMapLayers()
 
       if (selected_metric() == "Urban Riverfly") {
-        mapProxy |>
-          addARMIMarkers(
-            map_data = riverflyARMIMap,
-            popup_data = Riverfly_ARMI_Popups,
-            screen_width = screen_width()
-          )
-
         if (selected_riverfly() == "ARMI") {
           mapProxy <- leafletProxy("map") |>
+            addARMIMarkers(
+              map_data = riverflyARMIMap,
+              popup_data = Riverfly_ARMI_Popups,
+              screen_width = screen_width()
+            ) |>
             showGroup("ARMI points")
         } else if (selected_riverfly() == "Urban Riverfly species") {
           # If the user chooses Urban Riverfly species, plot abundance data

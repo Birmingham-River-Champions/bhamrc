@@ -5,7 +5,7 @@
 \title{This function creates information cards on the page for a given
 set of text, image, and links}
 \usage{
-information_card(title, description, alt_text = NULL, url, image_src)
+information_card(title, description, alt_text = NULL, url, image_src, ns)
 }
 \arguments{
 \item{title}{The title of the link}

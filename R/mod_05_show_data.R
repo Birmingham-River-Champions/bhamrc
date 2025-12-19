@@ -86,7 +86,11 @@ mod_05_show_data_server <- function(id) {
         data_to_download <- dbReadTable(
           con,
           survey()
-        )
+        ) |>
+          select(-c(id, timestamp, email_address)) |>
+          mutate(survey_date = lubridate::dmy(survey_date)) |>
+          setNames(column_names[[survey()]])
+
         writexl::write_xlsx(data_to_download, path = file)
       }
     )

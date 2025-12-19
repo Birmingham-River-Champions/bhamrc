@@ -18,9 +18,9 @@ newsletter_card <- function(
         class = "grid-item",
         img(src = image_src, alt = alt_text), # Image
         div(
-            #class = "text-container",
-            h2(title),
-            h4(HTML(description)),
+            class = "text-container",
+            h4(title),
+            HTML(description),
             a(
                 href = url,
                 target = "_blank",
