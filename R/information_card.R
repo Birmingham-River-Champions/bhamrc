@@ -5,6 +5,7 @@
 #' @param alt_text Alternative text for the provided image, defaults to NULL
 #' @param url The URL that the header link should target
 #' @param image_src The location within the app of the image
+#' @param ns the Shiny namespace that the title of the link is stored in
 information_card <- function(
     title,
     description,
@@ -20,7 +21,7 @@ information_card <- function(
         img(src = image_src, alt = alt_text), # Image
         div(
             class = "text-container",
-            h4(actionLink(
+            h3(actionLink(
                 inputId = ns(title),
                 label = title,
                 onclick = url # url is the action to open a window to the URL unless this is a link to the Submission form panel
