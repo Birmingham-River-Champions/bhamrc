@@ -768,6 +768,17 @@ mod_data_entry_form_server <- function(id, table_name) {
                     new_row <- select(new_row,id,timestamp,email_address,
                                       organisation:names_of_other_taxa)
 
+                    browser()
+                    # Send the user a confirmation email
+                    msg <- gmailr::gm_mime() |>
+                      gmailr::gm_to(isolate(new_row$email_address)) |>
+                      gmailr::gm_from("birminghamriverchampions@gmail.com") |>
+                      gmailr::gm_subject("Birmingham River Champions form submitted successfully") |>
+                    gmailr::gm_text_body(paste("Thank you for submitting your data to the Birmingham River Champions
+                      project. For your reference, your submitted values are below: \n", new_row))
+                    draft <- gmailr::gm_create_draft(msg)
+                    gmailr::gm_send_message(msg)
+
                     # Put the data in the Google Sheet as well
                     googlesheets4::sheet_append(
                         ss = google_sheet_id,
@@ -780,6 +791,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                         "Your data has been submitted successfully. Thank you!",
                         type = "message"
                     )
+
+
                 } else {
                     shiny::showNotification(
                         "The data could not be submitted because the database structure has changed. Please contact the administrator.",

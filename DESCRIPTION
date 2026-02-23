@@ -18,6 +18,7 @@ Imports:
     dplyr,
     DT,
     ggplot2,
+    gmailr,
     golem,
     googlesheets4,
     hms,
