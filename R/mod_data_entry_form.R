@@ -628,9 +628,9 @@ mod_data_entry_form_server <- function(id, table_name) {
                         (input$ammonia_ppm < 0 || input$ammonia_ppm > 2))
             ) {
                 shiny::showNotification(
-                    "You have entered a value which we suspect may be an anomalous value. 
-                    If you are confident this is correct, please proceed with the submission 
-                    by leaving blank for now and email birminghamriverchampions@gmail.com.  
+                    "You have entered a value which we suspect may be an anomalous value.
+                    If you are confident this is correct, please proceed with the submission
+                    by leaving blank for now and email birminghamriverchampions@gmail.com.
                     If  your conductivity meter says mS you can simply multiply your value by 1000",
                     type = "warning"
                 )
@@ -763,6 +763,10 @@ mod_data_entry_form_server <- function(id, table_name) {
                         new_row,
                         append = TRUE
                     )
+
+                    # Put timestamp ahead of email address for new sheet
+                    new_row <- select(new_row,id,timestamp,email_address,
+                                      organisation:names_of_other_taxa)
 
                     # Put the data in the Google Sheet as well
                     googlesheets4::sheet_append(
