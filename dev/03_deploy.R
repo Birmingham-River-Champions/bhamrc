@@ -25,6 +25,7 @@ rsconnect::deployApp(
     "app.R"
   ),
   appId = rsconnect::deployments(".")$appID,
+  appMode = "shiny",
   lint = FALSE,
   forceUpdate = TRUE
 )
