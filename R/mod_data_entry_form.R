@@ -8,7 +8,9 @@
 mod_data_entry_form_ui <- function(id) {
     ns <- shiny::NS(id)
     shiny::tagList(
-        shiny::uiOutput(ns("form_ui"))
+        shiny::uiOutput(ns("form_ui")),
+        shiny::uiOutput(
+          ns("submission_feedback"))
     )
 }
 
@@ -473,6 +475,11 @@ mod_data_entry_form_server <- function(id, table_name) {
             )
         })
 
+        output$submission_feedback <- shiny::renderUI({
+          shiny::tagList(div("Congratulations! Your form has been submitted."),
+                         br(),
+                         a(href=google_sheet_id))
+        })
         # Add in the Urban Outfall Safari image if the outfall data type is selected
         # Use observe rather than observeEvent to catch changes in table selection
         observe({
@@ -769,17 +776,24 @@ mod_data_entry_form_server <- function(id, table_name) {
                                       organisation:names_of_other_taxa)
 
                     # Put the data in the Google Sheet as well
-                    googlesheets4::sheet_append(
-                        ss = google_sheet_id,
-                        data = as.data.frame(select(new_row, -id)),
-                        sheet = tbl
-                    )
+                    # googlesheets4::sheet_append(
+                    #     ss = google_sheet_id,
+                    #     data = as.data.frame(select(new_row, -id)),
+                    #     sheet = tbl
+                    # )
 
                     # If all checks pass, show a confirmation notification
                     shiny::showNotification(
                         "Your data has been submitted successfully. Thank you!",
                         type = "message"
                     )
+
+                    browser()
+
+                    #After data is submitted, hide the form and provide feedback.
+                    shinyjs::hide("form_ui")
+                    shinyjs::hide("data_type")
+                    shinyjs::show("feedback")
                 } else {
                     shiny::showNotification(
                         "The data could not be submitted because the database structure has changed. Please contact the administrator.",
