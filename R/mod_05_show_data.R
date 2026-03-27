@@ -69,6 +69,7 @@ mod_05_show_data_server <- function(id) {
         ) |>
           select(-id, -timestamp, -email_address) |>
           mutate(survey_date = lubridate::dmy(survey_date)) |>
+          arrange(desc(survey_date)) |>
           setNames(column_names[[survey()]])
       }
     )
