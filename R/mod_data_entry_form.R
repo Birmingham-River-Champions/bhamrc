@@ -8,7 +8,11 @@
 mod_data_entry_form_ui <- function(id) {
     ns <- shiny::NS(id)
     shiny::tagList(
-        shiny::uiOutput(ns("form_ui"))
+        shiny::uiOutput(ns("form_header")),
+        shiny::uiOutput(ns("form_ui")),
+        shinyjs::hidden(shiny::uiOutput(
+            ns("submission_feedback")
+        ))
     )
 }
 
@@ -215,6 +219,14 @@ mod_data_entry_form_server <- function(id, table_name) {
             }
         })
 
+        output$form_header <- shiny::renderUI({
+            shiny::tagList(
+                h3("Submit your entry using the form."),
+                p(
+                    "Choose a data type on the left to reveal form fields for that table."
+                )
+            )
+        })
         # render UI for selected table
         output$form_ui <- shiny::renderUI({
             # Get the reactive value of the currently-selected table
@@ -473,6 +485,16 @@ mod_data_entry_form_server <- function(id, table_name) {
             )
         })
 
+        output$submission_feedback <- shiny::renderUI({
+            shiny::tagList(div(
+                br(),
+                tags$p("Congratulations! Your form has been submitted."),
+                br(),
+                tags$p(
+                    "Click on the 'Tabulated Data' tab to see your submitted data. Please email birminghamriverchampions@gmail.com with any data-related issues."
+                )
+            ))
+        })
         # Add in the Urban Outfall Safari image if the outfall data type is selected
         # Use observe rather than observeEvent to catch changes in table selection
         observe({
@@ -765,8 +787,13 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
 
                     # Put timestamp ahead of email address for new sheet
-                    new_row <- select(new_row,id,timestamp,email_address,
-                                      organisation:names_of_other_taxa)
+                    new_row <- select(
+                        new_row,
+                        id,
+                        timestamp,
+                        email_address,
+                        organisation:names_of_other_taxa
+                    )
 
                     # Put the data in the Google Sheet as well
                     googlesheets4::sheet_append(
@@ -780,6 +807,11 @@ mod_data_entry_form_server <- function(id, table_name) {
                         "Your data has been submitted successfully. Thank you!",
                         type = "message"
                     )
+
+                    #After data is submitted, hide the form and provide feedback.
+                    shinyjs::hide("form_ui")
+                    shinyjs::hide("form_header")
+                    shinyjs::show("submission_feedback")
                 } else {
                     shiny::showNotification(
                         "The data could not be submitted because the database structure has changed. Please contact the administrator.",

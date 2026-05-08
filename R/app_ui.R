@@ -124,11 +124,11 @@ app_ui <- function(request) {
           mod_06_newsletters_ui("06_newsletters_1")
         ),
         tabPanel(
-          "Your Data",
+          "Map Data",
           mod_03_plot_data_ui("03_plot_data_1")
         ),
         tabPanel(
-          "Submitted Data",
+          "Tabulated Data",
           h3("Submitted Entries"),
           mod_05_show_data_ui("05_show_data_1"),
         ),
@@ -140,9 +140,9 @@ app_ui <- function(request) {
       ),
       div(
         HTML(
-          "Web app by <a href='https://www.birmingham.ac.uk/staff/profiles/gees/white-james'>J.C. White</a>, 
-          <a href='https://www.linkedin.com/in/charlotte-rush-773919216/'>C. Rush</a>, and the 
-          <a href='https://www.birmingham.ac.uk/research/arc/rsg/bear-software'>Research Software Group</a> at the 
+          "Web app by <a href='https://www.birmingham.ac.uk/staff/profiles/gees/white-james'>J.C. White</a>,
+          <a href='https://www.linkedin.com/in/charlotte-rush-773919216/'>C. Rush</a>, and the
+          <a href='https://www.birmingham.ac.uk/research/arc/rsg/bear-software'>Research Software Group</a> at the
           <a href = 'https://www.birmingham.ac.uk/'>University of Birmingham.</a>"
         ),
         align = "right",
