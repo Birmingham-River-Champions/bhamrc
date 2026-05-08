@@ -1,4 +1,3 @@
-## code to prepare `data_20250922` dataset goes here
 #' Function to read in data from Google Sheets and populate the SQLite database
 #' Also saves cleaned data as internal package data
 #' @param data_types A character vector specifying which data types to process.
