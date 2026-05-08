@@ -490,10 +490,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 br(),
                 tags$p("Congratulations! Your form has been submitted."),
                 br(),
-                tags$a(
-                    "Click here to see and edit submitted data.",
-                    target = "_blank",
-                    href = google_sheet_id
+                tags$p(
+                    "Click on the 'Tabulated Data' tab to see your submitted data. Please email birminghamriverchampions@gmail.com with any data-related issues."
                 )
             ))
         })
@@ -798,11 +796,11 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
 
                     # Put the data in the Google Sheet as well
-                    googlesheets4::sheet_append(
-                        ss = google_sheet_id,
-                        data = as.data.frame(select(new_row, -id)),
-                        sheet = tbl
-                    )
+                    # googlesheets4::sheet_append(
+                    #     ss = google_sheet_id,
+                    #     data = as.data.frame(select(new_row, -id)),
+                    #     sheet = tbl
+                    # )
 
                     # If all checks pass, show a confirmation notification
                     shiny::showNotification(
