@@ -33,20 +33,20 @@ turn_newsheet_into_db <- function(
         outfall_locs_url = 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
     )
 
-    colnames <- coltypes <- vector("list", length(data_types))
+    column_names <- column_types <- vector("list", length(data_types))
 
-    generic_colnames = c(
+    generic_column_names = c(
         "timestamp",
         "email_address",
         "organisation",
         "survey_date",
-        "data_type",
-        "sampling_site"
+        "data_type"
     )
 
-    colnames[[1]] <- c(
-        generic_colnames,
+    column_names[[1]] <- c(
+        generic_column_names,
         c(
+            "sampling_site",
             "cased_caddisfly",
             "caseless_caddisfly",
             "olive_mayfly",
@@ -82,8 +82,35 @@ turn_newsheet_into_db <- function(
             "names_of_other_taxa"
         )
     )
-    colnames[[4]] <- c(
-        generic_colnames,
+
+    column_names[[2]] <- c(
+        generic_column_names,
+        c(
+            "sampling_site",
+            "conductivity_mS",
+            "temperature_C",
+            "ammonia_ppm",
+            "phosphate_ppm",
+            "nitrate_ppm",
+            "turbidity_NTU",
+            "other_water_quality"
+        )
+    )
+    column_names[[3]] <- c(
+        generic_column_names,
+        c(
+            "outfall_survey_date",
+            "sampling_site",
+            "outfall_photo",
+            "outfall_flow",
+            "outfall_pollution_distance",
+            "outfall_aesthetics",
+            "other_pollution_description"
+        )
+    )
+
+    column_names[[4]] <- c(
+        generic_column_names,
         c(
             "invasive_spp_sampling_date",
             "sampling_site",
@@ -97,58 +124,42 @@ turn_newsheet_into_db <- function(
         )
     )
 
-    colnames[[2]] <- c(
-        generic_colnames,
-        c(
-            "conductivity_mS",
-            "temperature_C",
-            "ammonia_ppm",
-            "phosphate_ppm",
-            "nitrate_ppm",
-            "turbidity_NTU",
-            "other_water_quality"
-        )
-    )
-    colnames[[3]] <- c(
-        generic_colnames,
-        c(
-            "outfall_survey_date",
-            "sampling_site",
-            "outfall_photo",
-            "outfall_flow",
-            "outfall_pollution_distance",
-            "outfall_aesthetics",
-            "other_pollution_description",
-            "fifth_data_type",
-            "submit_or_return",
-            "other_comments_river",
-            "outfall_location_wtw",
-            "location_wtw"
-        )
-    )
-
-    coltypes[[1]] <- paste(
-        rep("c", 39),
+    column_types[[1]] <- paste(
+        rep("c", length(column_names[[1]])),
         collapse = ""
     )
 
-    coltypes[[2]] <- paste(
+    column_types[[2]] <- paste(
         c(rep("c", 6), rep("n", 6), rep("c", 1)),
         collapse = ""
     )
 
-    coltypes[[3]] <- substr(coltypes[[1]], 1, 14)
+    column_types[[3]] <- paste(
+        rep("c", length(column_names[[3]])),
+        collapse = ""
+    )
 
-    coltypes[[4]] <- substr(coltypes[[1]], 1, 12)
+    column_types[[4]] <- paste(
+        rep("c", length(column_names[[4]])),
+        collapse = ""
+    )
 
     for (i in seq_len(length(data_types))) {
+        if (
+            length(column_names[[i]]) != stringr::str_length(column_types[[i]])
+        ) {
+            stop(paste0(
+                "Length of column names and column types must be the same for data type: ",
+                data_types[i]
+            ))
+        }
         if (data_types[i] != "") {
             BRC_full_form <- as.data.frame(
                 googlesheets4::read_sheet(
                     full_form_url, # Get rid of duplicate columns, spaces, and other odd characters in column names
                     sheet = data_types[i],
-                    col_types = coltypes[[i]],
-                    col_names = colnames[[i]]
+                    col_types = column_types[[i]],
+                    col_names = column_names[[i]]
                 )
             )
 
