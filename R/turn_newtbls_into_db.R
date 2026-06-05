@@ -25,7 +25,7 @@ turn_newsheet_into_db <- function(
     col_indices = c(6, 6, 7, 7)
 ) {
     # Function to create the SQLite database and tables if they don't exist
-    full_form_url <- "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?usp=sharing"
+    sheet_url <- "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?usp=sharing"
 
     # Create location data frames for the two different location tables
     locations_list <- process_locations(
@@ -154,9 +154,9 @@ turn_newsheet_into_db <- function(
             ))
         }
         if (data_types[i] != "") {
-            BRC_full_form <- as.data.frame(
+            sub_table <- as.data.frame(
                 googlesheets4::read_sheet(
-                    full_form_url, # Get rid of duplicate columns, spaces, and other odd characters in column names
+                    sheet_url, # Get rid of duplicate columns, spaces, and other odd characters in column names
                     sheet = data_types[i],
                     col_types = column_types[[i]],
                     col_names = column_names[[i]]
@@ -164,7 +164,7 @@ turn_newsheet_into_db <- function(
             )
 
             # Replace "N/A" with blank values
-            BRC_full_form <- BRC_full_form |>
+            sub_table <- sub_table |>
                 mutate(across(everything(), ~ replace(., . == "N/A", "")))
 
             locations_name <- c(
@@ -173,13 +173,32 @@ turn_newsheet_into_db <- function(
                 "outfall_locs",
                 "riverfly_locs"
             )
-            # db_create_and_pop(
-            #     BRC_full_form,
-            #     locations_name[i],
-            #     data_types[i],
-            #     col_indices[i],
-            #     table_name = table_name[i]
-            # )
+
+            sub_table <- sub_table |>
+                clean_data(
+                    sample_site = case_when(
+                        data_types[i] ==
+                            "Urban Riverfly" ~ "sampling_site_riverfly",
+                        data_types[i] == "Water Quality" ~ "wq_sampling_site",
+                        data_types[i] ==
+                            "Invasive Species" ~ "invasive_spp_sampling_site",
+                        data_types[i] ==
+                            "Urban Outfall Safari" ~ "outfall_sampling_site"
+                    ),
+                    locations_name = case_when(
+                        data_types[i] ==
+                            "Urban Outfall Safari" ~ "outfall_locs",
+                        .default = "riverfly_locs"
+                    ),
+                    data_type_name = data_types[i]
+                )
+            #db_create_and_pop(
+            #    sub_table,
+            #    locations_name[i],
+            #    data_types[i],
+            #    col_indices[i],
+            #    table_name = table_name[i]
+            #)
         }
     }
 }
