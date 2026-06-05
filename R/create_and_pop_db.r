@@ -17,7 +17,7 @@ db_create_and_pop <- function(
     table_name,
     ...
 ) {
-    processed_data <- clean_data(
+    processed_data <- subset_data(
         input_df = full_form,
         case_when(
             data_type == "Urban Riverfly" ~ "data_type",
@@ -31,18 +31,21 @@ db_create_and_pop <- function(
             data_type == "Invasive Species" ~ "any_other_invasive_spp",
             data_type == "Urban Outfall Safari" ~ "other_pollution_description"
         ),
-        sample_site = case_when(
-            data_type == "Urban Riverfly" ~ "sampling_site_riverfly",
-            data_type == "Water Quality" ~ "wq_sampling_site",
-            data_type == "Invasive Species" ~ "invasive_spp_sampling_site",
-            data_type == "Urban Outfall Safari" ~ "outfall_sampling_site"
-        ),
-        locations_name = case_when(
-            data_type == "Urban Outfall Safari" ~ "outfall_locs",
-            .default = "riverfly_locs"
-        ),
         data_type_name = data_type
-    )
+    ) |>
+        clean_data(
+            sample_site = case_when(
+                data_type == "Urban Riverfly" ~ "sampling_site_riverfly",
+                data_type == "Water Quality" ~ "wq_sampling_site",
+                data_type == "Invasive Species" ~ "invasive_spp_sampling_site",
+                data_type == "Urban Outfall Safari" ~ "outfall_sampling_site"
+            ),
+            locations_name = case_when(
+                data_type == "Urban Outfall Safari" ~ "outfall_locs",
+                .default = "riverfly_locs"
+            ),
+            data_type_name = data_type
+        )
 
     names(processed_data)[index_of_site_col] <- "sampling_site"
 
