@@ -176,15 +176,7 @@ turn_newsheet_into_db <- function(
 
             sub_table <- sub_table |>
                 clean_data(
-                    sample_site = case_when(
-                        data_types[i] ==
-                            "Urban Riverfly" ~ "sampling_site_riverfly",
-                        data_types[i] == "Water Quality" ~ "wq_sampling_site",
-                        data_types[i] ==
-                            "Invasive Species" ~ "invasive_spp_sampling_site",
-                        data_types[i] ==
-                            "Urban Outfall Safari" ~ "outfall_sampling_site"
-                    ),
+                    sample_site = "sampling_site",
                     locations_name = case_when(
                         data_types[i] ==
                             "Urban Outfall Safari" ~ "outfall_locs",
