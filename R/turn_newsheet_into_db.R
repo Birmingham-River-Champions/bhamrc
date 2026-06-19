@@ -184,13 +184,11 @@ turn_newsheet_into_db <- function(
                     ),
                     data_type_name = data_types[i]
                 )
-            #db_create_and_pop(
-            #    sub_table,
-            #    locations_name[i],
-            #    data_types[i],
-            #    col_indices[i],
-            #    table_name = table_name[i]
-            #)
+            db_create_and_pop(
+                sub_table,
+                index_of_site_col = col_indices[i],
+                table_name = table_name[i]
+            )
         }
     }
 }
