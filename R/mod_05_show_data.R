@@ -27,6 +27,7 @@ mod_05_show_data_ui <- function(id) {
 #' @importFrom RSQLite SQLite
 #' @importFrom DT renderDT DTOutput
 #' @importFrom writexl write_xlsx
+#' @importFrom stats setNames
 #' @noRd
 mod_05_show_data_server <- function(id) {
   moduleServer(id, function(input, output, session) {
@@ -70,7 +71,7 @@ mod_05_show_data_server <- function(id) {
           select(-id, -timestamp, -email_address) |>
           mutate(survey_date = lubridate::dmy(survey_date)) |>
           arrange(desc(survey_date)) |>
-          setNames(column_names[[survey()]])
+          stats::setNames(column_names[[survey()]])
       }
     )
 
@@ -90,7 +91,7 @@ mod_05_show_data_server <- function(id) {
         ) |>
           select(-c(id, timestamp, email_address)) |>
           mutate(survey_date = lubridate::dmy(survey_date)) |>
-          setNames(column_names[[survey()]])
+          stats::setNames(column_names[[survey()]])
 
         writexl::write_xlsx(data_to_download, path = file)
       }

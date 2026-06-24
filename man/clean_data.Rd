@@ -4,21 +4,10 @@
 \alias{clean_data}
 \title{clean_data}
 \usage{
-clean_data(
-  input_df,
-  col_name_start,
-  col_name_end,
-  sample_site,
-  locations_name,
-  data_type_name
-)
+clean_data(cleaned_df, sample_site, locations_name, data_type_name)
 }
 \arguments{
-\item{input_df}{Data frame containing the raw data from Google Sheets.}
-
-\item{col_name_start}{The starting column name for selecting relevant data.}
-
-\item{col_name_end}{The ending column name for selecting relevant data.}
+\item{cleaned_df}{Data frame containing the raw data from Google Sheets.}
 
 \item{sample_site}{Column in input_df that is used to filter out data uploads for this specific data type.}
 

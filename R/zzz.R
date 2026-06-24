@@ -7,5 +7,5 @@
     #    path = "./inst/extdata/birminghamriverchampions-36c3c5598be5.json"
     #)
     googlesheets4::gs4_deauth()
-    turn_gsheets_into_db()
+    turn_newsheet_into_db()
 }

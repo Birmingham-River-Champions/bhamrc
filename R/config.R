@@ -109,9 +109,9 @@ column_names <- list(
     )
 )
 
-setNames(names(riverfly_spp_bw), riverfly_spp_bw)
-setNames(names(other_spp_bw), other_spp_bw)
-setNames(names(water_quality_bw), water_quality_bw)
+stats::setNames(names(riverfly_spp_bw), riverfly_spp_bw)
+stats::setNames(names(other_spp_bw), other_spp_bw)
+stats::setNames(names(water_quality_bw), water_quality_bw)
 
 #Palette to avoid duplication for blues plots
 palette_for_leaflet <- RColorBrewer::brewer.pal(n = 9, name = "Blues")
