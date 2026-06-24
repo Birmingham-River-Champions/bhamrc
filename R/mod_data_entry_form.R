@@ -614,7 +614,7 @@ mod_data_entry_form_server <- function(id, table_name) {
 
             tbl_name <- data_types_bw[[which(names(data_types_bw) == tbl)]]
             column_name <- names(cols[[tbl_name]])
-            out <- setNames(
+            out <- stats::setNames(
                 vector("list", length(column_name)),
                 column_name
             )

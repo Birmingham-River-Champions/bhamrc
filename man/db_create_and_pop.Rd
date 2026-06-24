@@ -5,21 +5,10 @@
 \title{db_create
 A function to create a SQLite database with specified tables for storing Riverfly and Water Quality data.}
 \usage{
-db_create_and_pop(
-  full_form,
-  locations_list,
-  data_type,
-  index_of_site_col,
-  table_name,
-  ...
-)
+db_create_and_pop(sub_table, index_of_site_col, table_name, ...)
 }
 \arguments{
-\item{full_form}{The full data frame read in from the Google Sheet.}
-
-\item{locations_list}{A list of data frames containing location information for different data types.}
-
-\item{data_type}{A string indicating the type of data being processed (e.g., "Urban Riverfly", "Water Quality", etc.).}
+\item{sub_table}{The subsetted data frame read in from the Google Sheet.}
 
 \item{index_of_site_col}{The index of the column in the cleaned data that contains the sampling site information.}
 

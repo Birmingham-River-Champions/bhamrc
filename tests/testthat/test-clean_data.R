@@ -40,9 +40,7 @@ deduped_df <- correct_org_df |>
 test_that("function returns full df when db is valid", {
   testthat::expect_equal(
     nrow(clean_data(
-      input_df = test_df,
-      col_name_start = "organisation",
-      col_name_end = "stonefly_plecoptera",
+      cleaned_df = cleaned_df,
       sample_site = "sampling_site",
       locations_name = "riverfly_locs",
       data_type_name = "Urban Riverfly"
@@ -54,9 +52,7 @@ test_that("function returns full df when db is valid", {
 test_that("function returns no error when db is valid", {
   testthat::expect_no_error(
     clean_data(
-      input_df = test_df,
-      col_name_start = "organisation",
-      col_name_end = "stonefly_plecoptera",
+      cleaned_df = cleaned_df,
       sample_site = "sampling_site",
       locations_name = "riverfly_locs",
       data_type_name = "Urban Riverfly"
@@ -65,12 +61,10 @@ test_that("function returns no error when db is valid", {
 })
 
 test_that("function catches an invalid site and organisation combination", {
-  wrong_org_df <- test_df
+  wrong_org_df <- cleaned_df
   wrong_org_df$sampling_site[1] <- "SiteB"
   testthat::expect_warning(clean_data(
-    input_df = wrong_org_df,
-    col_name_start = "organisation",
-    col_name_end = "stonefly_plecoptera",
+    cleaned_df = wrong_org_df,
     sample_site = "sampling_site",
     locations_name = "riverfly_locs",
     data_type_name = "Urban Riverfly"
@@ -78,13 +72,11 @@ test_that("function catches an invalid site and organisation combination", {
 })
 
 test_that("function catches an entry with a blank site", {
-  blank_df <- test_df
+  blank_df <- cleaned_df
   blank_df$sampling_site[1] <- ""
 
   testthat::expect_warning(clean_data(
-    input_df = blank_df,
-    col_name_start = "organisation",
-    col_name_end = "stonefly_plecoptera",
+    cleaned_df = blank_df,
     sample_site = "sampling_site",
     locations_name = "riverfly_locs",
     data_type_name = "Urban Riverfly"
@@ -92,14 +84,12 @@ test_that("function catches an entry with a blank site", {
 })
 
 test_that("function catches an entry with a duplicate site and timestamp", {
-  dupe_df <- test_df
+  dupe_df <- cleaned_df
   fake_row <- dupe_df[1, ]
   dupe_df <- rbind(dupe_df, fake_row)
 
   testthat::expect_warning(clean_data(
-    input_df = dupe_df,
-    col_name_start = "organisation",
-    col_name_end = "stonefly_plecoptera",
+    cleaned_df = dupe_df,
     sample_site = "sampling_site",
     locations_name = "riverfly_locs",
     data_type = "Urban Riverfly"

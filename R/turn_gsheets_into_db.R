@@ -130,10 +130,45 @@ turn_gsheets_into_db <- function(
     # Create the database tables if they don't exist
     for (i in seq_len(length(data_types))) {
         if (data_types[i] != "") {
+            sub_tbl <- subset_data(
+                input_df = BRC_full_form,
+                case_when(
+                    data_types[i] == "Urban Riverfly" ~ "data_type",
+                    data_types[i] == "Water Quality" ~ "wq_sampling_site",
+                    data_types[i] ==
+                        "Invasive Species" ~ "invasive_spp_sampling_date",
+                    data_types[i] ==
+                        "Urban Outfall Safari" ~ "outfall_survey_date"
+                ),
+                col_name_end = case_when(
+                    data_types[i] == "Urban Riverfly" ~ "names_of_other_taxa",
+                    data_types[i] == "Water Quality" ~ "other_water_quality",
+                    data_types[i] ==
+                        "Invasive Species" ~ "any_other_invasive_spp",
+                    data_types[i] ==
+                        "Urban Outfall Safari" ~ "other_pollution_description"
+                ),
+                data_type_name = data_types[i]
+            ) |>
+                clean_data(
+                    sample_site = case_when(
+                        data_types[i] ==
+                            "Urban Riverfly" ~ "sampling_site_riverfly",
+                        data_types[i] == "Water Quality" ~ "wq_sampling_site",
+                        data_types[i] ==
+                            "Invasive Species" ~ "invasive_spp_sampling_site",
+                        data_types[i] ==
+                            "Urban Outfall Safari" ~ "outfall_sampling_site"
+                    ),
+                    locations_name = case_when(
+                        data_types[i] ==
+                            "Urban Outfall Safari" ~ "outfall_locs",
+                        .default = "riverfly_locs"
+                    ),
+                    data_type_name = data_types[i]
+                )
             db_create_and_pop(
-                BRC_full_form,
-                locations_name[i],
-                data_types[i],
+                sub_tbl,
                 col_indices[i],
                 table_name = table_name[i]
             )
