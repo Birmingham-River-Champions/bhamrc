@@ -314,3 +314,9 @@ choices_list <- list(
 # This is the ID for the new sheet with four separate tables
 google_sheet_id <-
     "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?pli=1&gid=2035392267#gid=2035392267"
+
+new_sheet_url <- "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?usp=sharing"
+
+sampling_locations_url <- 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing'
+
+outfall_locations_url <- 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'

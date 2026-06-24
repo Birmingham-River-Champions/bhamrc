@@ -25,17 +25,17 @@ turn_newsheet_into_db <- function(
     col_indices = c(6, 6, 7, 7)
 ) {
     # Function to create the SQLite database and tables if they don't exist
-    sheet_url <- "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?usp=sharing"
+    sheet_url <- new_sheet_url
 
     # Create location data frames for the two different location tables
     locations_list <- process_locations(
-        sampling_locs_url = 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing',
-        outfall_locs_url = 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
+        sampling_locs_url = sampling_locations_url,
+        outfall_locs_url = outfall_locations_url
     )
 
     column_names <- column_types <- vector("list", length(data_types))
 
-    generic_column_names = c(
+    generic_column_names <- c(
         "timestamp",
         "email_address",
         "organisation",
@@ -166,13 +166,6 @@ turn_newsheet_into_db <- function(
             # Replace "N/A" with blank values
             sub_table <- sub_table |>
                 mutate(across(everything(), ~ replace(., . == "N/A", "")))
-
-            locations_name <- c(
-                "riverfly_locs",
-                "riverfly_locs",
-                "outfall_locs",
-                "riverfly_locs"
-            )
 
             sub_table <- sub_table |>
                 clean_data(
