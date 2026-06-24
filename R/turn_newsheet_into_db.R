@@ -154,7 +154,6 @@ turn_newsheet_into_db <- function(
             ))
         }
 
-        browser()
         if (data_types[i] != "") {
             sub_table <- as.data.frame(
                 googlesheets4::read_sheet(
