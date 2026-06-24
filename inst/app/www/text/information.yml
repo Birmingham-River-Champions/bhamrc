@@ -33,7 +33,7 @@ information:
     image_alt: "A photo of someone holding out a water chemistry assessment card included within the Freshwater Water Watch initiative"
     title: "Water chemistry guidance"
     description: "Follow this link to see guidance on how to effectively undertake water chemistry samples, detecting a 'cocktail' of different pollutants via various pieces of equipment"
-    url: "window.open('www/images/BRC Water Chemistry guidance.pdf"
+    url: "window.open('www/images/BRC Water Chemistry guidance.pdf', '_blank')"
   - image_src: "www/images/Person clipboard.jpg"
     image_alt: "A photo of a surveyor undertaking data collection next to a waterbody"
     title: "Paper copy of the water chemistry survey form"
