@@ -24,7 +24,7 @@ app_server <- function(input, output, session) {
   # Setup reactive for non-reactive be environment
   be_result <- reactivePoll(
     # Poll every x milliseconds
-    interval = 100,
+    interval = 10,
     session = session,
 
     # This checks the background task data
@@ -46,6 +46,10 @@ app_server <- function(input, output, session) {
   output$be_status <- renderText({
     req(be_result())
 
+    # Interrupts to examine data download
+    # are well placed here
+    # browser()
+
     paste(
       # Test code to confirm on main page that be to
       # shiny app pipeline correctly downloads data,
@@ -59,7 +63,7 @@ app_server <- function(input, output, session) {
   mod_02_data_input_server("02_data_input_1")
   mod_03_plot_data_server("03_plot_data_1")
   mod_04_information_server("04_information_1", session)
-  mod_05_show_data_server("05_show_data_1")
+  mod_05_show_data_server("05_show_data_1", be_result)
 
   table_name <- reactive(input$data_type)
 
