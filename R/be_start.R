@@ -12,12 +12,18 @@ be_start <- function() {
     be$running <- TRUE
 
     be$job <- mirai({
+      start <- Sys.time()
+
+      timings <- list()
+
+      timings$start <- Sys.time()
+
       # Mirai is a separate process
       # requiring us to read in libraries, variables, etc.
       library(googlesheets4)
       library(dplyr)
       library(sf)
-      library(arrow)
+      cat("Packages loaded:", Sys.time(), "\n")
 
       # Load auth cache
       # Note: cache is not available then you will need
@@ -29,7 +35,24 @@ be_start <- function() {
       source('R/config.R')
 
       # Read in google data
-      submissions <- read_sheet(new_sheet_id)
+      # All sheets are loaded into
+      # one table. Helps for later filtering.
+      submissions <- bind_rows(
+        read_sheet(new_sheet_id, sheet = "Urban Riverfly") |>
+          mutate(across(everything(), as.character)) |>
+          mutate(sheet = "Urban Riverfly"),
+        read_sheet(new_sheet_id, sheet = "Water Quality") |>
+          mutate(across(everything(), as.character)) |>
+          mutate(sheet = "Water Quality"),
+        read_sheet(new_sheet_id, sheet = "Invasive Species") |>
+          mutate(across(everything(), as.character)) |>
+          mutate(sheet = "Invasive Species"),
+        read_sheet(new_sheet_id, sheet = "Urban Outfall Safari") |>
+          mutate(across(everything(), as.character)) |>
+          mutate(sheet = "Urban Outfall Safari")
+      )
+
+      timings$submission_loaded <- Sys.time()
 
       locations <- rbind(
         read_sheet(sampling_locations_url) |>
@@ -48,6 +71,8 @@ be_start <- function() {
           ) |>
           select(sampling_site, LONG, LAT)
       )
+
+      timings$location_loaded <- Sys.time()
 
       # Add coordinates to submission information
       coords <- locations |>
@@ -69,11 +94,14 @@ be_start <- function() {
           relationship = "many-to-many"
         )
 
+      timings$finished <- Sys.time()
+
       # Return results
       # Currently picks two psuedorandomly sampled
       # results for testing purposes
       list(
         timestamp = format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        timings = timings,
         data = list(
           df_geolocated_submissions = df_geolocated_submissions |> sample_n(2)
         )
