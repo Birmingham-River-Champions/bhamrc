@@ -16,6 +16,7 @@ be$started <- FALSE
 #' @importFrom mirai mirai
 #' @importFrom googlesheets4 gs4_auth read_sheet
 #' @importFrom dplyr left_join rename select
+#' @importFrom lgr get_logger AppenderFile
 #' @noRd
 be_start <- function() {
   # If running then return
@@ -26,18 +27,23 @@ be_start <- function() {
     be$running <- TRUE
 
     be$job <- mirai({
-      start <- Sys.time()
+      library(lgr)
+      # setup logger
+      lg <- get_logger('bhamrc')
 
-      timings <- list()
+      # Set log location
+      lg$set_appenders(
+        AppenderFile$new("logs/bhamrc.log")
+      )
 
-      timings$start <- Sys.time()
+      lg$info('Mirai job started')
 
       # Mirai is a separate process
       # requiring us to read in libraries, variables, etc.
       library(googlesheets4)
       library(dplyr)
       library(sf)
-      cat("Packages loaded:", Sys.time(), "\n")
+      lg$info('Packages loaded')
 
       # Load auth cache
       # Note: cache is not available then you will need
@@ -48,74 +54,84 @@ be_start <- function() {
       # Read in config options (including google sheet urls, etc.)
       source('R/config.R')
 
-      # Read in google data
-      # All sheets are loaded into
-      # one table. Helps for later filtering.
-      submissions <- bind_rows(
-        read_sheet(new_sheet_id, sheet = "Urban Riverfly") |>
-          mutate(across(everything(), as.character)) |>
-          mutate(sheet = "Urban Riverfly"),
-        read_sheet(new_sheet_id, sheet = "Water Quality") |>
-          mutate(across(everything(), as.character)) |>
-          mutate(sheet = "Water Quality"),
-        read_sheet(new_sheet_id, sheet = "Invasive Species") |>
-          mutate(across(everything(), as.character)) |>
-          mutate(sheet = "Invasive Species"),
-        read_sheet(new_sheet_id, sheet = "Urban Outfall Safari") |>
-          mutate(across(everything(), as.character)) |>
-          mutate(sheet = "Urban Outfall Safari")
+      withCallingHandlers(
+        {
+          # Read in google data
+          # All sheets are loaded into
+          # one table. Helps for later filtering.
+          submissions <- bind_rows(
+            read_sheet(new_sheet_id, sheet = "Urban Riverfly") |>
+              mutate(across(everything(), as.character)) |>
+              mutate(sheet = "Urban Riverfly"),
+            read_sheet(new_sheet_id, sheet = "Water Quality") |>
+              mutate(across(everything(), as.character)) |>
+              mutate(sheet = "Water Quality"),
+            read_sheet(new_sheet_id, sheet = "Invasive Species") |>
+              mutate(across(everything(), as.character)) |>
+              mutate(sheet = "Invasive Species"),
+            read_sheet(new_sheet_id, sheet = "Urban Outfall Safari") |>
+              mutate(across(everything(), as.character)) |>
+              mutate(sheet = "Urban Outfall Safari")
+          )
+
+          lg$info('Submission dataframe downloaded from Google sheets')
+
+          locations <- rbind(
+            read_sheet(sampling_locations_url) |>
+              rename(
+                sampling_site = `BRC sampling site ID`,
+                LONG = Easting,
+                LAT = Northing
+              ) |>
+              select(sampling_site, LONG, LAT),
+
+            read_sheet(outfall_locations_url) |>
+              rename(
+                sampling_site = `Outfall ID`,
+                LONG = Easting,
+                LAT = Northing
+              ) |>
+              select(sampling_site, LONG, LAT)
+          )
+
+          lg$info('Locations parsed')
+
+          # Add coordinates to submission information
+          coords <- locations |>
+            select(LONG, LAT) |>
+            st_as_sf(coords = c("LONG", "LAT"), crs = 27700) |>
+            st_transform(4326) |>
+            st_coordinates()
+
+          geolocations <- cbind(
+            locations |> select(sampling_site),
+            coords
+          )
+
+          df_geolocated_submissions <-
+            left_join(
+              submissions,
+              geolocations,
+              by = "sampling_site",
+              relationship = "many-to-many"
+            )
+
+          lgr$info('Finished loading data')
+        },
+        message = function(m) {
+          lg$info(conditionMessage(m))
+          invokeRestart("muffleMessage")
+        },
+        warning = function(w) {
+          lg$warn(conditionMessage(w))
+          invokeRestart("muffleWarning")
+        }
       )
-
-      timings$submission_loaded <- Sys.time()
-
-      locations <- rbind(
-        read_sheet(sampling_locations_url) |>
-          rename(
-            sampling_site = `BRC sampling site ID`,
-            LONG = Easting,
-            LAT = Northing
-          ) |>
-          select(sampling_site, LONG, LAT),
-
-        read_sheet(outfall_locations_url) |>
-          rename(
-            sampling_site = `Outfall ID`,
-            LONG = Easting,
-            LAT = Northing
-          ) |>
-          select(sampling_site, LONG, LAT)
-      )
-
-      timings$location_loaded <- Sys.time()
-
-      # Add coordinates to submission information
-      coords <- locations |>
-        select(LONG, LAT) |>
-        st_as_sf(coords = c("LONG", "LAT"), crs = 27700) |>
-        st_transform(4326) |>
-        st_coordinates()
-
-      geolocations <- cbind(
-        locations |> select(sampling_site),
-        coords
-      )
-
-      df_geolocated_submissions <-
-        left_join(
-          submissions,
-          geolocations,
-          by = "sampling_site",
-          relationship = "many-to-many"
-        )
-
-      timings$finished <- Sys.time()
-
       # Return results
       # Currently picks two psuedorandomly sampled
       # results for testing purposes
       list(
         timestamp = format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-        timings = timings,
         data = list(
           df_geolocated_submissions = df_geolocated_submissions |> sample_n(2)
         )
