@@ -1,5 +1,5 @@
 # Checks if backend job running.
-# Once complete moves data to be$data an sets flags
+# Once complete moves data to be$data and sets flags
 #' @importFrom mirai unresolved
 #' @noRd
 be_check <- function() {
