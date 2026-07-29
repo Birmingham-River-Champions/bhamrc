@@ -26,6 +26,7 @@ Imports:
     leaflet,
     leafpop,
     lubridate,
+    mirai,
     markdown,
     purrr,
     RColorBrewer,
