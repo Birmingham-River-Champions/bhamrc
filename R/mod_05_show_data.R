@@ -7,6 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
+#' @importFrom DT renderDT DTOutput dataTableProxy datatable replaceData
 mod_05_show_data_ui <- function(id) {
   ns <- NS(id)
   sidebarLayout(
@@ -14,10 +15,11 @@ mod_05_show_data_ui <- function(id) {
       data_type_input_ui(ns("data_type"), which_data_types = c(1, 2)) # To add more data types, change the vector here (add 3 for invasive species, add 5 for outfall safari)
     ),
     mainPanel(
-      textOutput(ns("survey")),
-      textOutput(ns("table_name")),
-      downloadButton(ns("download_data"), "Download Data"),
-      DT::DTOutput(ns("entries"))
+      DTOutput(ns("dt_submissions")),
+      #textOutput(ns("survey")),
+      #textOutput(ns("table_name")),
+      #downloadButton(ns("download_data"), "Download Data"),
+      #DT::DTOutput(ns("entries"))
     )
   )
 }
@@ -29,7 +31,7 @@ mod_05_show_data_ui <- function(id) {
 #' @importFrom writexl write_xlsx
 #' @importFrom stats setNames
 #' @noRd
-mod_05_show_data_server <- function(id) {
+mod_05_show_data_server <- function(id, be_result) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     # Determine table name based on selected survey
@@ -52,6 +54,53 @@ mod_05_show_data_server <- function(id) {
         }
       )
     })
+
+    # Datatable proxy
+    # Using a proxy allows us to update
+    # the table without rerendering it entirely.
+
+    # This approach improves the user experience.
+    # Our approach here is to (a) combine all the data
+    # into one table in the backend and (b) show all
+    # of the data in one table, then (c) filter the
+    # rows and columns of the table dynamically.
+
+    # Our initial table needs to contain _all_ of the
+    # possible columns. The dataframe is created in the
+    # file
+    # Create the proxy
+    dt_proxy <- dataTableProxy("dt_submissions")
+    output$dt_submissions <- renderDataTable({
+      datatable(
+        create_blank_submission_df()
+      )
+    })
+
+    # Update data based on drop down selection
+    survey_map <- c(
+      riverfly = "Urban Riverfly",
+      water_quality = "Water Quality",
+      invasive_species = "Invasive Species",
+      outfall_safari = "Urban Outfall Survey"
+    )
+
+    # Update table when either be_result or survey
+    # selection changes.
+    # TODO: Currently update on first load
+    observeEvent(
+      list(be_result(), survey()),
+      {
+        req(be_result())
+        req(survey())
+        replaceData(
+          dt_proxy,
+          be_result()$data$df_geolocated_submissions |>
+            filter(sheet == survey_map[[survey()]]),
+          resetPaging = FALSE,
+          clearSelection = "none",
+        )
+      }
+    )
 
     # Display selected table name
     output$survey <- renderText({
