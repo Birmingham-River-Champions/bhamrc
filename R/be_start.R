@@ -70,7 +70,8 @@ be_start <- function() {
         )
 
       # Return results
-      # Currently picks two results for testing purposes
+      # Currently picks two psuedorandomly sampled
+      # results for testing purposes
       list(
         timestamp = format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
         data = list(
