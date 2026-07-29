@@ -1,5 +1,6 @@
 # R/be_startup.R
 be_startup <- function() {
+  mirai::daemons(1)
   # Start polling for completed jobs
   be_poll()
 
