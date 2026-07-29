@@ -119,11 +119,11 @@ be_start <- function() {
           lgr$info('Finished loading data')
         },
         message = function(m) {
-          lg$info(conditionMessage(m))
+          lg$info(paste('\t', conditionMessage(m)))
           invokeRestart("muffleMessage")
         },
         warning = function(w) {
-          lg$warn(conditionMessage(w))
+          lg$warn(paste('\t', conditionMessage(w)))
           invokeRestart("muffleWarning")
         }
       )
