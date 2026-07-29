@@ -6,6 +6,6 @@ be_poll <- function() {
 
   later(
     be_poll,
-    delay = 1
+    delay = 0.1
   )
 }
