@@ -40,8 +40,7 @@ app_ui <- function(request) {
                 "<div>Monitor <span>your</span> river</div>
                 <div>Protect <span>your</span> river</div>
                 <div>Love <span>your</span> river</div>"
-              ),
-              verbatimTextOutput("be_status")
+              )
             )
           ),
           # Right side: Smaller footer images, with EA logo slightly bigger

@@ -41,27 +41,8 @@ app_server <- function(input, output, session) {
     }
   )
 
-  # Rendered text is only returned
-  # if there is data in the be_result column
-  output$be_status <- renderText({
-    req(be_result())
-
-    # Interrupts to examine data download
-    # are well placed here
-    # browser()
-
-    paste(
-      # Test code to confirm on main page that be to
-      # shiny app pipeline correctly downloads data,
-      # turns this into reactive variable and then
-      # is displayed in Shiny.
-      be_result()$data$df_geolocated_submissions$email_address,
-      collapse = ", "
-    )
-  })
-
   mod_02_data_input_server("02_data_input_1")
-  mod_03_plot_data_server("03_plot_data_1")
+  mod_03_plot_data_server("03_plot_data_1", be_result)
   mod_04_information_server("04_information_1", session)
   mod_05_show_data_server("05_show_data_1", be_result)
 
