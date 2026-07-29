@@ -43,7 +43,7 @@ be_start <- function() {
       # Note: cache is not available then you will need
       # to create it using googlesheets4 auth
       # options(gargle_oauth_cache = ".secrets")
-      gs4_auth(cache = ".secrets", email = "jamesjrtripp@gmail.com")
+      gs4_auth(path = '.secrets/birminghamriverchampions-db5399f61d80.json')
 
       # Read in config options (including google sheet urls, etc.)
       source('R/config.R')
