@@ -27,13 +27,15 @@ app_server <- function(input, output, session) {
     interval = 100,
     session = session,
 
-    # This checks the background task version
+    # This checks the background task data
     checkFunc = function() {
       be$data
     },
 
-    # Once the version updates, put the data
-    # the new reactive be_data variable
+    # Once there is new data in the
+    # mirai job found by reactivePoll
+    # this data is then assigned to
+    # the be_result reactive variable
     valueFunc = function() {
       be$data
     }
