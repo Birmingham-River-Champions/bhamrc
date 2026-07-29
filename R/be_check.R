@@ -21,12 +21,13 @@ be_check <- function() {
 
   be$run <- be$run + 1 #iterate run count
 
-  # Update data value when backend has data
+  # Update data value when marai back end job
+  # contains data
   if (!is.null(be$job$data)) {
     be$data <- be$job$data
   }
 
-  # Clear job data and set job running flag to false
+  # Clear mira back end job data and set job running flag to false
   be$job <- NULL
   be$running <- FALSE
 }
