@@ -1,5 +1,6 @@
 # Creates environment to store back end variables
-# Runs before shiny process starts
+# Runs before Shiny process starts so environment is accessible
+# to all subsequently created Shiny sessions
 be <- new.env(parent = emptyenv())
 
 be$running <- FALSE
