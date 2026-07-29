@@ -7,6 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
+#' @importFrom leaflet leafletOutput
 mod_03_plot_data_ui <- function(id) {
   ns <- NS(id)
 
@@ -92,6 +93,7 @@ mod_03_plot_data_ui <- function(id) {
       ),
     ),
     mainPanel(
+      leafletOutput(ns('submission_map')),
       div(
         id = "yourdata-descriptor",
         HTML(
@@ -118,7 +120,7 @@ mod_03_plot_data_ui <- function(id) {
 #' @importFrom leaflet providers leafletOptions renderLeaflet leaflet addLayersControl layersControlOptions
 #' @importFrom dplyr filter mutate rowwise
 #' @noRd
-mod_03_plot_data_server <- function(id) {
+mod_03_plot_data_server <- function(id, be_result) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     # Load the data and assign to variables in the module environment
@@ -126,7 +128,7 @@ mod_03_plot_data_server <- function(id) {
     list2env(data_plot_list, envir = environment())
 
     # Initialize the Leaflet map
-    output$map <- renderLeaflet({
+    output$submission_map <- renderLeaflet({
       leaflet(
         options = leafletOptions(
           zoomControl = FALSE,
@@ -142,6 +144,32 @@ mod_03_plot_data_server <- function(id) {
         setView(lng = -1.83, lat = 52.45, zoom = 10) |>
         addPolygonsAndLines(zoomLevel = 10) # Add polygons and lines at initial zoom level
     })
+
+    # Watch for changes in data and options
+    # then update map
+    observeEvent(
+      list(be_result(), selected_metric()),
+      {
+        req(be_result())
+
+        leafletProxy('submission_map') |>
+          clearGroup("Points") |>
+          addCircleMarkers(
+            data = be_result()$data$df_geolocated_submissions,
+            lng = ~X,
+            lat = ~Y,
+            radius = 6,
+            weight = 2,
+            group = "Points",
+            color = "black",
+            stroke = TRUE,
+            opacity = 0.5,
+            fill = TRUE,
+            fillOpacity = 1
+          )
+      }
+    )
+
     # Reactive expressions to capture user selections
     selected_metric <- reactive(input$metric)
     selected_riverfly <- reactive(input$riverfly)
