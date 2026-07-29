@@ -13,6 +13,9 @@ be_check <- function() {
     return()
   }
 
+  # Below code only runs when the mirai job is
+  # neither unresolved or not running.
+
   # pass result to be$data for convenience
   be$timestamp <- be$job$timestamp # Record when run
 
