@@ -106,45 +106,6 @@ mod_05_show_data_server <- function(id, be_result) {
     output$survey <- renderText({
       paste("Selected survey table:", survey())
     })
-    output$table_name <- renderText(table_name())
-    # Render the table from the SQL database
-    output$entries <- DT::renderDT(
-      {
-        # Retrieve data based on chosen survey
-        # Remove id column and convert date columns before displaying
-        # Fix column names for display
-        dbReadTable(
-          con,
-          survey()
-        ) |>
-          select(-id, -timestamp, -email_address) |>
-          mutate(survey_date = lubridate::dmy(survey_date)) |>
-          arrange(desc(survey_date)) |>
-          stats::setNames(column_names[[survey()]])
-      }
-    )
-
-    onStop(function() {
-      dbDisconnect(con)
-    })
-
-    # Create download handler to download the data when clicked
-    output$download_data <- downloadHandler(
-      filename = function() {
-        paste0(survey(), "_data.xlsx")
-      },
-      content = function(file) {
-        data_to_download <- dbReadTable(
-          con,
-          survey()
-        ) |>
-          select(-c(id, timestamp, email_address)) |>
-          mutate(survey_date = lubridate::dmy(survey_date)) |>
-          stats::setNames(column_names[[survey()]])
-
-        writexl::write_xlsx(data_to_download, path = file)
-      }
-    )
   })
 }
 
