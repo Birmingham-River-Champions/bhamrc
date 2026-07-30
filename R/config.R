@@ -340,4 +340,4 @@ shp_tame_river <- st_read(
 be_poll_interval <- 1
 
 # How long to wait after a completed refresh before starting again
-be_refresh_interval <- 10
+be_refresh_interval <- 30
