@@ -9,22 +9,10 @@
 #' @import RSQLite
 #' @noRd
 app_server <- function(input, output, session) {
-  # Trigger backend in session if not already going
-  if (!be$started) {
-    # setup regular check
-    be_poll()
-
-    # start be at set interval
-    be_schedule_check(be_interval)
-
-    # prevent other sessions restarting backend
-    be$started <- TRUE
-  }
-
   # Setup reactive for non-reactive be environment
   be_result <- reactivePoll(
     # Poll every x milliseconds
-    interval = 10,
+    interval = 100,
     session = session,
 
     # This checks the background task data
