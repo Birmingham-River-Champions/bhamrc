@@ -775,7 +775,9 @@ mod_data_entry_form_server <- function(id, table_name) {
                 }
             }
             if (allow_submit()) {
-                new_row$names_of_other_taxa <- other_taxa_names
+                if (not_null(other_taxa_names)) {
+                    new_row$names_of_other_taxa <- other_taxa_names
+                }
                 if (ncol(existing_data) == length(new_row)) {
                     # Ensure the new data has the same columns as the existing table
                     names(new_row) <- names(existing_data)
@@ -792,7 +794,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                         id,
                         timestamp,
                         email_address,
-                        organisation:names_of_other_taxa
+                        organisation:tail(names(new_row), n = 1)
                     )
 
                     # Put the data in the Google Sheet as well

@@ -53,10 +53,6 @@ mod_02_data_input_server <- function(id) {
       }
       # simple feedback - show how many fields submitted
       n <- length(vals)
-      shiny::showNotification(
-        sprintf("Form submitted for '%s' (%d fields).", table_name(), n),
-        type = "message"
-      )
 
       # for now we just print the values (could be saved to DB in a follow-up)
       message("Form values for table '", table_name(), "':")
