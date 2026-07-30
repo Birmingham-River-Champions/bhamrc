@@ -33,7 +33,9 @@ be_start <- function() {
 
       # Set log location
       lg$set_appenders(
-        AppenderFile$new("logs/bhamrc.log")
+        AppenderFile$new(
+          "logs/bhamrc.log"
+        )
       )
 
       lg$info('Mirai job started')
