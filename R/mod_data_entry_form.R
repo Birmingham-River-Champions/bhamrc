@@ -824,7 +824,6 @@ mod_data_entry_form_server <- function(id, table_name) {
 
                 DBI::dbDisconnect(con)
             }
-            allow_submit(TRUE)
         })
         list(
             values = values,
