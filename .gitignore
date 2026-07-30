@@ -25,3 +25,4 @@
 .radian_profile
 data.sqlite
 .secrets
+logs/bhamrc.log
