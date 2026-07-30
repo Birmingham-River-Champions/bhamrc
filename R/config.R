@@ -322,10 +322,6 @@ sampling_locations_url <- 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJ
 
 outfall_locations_url <- 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
 
-# How often in seconds should the backend (defined in be_run.R) run?
-# The backend reads in and proceses the dataset regularly
-be_interval <- 5
-
 # Read in spatial data which we assume will not update dynamically
 library(sf)
 # Spatial shape files
@@ -339,3 +335,9 @@ shp_tame_river <- st_read(
 ) |>
   st_zm(shp_tame) |>
   st_transform(crs = 4326)
+
+# How often to check whether a Mirai job has completed
+be_poll_interval <- 1
+
+# How long to wait after a completed refresh before starting again
+be_refresh_interval <- 10
