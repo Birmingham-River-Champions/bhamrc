@@ -2,7 +2,9 @@ default:
   golem_name: bhamrc
   golem_version: 0.0.0.9000
   app_prod: no
+  enable_logging: TRUE
 production:
   app_prod: yes
+  enable_logging: FALSE
 dev:
   golem_wd: !expr golem::pkg_path()
