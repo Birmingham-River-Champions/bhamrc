@@ -26,6 +26,7 @@ Imports:
     later,
     leaflet,
     leafpop,
+    lgr,
     lubridate,
     mirai,
     markdown,
