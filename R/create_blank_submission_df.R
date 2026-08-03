@@ -42,7 +42,13 @@ create_blank_submission_df <- function() {
     "other_unspecified_7",
     "other_unspecified_8",
     "names_of_other_taxa",
-    "sheet",
+    "dataset",
+    "outfall_survey_date",
+    "outfall_photo",
+    "outfall_flow",
+    "outfall_pollution_distance",
+    "outfall_aesthetics",
+    "other_pollution_description",
     "conductivity_mS",
     "temperature_C",
     "ammonia_ppm",
@@ -58,14 +64,9 @@ create_blank_submission_df <- function() {
     "japanese_knotweed",
     "giant_hogweed",
     "any_other_invasive_spp",
-    "outfall_survey_date",
-    "outfall_photo",
-    "outfall_flow",
-    "outfall_pollution_distance",
-    "outfall_aesthetics",
-    "other_pollution_description",
-    "X",
-    "Y"
+    "Organisation",
+    "LONG",
+    "LAT"
   )
 
   col_list <- setNames(
@@ -74,8 +75,8 @@ create_blank_submission_df <- function() {
   )
 
   # Override X and Y to be numeric
-  col_list$X <- numeric()
-  col_list$Y <- numeric()
+  col_list$LONG <- numeric()
+  col_list$LAT <- numeric()
 
   tibble::as_tibble(col_list)
 }
