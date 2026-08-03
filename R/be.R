@@ -205,7 +205,7 @@ be_start <- function() {
           df_geolocated_submissions <-
             left_join(
               submissions,
-              geolocations,
+              locations,
               by = "sampling_site",
               relationship = "many-to-many"
             )
@@ -218,10 +218,12 @@ be_start <- function() {
 
         # TODO: Consider logging all caught warnings/messages
         message = function(m) {
+          log_info(paste("/t", m))
           invokeRestart("muffleMessage")
         },
 
         warning = function(w) {
+          log_info(paste("/t", w))
           invokeRestart("muffleWarning")
         }
       )
