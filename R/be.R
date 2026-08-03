@@ -150,11 +150,15 @@ be_start <- function() {
   be$job <- mirai::mirai(
     {
       source("R/config.R")
+      source("R/get_submissions.R")
+      source("R/get_locations.R")
+      source('R/clean_submissions.R')
 
       library(lgr)
       library(googlesheets4)
       library(dplyr)
       library(sf)
+      library(stringr)
 
       log_info <- function(msg) {
         if (enable_logging) {
@@ -178,58 +182,26 @@ be_start <- function() {
 
       withCallingHandlers(
         {
-          submissions <- bind_rows(
-            read_sheet(new_sheet_id, sheet = "Urban Riverfly") |>
-              mutate(across(everything(), as.character)) |>
-              mutate(sheet = "Urban Riverfly"),
-
-            read_sheet(new_sheet_id, sheet = "Water Quality") |>
-              mutate(across(everything(), as.character)) |>
-              mutate(sheet = "Water Quality"),
-
-            read_sheet(new_sheet_id, sheet = "Invasive Species") |>
-              mutate(across(everything(), as.character)) |>
-              mutate(sheet = "Invasive Species"),
-
-            read_sheet(new_sheet_id, sheet = "Urban Outfall Safari") |>
-              mutate(across(everything(), as.character)) |>
-              mutate(sheet = "Urban Outfall Safari")
-          )
+          # Download the current submissions dataset
+          submissions <- get_submissions(new_sheet_id)
 
           log_info("Submission dataframe downloaded")
 
-          locations <- rbind(
-            read_sheet(sampling_locations_url) |>
-              rename(
-                sampling_site = `BRC sampling site ID`,
-                LONG = Easting,
-                LAT = Northing
-              ) |>
-              select(sampling_site, LONG, LAT),
-
-            read_sheet(outfall_locations_url) |>
-              rename(
-                sampling_site = `Outfall ID`,
-                LONG = Easting,
-                LAT = Northing
-              ) |>
-              select(sampling_site, LONG, LAT)
+          # Download and convert location information
+          locations <- get_locations(
+            sampling_locations_url,
+            outfall_locations_url
           )
 
           log_info("Locations parsed")
 
-          coords <- locations |>
-            select(LONG, LAT) |>
-            st_as_sf(coords = c("LONG", "LAT"), crs = 27700) |>
-            st_transform(4326) |>
-            st_coordinates()
+          # Refine the submission data
+          submissions <- clean_submissions(submissions, locations)
 
-          geolocations <- cbind(
-            locations |>
-              select(sampling_site),
-            coords
-          )
+          log_info("Cleaned submissions df")
 
+          # Combine submission data and corresponding geospatial
+          # data for plotting on map
           df_geolocated_submissions <-
             left_join(
               submissions,
@@ -239,6 +211,9 @@ be_start <- function() {
             )
 
           log_info("Finished loading data")
+
+          # Return data from Mirai worker
+          return(df_geolocated_submissions)
         },
 
         # TODO: Consider logging all caught warnings/messages
