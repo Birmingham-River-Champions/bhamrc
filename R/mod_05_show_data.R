@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-#' @importFrom DT renderDT DTOutput dataTableProxy datatable replaceData
+#' @importFrom DT renderDT DTOutput dataTableProxy datatable replaceData hideCols showCols
 mod_05_show_data_ui <- function(id) {
   ns <- NS(id)
   sidebarLayout(
@@ -72,7 +72,27 @@ mod_05_show_data_server <- function(id, be_result) {
     dt_proxy <- dataTableProxy("dt_submissions")
     output$dt_submissions <- renderDataTable({
       datatable(
-        create_blank_submission_df()
+        create_blank_submission_df(),
+        extensions = "Buttons",
+        options = list(
+          dom = "Bfrtip",
+          buttons = list(
+            list(
+              extend = "csv",
+              filename = "birmingham_river_champions_submissions",
+              exportOptions = list(
+                columns = ":visible"
+              )
+            ),
+            list(
+              extend = "excel",
+              filename = "birmingham_river_champions_submissions",
+              exportOptions = list(
+                columns = ":visible"
+              )
+            )
+          )
+        )
       )
     })
 
@@ -94,11 +114,25 @@ mod_05_show_data_server <- function(id, be_result) {
         req(survey())
         replaceData(
           dt_proxy,
-          be_result()$data$df_geolocated_submissions |>
-            filter(sheet == survey_map[[survey()]]),
+          be_result() |>
+            filter(dataset == survey_map[[survey()]]),
           resetPaging = FALSE,
           clearSelection = "none",
         )
+
+        # filter out the data not relevent to
+        # the dataset we're looking at
+        all_cols <- names(be_result())
+
+        cols_to_show <- get_relevant_dataset_columns(survey_map[[survey()]])
+
+        show_cols <- which(all_cols %in% cols_to_show)
+        hide_cols <- which(!all_cols %in% cols_to_show)
+
+        #browser()
+
+        showCols(dt_proxy, show_cols)
+        hideCols(dt_proxy, hide_cols)
       }
     )
 
