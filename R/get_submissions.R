@@ -187,6 +187,8 @@ get_submissions <- function(submissions_url) {
       mutate(dataset = "Invasive Species"),
   )
 
+  # Set NAs to 0 in dataframe
+
   return(
     submissions
   )
