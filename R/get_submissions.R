@@ -1,5 +1,49 @@
-# Function to read in the 4 sheets containing submission information
-# When loading the data column names and data types are specified
+#' Read and combine all submission datasets from a Google Sheet
+#'
+#' Reads submission data from the four Urban River LAB Google Sheets
+#' ("Urban Riverfly", "Urban Outfall Safari", "Water Quality", and
+#' "Invasive Species"), applies predefined column names and column types,
+#' standardises known data quality issues, and combines all records into a
+#' single data frame.
+#'
+#' The function includes special handling for the Water Quality sheet, where
+#' timestamps may be imported in an inconsistent format and the
+#' `timestamp` and `email_address` columns are occasionally transposed.
+#'
+#' @param submissions_url Character scalar giving the URL or spreadsheet ID of
+#'   the Google Sheet containing the submission data.
+#'
+#' @return A tibble containing records from all submission sheets with a
+#'   standardised structure. An additional `dataset` column identifies the
+#'   source sheet for each record.
+#'
+#' @details
+#' The function:
+#' \itemize{
+#'   \item Reads data from the Urban Riverfly, Urban Outfall Safari,
+#'     Water Quality, and Invasive Species sheets.
+#'   \item Applies predefined column names and column type specifications.
+#'   \item Detects and corrects rows where `timestamp` and `email_address`
+#'     have been swapped.
+#'   \item Combines all submission datasets into a single tibble using
+#'     \code{dplyr::bind_rows()}.
+#' }
+#'
+#' @seealso
+#' \code{\link[googlesheets4]{read_sheet}}
+#'
+#' @examples
+#' \dontrun{
+#' submissions <- get_submissions(
+#'   "https://docs.google.com/spreadsheets/d/xxxxxxxxxxxxxxxx"
+#' )
+#' }
+#'
+#' @importFrom googlesheets4 read_sheet
+#' @importFrom dplyr bind_rows mutate across select rename relocate case_when
+#' @importFrom stringr str_detect
+#'
+#' @export
 get_submissions <- function(submissions_url) {
   # Names at start of all datasets
   generic_col_names <- c(
