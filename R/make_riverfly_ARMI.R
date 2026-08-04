@@ -3,7 +3,6 @@
 #' @description A function to add the ARMI values to the riverfly data
 #' @param riverfly_data - riverfly data frame from
 #' @return The data frame with riverfly data and an appended ARMI column.
-#' @importFrom DBI dbReadTable dbConnect dbDisconnect
 #' @importFrom dplyr mutate mutate_at left_join select vars c_across
 #' @importFrom dplyr summarise group_by join_by
 make_riverfly_ARMI <- function(riverfly_data) {
