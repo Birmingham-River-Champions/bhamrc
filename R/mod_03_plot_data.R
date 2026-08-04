@@ -157,11 +157,11 @@ mod_03_plot_data_server <- function(id, be_result) {
           selected_dataset <- "Water Quality"
         }
 
-        # Filter to just the data we are looking for
+        # Picks if the user selects Water Quality, Urban Riverfly or Invasive Species
         plot_data <- be_result() |>
-          filter(dataset == selected_dataset) |>
-          # Only select the data I need
-          select(LONG, LAT)
+          filter(dataset == selected_dataset)
+
+        #
 
         leafletProxy('submission_map') |>
           clearGroup("Points") |>
