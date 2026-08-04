@@ -153,6 +153,7 @@ be_start <- function() {
       source("R/get_submissions.R")
       source("R/get_locations.R")
       source('R/clean_submissions.R')
+      source('R/make_riverfly_ARMI.R')
 
       library(lgr)
       library(googlesheets4)
@@ -209,6 +210,11 @@ be_start <- function() {
               by = "sampling_site",
               relationship = "many-to-many"
             )
+
+          # Create ARMI data
+          riverfly_armi <- df_geolocated_submissions |>
+            filter(dataset == "Urban Riverfly") |>
+            make_riverfly_ARMI()
 
           log_info("Finished loading data")
 
