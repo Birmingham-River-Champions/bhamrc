@@ -133,6 +133,7 @@ be_log_info <- function(msg) {
 #' @importFrom mirai mirai
 #' @importFrom googlesheets4 gs4_auth read_sheet
 #' @importFrom dplyr left_join rename select
+#' @importFrom sf st_transform st_read
 #' @noRd
 be_start <- function() {
   if (be$running) {
@@ -142,6 +143,18 @@ be_start <- function() {
   enable_logging <- isTRUE(
     get_golem_config("enable_logging")
   )
+
+  # Read in spatial data which we assume will not update dynamically
+  shp_tame <- st_read(
+    "./inst/extdata/Upper_Tame_Wbs_Complete_SubCtchmnts_Dsslvd.shp"
+  ) |>
+    st_transform(crs = 4326)
+
+  shp_tame_river <- st_read(
+    "./inst/extdata/Tame_OS_WatercourseLink.shp"
+  ) |>
+    st_zm(shp_tame) |>
+    st_transform(crs = 4326)
 
   be$running <- TRUE
 
@@ -257,7 +270,9 @@ be_start <- function() {
         )
       )
     },
-    enable_logging = enable_logging # Pass enable logging flag to Mirai
+    enable_logging = enable_logging,
+    shp_tame = shp_tame,
+    shp_tame_river = shp_tame_river # Pass enable logging flag to Mirai
   )
 
   invisible(TRUE)
@@ -316,7 +331,6 @@ be_poll <- function() {
 #' job start.
 #'
 #' @importFrom mirai unresolved
-#' @importFro
 be_check <- function() {
   if (is.null(be$job)) {
     return()
