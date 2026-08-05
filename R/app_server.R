@@ -41,6 +41,26 @@ app_server <- function(input, output, session) {
     output$survey <- renderText(table_name())
   })
 
+  # Notification to show when loading data
+  data_notification <- showNotification(
+    "Loading data....",
+    duration = NULL,
+    type = 'message',
+    closeButton = FALSE
+  )
+
+  # Remove notification once data is loaded
+  observeEvent(
+    be_result(),
+    {
+      req(!is.null(be_result()))
+      req(nrow(be_result()) > 0)
+
+      removeNotification(data_notification)
+    },
+    once = TRUE
+  )
+
   # Force leaflet to render on start
   # Makes sure map is updated by shared state
   # outputOptions(
