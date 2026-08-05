@@ -112,7 +112,7 @@ mod_05_show_data_server <- function(id, be_result) {
     observeEvent(
       list(be_result(), survey()),
       {
-        req(be_result())
+        req(!is.null(be_result()))
         req(survey())
         replaceData(
           dt_proxy,
