@@ -79,6 +79,7 @@ mod_05_show_data_server <- function(id, be_result) {
           buttons = list(
             list(
               extend = "csv",
+              text = '<i class="fa fa-download"></i> Download CSV',
               filename = "birmingham_river_champions_submissions",
               exportOptions = list(
                 columns = ":visible"
@@ -86,6 +87,7 @@ mod_05_show_data_server <- function(id, be_result) {
             ),
             list(
               extend = "excel",
+              text = '<i class="fa fa-download"></i> Download XLSX',
               filename = "birmingham_river_champions_submissions",
               exportOptions = list(
                 columns = ":visible"
@@ -134,6 +136,15 @@ mod_05_show_data_server <- function(id, be_result) {
         showCols(dt_proxy, show_cols)
         hideCols(dt_proxy, hide_cols)
       }
+    )
+
+    # We want the table to be rendered
+    # when the app starts. Rather than only when
+    # we click on the tab
+    outputOptions(
+      output,
+      "dt_submissions",
+      suspendWhenHidden = FALSE
     )
 
     # Display selected table name
