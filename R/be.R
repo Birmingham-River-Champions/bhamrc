@@ -155,6 +155,7 @@ be_start <- function() {
       source('R/clean_submissions.R')
       source('R/make_riverfly_ARMI.R')
       source("R/sum_up_ARMI.r")
+      source("R/create_armi_plots.R")
 
       library(lgr)
       library(googlesheets4)
@@ -227,10 +228,10 @@ be_start <- function() {
             sum_up_ARMI() |>
             select(sampling_site, organisation, survey_date, ARMI)
 
-          # Pre-create plots for ARMI
+          # # Pre-create plots for ARMI
           riverfly_plot <- create_armi_plots(riverfly_armi_assignment)
 
-          log_info("Finished creating plots")
+          # log_info("Finished creating plots")
 
           # Return data from Mirai worker
           return(df_geolocated_submissions)
