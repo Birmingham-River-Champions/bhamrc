@@ -101,5 +101,7 @@ create_armi_plots <- function(riverfly_armi_assignment) {
     riverfly_plots[[site]] <- p
   }
 
-  riverfly_plots
+  return(
+    riverfly_plots
+  )
 }
