@@ -161,6 +161,8 @@ be_start <- function() {
       library(dplyr)
       library(sf)
       library(stringr)
+      library(ggplot2)
+      library(lubridate)
 
       log_info <- function(msg) {
         if (enable_logging) {
@@ -202,6 +204,8 @@ be_start <- function() {
 
           log_info("Cleaned submissions df")
 
+          log_info("Finished loading data")
+
           # Combine submission data and corresponding geospatial
           # data for plotting on map
           df_geolocated_submissions <-
@@ -212,15 +216,21 @@ be_start <- function() {
               relationship = "many-to-many"
             )
 
+          log_info("Created ARMI assignment for Riverfly data and plots")
+
           # Create ARMI data
+          # Select only the data needed for the plots
           riverfly_armi_assignment <- df_geolocated_submissions |>
             filter(dataset == "Urban Riverfly") |>
             select(any_of(riverfly_cols)) |>
-            make_riverfly_ARMI()
+            make_riverfly_ARMI() |>
+            sum_up_ARMI() |>
+            select(sampling_site, organisation, survey_date, ARMI)
 
-          riverfly_armi_assignment <- sum_up_ARMI(riverfly_armi_assignment)
+          # Pre-create plots for ARMI
+          riverfly_plot <- create_armi_plots(riverfly_armi_assignment)
 
-          log_info("Finished loading data")
+          log_info("Finished creating plots")
 
           # Return data from Mirai worker
           return(df_geolocated_submissions)
