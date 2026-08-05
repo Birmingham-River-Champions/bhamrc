@@ -341,3 +341,46 @@ be_poll_interval <- 1
 
 # How long to wait after a completed refresh before starting again
 be_refresh_interval <- 30
+
+# Columns in the riverfly dataframe
+riverfly_cols <- c(
+  "email_address",
+  "timestamp",
+  "organisation",
+  "survey_date",
+  "data_type",
+  "sampling_site",
+  "cased_caddisfly",
+  "caseless_caddisfly",
+  "olive_mayfly",
+  "blue_winged_olive_mayfly",
+  "freshwater_shrimp",
+  "freshwater_hoglouse",
+  "blackfly_larvae",
+  "freshwater_worm",
+  "freshwater_leech",
+  "freshwater_snail",
+  "freshwater_beetle",
+  "green_drake_mayfly",
+  "flat_bodied_stone_clinger_mayfly",
+  "stonefly_plecoptera",
+  "other_chironomidae",
+  "other_dicranota",
+  "other_tipulidae",
+  "other_hydracarina",
+  "other_hydropsychidae",
+  "other_rhyacophilidae",
+  "other_planorbidae",
+  "other_sphaeriidae",
+  "other_acroloxidae_ancylidae",
+  "other_bullhead",
+  "other_unspecified_1",
+  "other_unspecified_2",
+  "other_unspecified_3",
+  "other_unspecified_4",
+  "other_unspecified_5",
+  "other_unspecified_6",
+  "other_unspecified_7",
+  "other_unspecified_8",
+  "names_of_other_taxa"
+)
