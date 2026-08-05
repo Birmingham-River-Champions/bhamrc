@@ -40,4 +40,12 @@ app_server <- function(input, output, session) {
   observeEvent(input$submit_dt, {
     output$survey <- renderText(table_name())
   })
+
+  # Force leaflet to render on start
+  # Makes sure map is updated by shared state
+  # outputOptions(
+  #   output,
+  #   "submission_map",
+  #   suspendWhenHidden = FALSE
+  # )
 }
