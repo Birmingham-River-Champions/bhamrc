@@ -179,6 +179,15 @@ mod_03_plot_data_server <- function(id, be_result) {
       }
     )
 
+    # We want the plot to be rendered
+    # when the app starts. Rather than only when
+    # we click on the tab
+    outputOptions(
+      output,
+      "submission_map",
+      suspendWhenHidden = FALSE
+    )
+
     # Reactive expressions to capture user selections
     selected_metric <- reactive(input$metric)
     selected_riverfly <- reactive(input$riverfly)
