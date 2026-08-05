@@ -161,8 +161,6 @@ mod_03_plot_data_server <- function(id, be_result) {
         plot_data <- be_result() |>
           filter(dataset == selected_dataset)
 
-        #
-
         leafletProxy('submission_map') |>
           clearGroup("Points") |>
           addCircleMarkers(
