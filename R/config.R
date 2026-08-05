@@ -322,20 +322,6 @@ sampling_locations_url <- 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJ
 
 outfall_locations_url <- 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
 
-# Read in spatial data which we assume will not update dynamically
-library(sf)
-# Spatial shape files
-shp_tame <- st_read(
-  "./inst/extdata/Upper_Tame_Wbs_Complete_SubCtchmnts_Dsslvd.shp"
-) |>
-  st_transform(crs = 4326)
-
-shp_tame_river <- st_read(
-  "./inst/extdata/Tame_OS_WatercourseLink.shp"
-) |>
-  st_zm(shp_tame) |>
-  st_transform(crs = 4326)
-
 # How often to check whether a Mirai job has completed
 be_poll_interval <- 1
 
