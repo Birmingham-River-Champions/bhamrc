@@ -89,15 +89,8 @@ create_armi_plots <- function(riverfly_armi_assignment) {
         axis.text.x = element_text(angle = 45, hjust = 1)
       ) + #+ ##Did have the text over the y-axis title, but changed to centre - ","
       ggtitle(title_text)
-    # ggtitle(str_wrap(title_text, width = title_wrap_width)) # Wrap the title based on width
-    # TODO: Look into prerendering SVGs here and then modifying heigh and width later at point of plotting
-    # Code to view and then maybe edit these for testing could be
-    # htmltools::browsable(htmltools::HTML(svglite::stringSVG(print(p))))
-    # Modify plot: sub('width="[^\"]+"', 'width="600"', svg)
-    #.             sub('height="[^\"]+"', 'height="400"', svg)
 
     # Add to list
-    # Note: this is
     riverfly_plots[[site]] <- p
   }
 
