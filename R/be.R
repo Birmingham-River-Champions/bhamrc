@@ -56,7 +56,7 @@
 #                be_check() (run regularly by be_poll())
 #                    |
 #                    +-> Moves results of Mirai worker to be$data
-#                    +-> Incriments be run so reactivePoll can pull out results
+#                    +-> Increments be run so reactivePoll can pull out results
 #                    +-> Clears complete job
 #                    V
 #            Waits n seconds defined by be_refresh_interval (defined in config.R)
