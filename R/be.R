@@ -134,6 +134,7 @@ be_log_info <- function(msg) {
 #' @importFrom googlesheets4 gs4_auth read_sheet
 #' @importFrom dplyr left_join rename select
 #' @importFrom sf st_transform st_read
+#' @importFrom lgr be_logger
 #' @noRd
 be_start <- function() {
   if (be$running) {
