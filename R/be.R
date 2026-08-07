@@ -45,7 +45,7 @@
 #.                   V
 #                 be_start()
 #                    V
-#               Mirai Worker (seperate R process)
+#               Mirai Worker (separate R process)
 #                    |
 #                    +-> Data download and processing
 #                    |
