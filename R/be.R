@@ -244,13 +244,12 @@ be_start <- function() {
           # # Pre-create plots for ARMI
           riverfly_plot <- create_armi_plots(riverfly_armi_assignment)
 
-          # log_info("Finished creating plots")
+          log_info("Finished creating plot objects")
 
           # Return data from Mirai worker
           return(df_geolocated_submissions)
         },
 
-        # TODO: Consider logging all caught warnings/messages
         message = function(m) {
           log_info(paste("/t", m))
           invokeRestart("muffleMessage")
