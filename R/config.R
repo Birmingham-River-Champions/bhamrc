@@ -113,7 +113,7 @@ stats::setNames(names(riverfly_spp_bw), riverfly_spp_bw)
 stats::setNames(names(other_spp_bw), other_spp_bw)
 stats::setNames(names(water_quality_bw), water_quality_bw)
 
-#Palette to avoid duplication for blues plots
+# Palette to avoid duplication for blues plots
 palette_for_leaflet <- RColorBrewer::brewer.pal(n = 9, name = "Blues")
 
 # CSS to make required fields have a red star
@@ -318,9 +318,9 @@ google_sheet_id <-
 new_sheet_id <- "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?usp=sharing"
 
 # Create location data frames for the two different location tables
-sampling_locations_url <- 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing'
+sampling_locations_url <- "https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing"
 
-outfall_locations_url <- 'https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0'
+outfall_locations_url <- "https://docs.google.com/spreadsheets/d/1JJ8bPWppVKbmCfllIevrVmt_dcoswOim7Cos418Ot6w/edit?gid=0#gid=0"
 
 # How often to check whether a Mirai job has completed
 be_poll_interval <- 1
