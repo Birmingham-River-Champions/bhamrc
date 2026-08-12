@@ -4,6 +4,7 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("James", "White", , "j.c.white.1@bham.ac.uk", role = c("aut", "cre")),
     person("Christine", "Stawitz", , "c.c.stawitz@bham.ac.uk", role = "aut"),
+    person("James", "Tripp", , "j.tripp.1@bham.ac.uk", role = "aut"),
     person("Charlotte", "Rush", role = "aut")
   )
 Description: Birmingham River Champions is a package containing a Shiny application
@@ -22,9 +23,12 @@ Imports:
     googlesheets4,
     hms,
     htmlwidgets,
+    later,
     leaflet,
     leafpop,
+    lgr,
     lubridate,
+    mirai,
     markdown,
     purrr,
     RColorBrewer,

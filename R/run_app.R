@@ -8,7 +8,7 @@
 #' @importFrom shiny shinyApp
 #' @importFrom golem with_golem_options
 run_app <- function(
-  onStart = NULL,
+  onStart = be_startup, # start backend straight away
   options = list(),
   enableBookmarking = NULL,
   uiPattern = "/",
