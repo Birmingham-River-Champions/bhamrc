@@ -24,7 +24,7 @@ turn_gsheets_into_db <- function(
   ),
   col_indices = c(6, 6, 7, 7)
 ) {
-  gs4_deauth()
+  googlesheets4::gs4_deauth()
 
   # Function to create the SQLite database and tables if they don't exist
   full_form_url <- "https://docs.google.com/spreadsheets/d/1458OWr2_x3vdM_LGAQaf0lcOWitO9LtnRm2GsAF_pys/edit?usp=sharing"
