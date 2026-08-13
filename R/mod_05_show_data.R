@@ -28,6 +28,7 @@ mod_05_show_data_ui <- function(id) {
 #' @importFrom DT renderDT DTOutput
 #' @importFrom writexl write_xlsx
 #' @importFrom stats setNames
+#' @importFrom dplyr select
 #' @noRd
 mod_05_show_data_server <- function(id, be_result) {
   moduleServer(id, function(input, output, session) {
@@ -69,8 +70,19 @@ mod_05_show_data_server <- function(id, be_result) {
     # Create the proxy
     dt_proxy <- dataTableProxy("dt_submissions")
     output$dt_submissions <- renderDataTable({
+      # Show data if available
+      initial_data <- isolate({
+        if (
+          !is.null(be_result()) && nrow(be_result()) > 0 && !is.null(survey())
+        ) {
+          be_result() |> filter(dataset == survey_map[[survey()]])
+        } else {
+          create_blank_submission_df()
+        }
+      })
+
       datatable(
-        create_blank_submission_df(),
+        initial_data,
         extensions = "Buttons",
         options = list(
           dom = "Bfrtip",
@@ -106,7 +118,6 @@ mod_05_show_data_server <- function(id, be_result) {
 
     # Update table when either be_result or survey
     # selection changes.
-    # TODO: Currently update on first load
     observeEvent(
       list(be_result(), survey()),
       {
