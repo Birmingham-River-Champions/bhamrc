@@ -3,8 +3,6 @@
 #' @return A tibble with all submission columns defined as character vectors.
 create_blank_submission_df <- function() {
   cols <- c(
-    "timestamp",
-    "email_address",
     "organisation",
     "survey_date",
     "data_type",

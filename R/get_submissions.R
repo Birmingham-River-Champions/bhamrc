@@ -233,7 +233,8 @@ get_submissions <- function(submissions_url) {
 
   # Set NAs to 0 in dataframe
 
+  # Remove email address and organisation from dataset
   return(
-    submissions
+    submissions |> select(!c("timestamp", "email_address"))
   )
 }
