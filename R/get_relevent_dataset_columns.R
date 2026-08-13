@@ -1,13 +1,13 @@
 get_relevant_dataset_columns <- function(dataset) {
+  # Get a list of cols to show
+  # Remove email, timestamp and location data from the list
   cols <- list(
-    "Urban Riverfly" = c(
-      "timestamp",
-      "email_address",
-      "organisation"
-    ),
-    "Water Quality" = c(
-      "organisation"
-    ),
+    "Urban Riverfly" = riverfly_cols[
+      !riverfly_cols %in% c("timestamp", "email_address", "LONG", "LAT")
+    ],
+    "Water Quality" = water_quality_cols[
+      !water_quality_cols %in% c("timestamp", "email_address", "LONG", "LAT")
+    ],
     "Invasive Species" = c(
       "timestamp"
     ),
