@@ -328,7 +328,7 @@ be_poll_interval <- 1
 # How long to wait after a completed refresh before starting again
 be_refresh_interval <- 30
 
-# Columns in the riverfly dataframe
+# Columns in the riverfly dataset
 riverfly_cols <- c(
   "email_address",
   "timestamp",
@@ -370,3 +370,23 @@ riverfly_cols <- c(
   "other_unspecified_8",
   "names_of_other_taxa"
 )
+
+# Columns in the water quality dataset
+water_quality_cols <- c(
+  "id",
+  "email_address",
+  "timestamp",
+  "organisation",
+  "survey_date",
+  "data_type",
+  "sampling_site",
+  "conductivity_mS",
+  "temperature_C",
+  "ammonia_ppm",
+  "phosphate_ppm",
+  "nitrate_ppm",
+  "turbidity_NTU",
+  "other_water_quality"
+)
+
+invasive_species_cols <- c()
