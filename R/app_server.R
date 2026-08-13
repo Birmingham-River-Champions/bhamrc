@@ -16,7 +16,7 @@ app_server <- function(input, output, session) {
 
     # This checks the background task data
     checkFunc = function() {
-      be$data
+      be$run
     },
 
     # Once there is new data in the
