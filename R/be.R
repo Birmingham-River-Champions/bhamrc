@@ -170,6 +170,7 @@ be_start <- function() {
       source('R/make_riverfly_ARMI.R')
       source("R/sum_up_ARMI.r")
       source("R/create_armi_plots.R")
+      source("R/small_helpers.R")
 
       library(lgr)
       library(googlesheets4)
