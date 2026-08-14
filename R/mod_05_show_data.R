@@ -48,10 +48,7 @@ mod_05_show_data_ui <- function(id) {
         class = "hide-dt-search",
         DTOutput(ns("dt_submissions"))
       ),
-      textOutput(ns("survey")),
-      #textOutput(ns("table_name")),
-      #downloadButton(ns("download_data"), "Download Data"),
-      #DT::DTOutput(ns("entries"))
+      textOutput(ns("survey"))
     )
   )
 }
