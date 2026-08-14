@@ -234,7 +234,10 @@ get_submissions <- function(submissions_url) {
   # Set NAs to 0 in dataframe
 
   # Remove email address and organisation from dataset
+  # Anonymise organisations if they request to be anonymous
   return(
-    submissions |> select(!c("timestamp", "email_address"))
+    submissions |>
+      select(!c("timestamp", "email_address")) |>
+      anonymise_organisations()
   )
 }
