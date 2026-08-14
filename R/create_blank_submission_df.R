@@ -62,9 +62,9 @@ create_blank_submission_df <- function() {
     "japanese_knotweed",
     "giant_hogweed",
     "any_other_invasive_spp",
-    "Organisation",
-    "LONG",
-    "LAT"
+    "Organisation" #,
+    #"LONG",
+    #"LAT"
   )
 
   col_list <- setNames(
