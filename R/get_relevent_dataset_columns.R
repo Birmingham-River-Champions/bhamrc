@@ -8,9 +8,9 @@ get_relevant_dataset_columns <- function(dataset) {
     "Water Quality" = water_quality_cols[
       !water_quality_cols %in% c("timestamp", "email_address", "LONG", "LAT")
     ],
-    "Invasive Species" = c(
-      "timestamp"
-    ),
+    "Invasive Species" = invasive_species_cols[
+      !invasive_species_cols %in% c("timestamp", "email_address", "LONG", "LAT")
+    ],
     "Urban Outfall Survey" = c(
       "timestamp"
     )
