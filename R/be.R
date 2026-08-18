@@ -193,6 +193,9 @@ be_start <- function() {
       # Species
       source("R/make_species_plots.r")
 
+      # Invasive Species plot
+      source("R/make_recent_inv_spp.R")
+
       # Required libraries sourced here
       # Mirai worker is a seperate process
       library(lgr)
@@ -225,7 +228,7 @@ be_start <- function() {
         path = ".secrets/birminghamriverchampions-db5399f61d80.json"
       )
 
-      withCallingHandlers(
+      out <- withCallingHandlers(
         {
           # Download the current submissions dataset
           submissions <- get_submissions(new_sheet_id)
@@ -316,10 +319,11 @@ be_start <- function() {
 
           cols <-
             get_relevant_dataset_columns("Invasive Species")
-          BBCInvSpcs <- df_geolocated_submissions |>
+          BRCInvSpcs <- df_geolocated_submissions |>
             filter(dataset == "Invasive Species") |>
             select(!c("LONG", "LAT")) |>
             select(any_of(cols))
+
           BRCINvSpcs_Plot_Recent <- make_recent_inv_spp(
             BRCInvSpcs,
             BRC_locs,
@@ -328,8 +332,33 @@ be_start <- function() {
 
           log_info("Invasive Species plots created")
 
-          # Return data from Mirai worker
-          return(df_geolocated_submissions)
+          # Return a list of all the variables presented
+          # in the web front end.
+          # This happens and then the Mirai worker is closed down
+          # Note: This list is available via out$variable_name outside
+          # this withCallingHandlers
+          return(
+            list(
+              df_geolocated_submissions = df_geolocated_submissions,
+              locations = locations,
+              BRC_locs = BRC_locs,
+              Unique_BRC_Sampling_Locs = Unique_BRC_Sampling_Locs,
+              riverfly_data = riverfly_data,
+              Riverfly_Species_Plot_All = Riverfly_Species_Plot_All,
+              Riverfly_Species_Plot = Riverfly_Species_Plot,
+              Riverfly_Species_Plot_Recent = Riverfly_Species_Plot_Recent,
+              Riverfly_Other_Species_Plot = Riverfly_Other_Species_Plot,
+              Riverfly_Other_Species_Plot_Recent = Riverfly_Other_Species_Plot_Recent,
+              ARMI_assignment = ARMI_assignment,
+              ARMI_data = ARMI_data,
+              riverflyARMIDataList = riverflyARMIDataList,
+              BRC_wq = BRC_wq,
+              WQ_plot_data = WQ_plot_data,
+              BRCInvSpcs = BRCInvSpcs,
+              BRCINvSpcs_Plot_Recent = BRCINvSpcs_Plot_Recent
+            )
+          )
+          #return(df_geolocated_submissions)
         },
 
         message = function(m) {
@@ -346,8 +375,23 @@ be_start <- function() {
       list(
         timestamp = format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
         data = list(
-          df_geolocated_submissions = df_geolocated_submissions |>
-            sample_n(2)
+          df_geolocated_submissions = df_geolocated_submissions,
+          locations = locations,
+          BRC_locs = BRC_locs,
+          Unique_BRC_Sampling_Locs = Unique_BRC_Sampling_Locs,
+          riverfly_data = riverfly_data,
+          Riverfly_Species_Plot_All = Riverfly_Species_Plot_All,
+          Riverfly_Species_Plot = Riverfly_Species_Plot,
+          Riverfly_Species_Plot_Recent = Riverfly_Species_Plot_Recent,
+          Riverfly_Other_Species_Plot = Riverfly_Other_Species_Plot,
+          Riverfly_Other_Species_Plot_Recent = Riverfly_Other_Species_Plot_Recent,
+          ARMI_assignment = ARMI_assignment,
+          ARMI_data = ARMI_data,
+          riverflyARMIDataList = riverflyARMIDataList,
+          BRC_wq = BRC_wq,
+          WQ_plot_data = WQ_plot_data,
+          BBCInvSpcs = BBCInvSpcs,
+          BRCINvSpcs_Plot_Recent = BRCINvSpcs_Plot_Recent
         )
       )
     },
