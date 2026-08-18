@@ -389,4 +389,18 @@ water_quality_cols <- c(
   "other_water_quality"
 )
 
-invasive_species_cols <- c()
+invasive_species_cols <- c(
+  "id",
+  "email_address",
+  "timestamp",
+  "organisation",
+  "freshwater_shrimp",
+  "invasive_spp_sampling_date",
+  "invasive_spp_wtw",
+  "signal_crayfish",
+  "killer_demon_shrimp",
+  "himalayan_balsam",
+  "japanese_knotweed",
+  "giant_hogweed",
+  "any_other_invasive_spp"
+)
