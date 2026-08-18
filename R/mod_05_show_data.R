@@ -97,7 +97,8 @@ mod_05_show_data_server <- function(id, be_result) {
     # Filters the data in one location
     filtered_data <- reactive({
       req(!is.null(be_result()), survey())
-      be_result() |> filter(dataset == survey_map[[survey()]])
+      be_result()$df_geolocated_submissions |>
+        filter(dataset == survey_map[[survey()]])
     })
 
     # Our initial table needs to contain _all_ of the
@@ -208,7 +209,7 @@ mod_05_show_data_server <- function(id, be_result) {
     observeEvent(
       list(be_result(), survey()),
       {
-        req(!is.null(be_result()))
+        req(!is.null(be_result()$df_geolocated_submissions))
         req(survey())
         DT::replaceData(
           dt_proxy,
@@ -229,7 +230,7 @@ mod_05_show_data_server <- function(id, be_result) {
             str_to_sentence()
         }
 
-        all_cols <- names(be_result()) |>
+        all_cols <- names(be_result()$df_geolocated_submissions) |>
           pretty_cols()
 
         cols_to_show <- get_relevant_dataset_columns(survey_map[[survey()]]) |>
