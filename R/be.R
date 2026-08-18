@@ -145,6 +145,8 @@ be_start <- function() {
     get_golem_config("enable_logging")
   )
 
+  library(sf)
+
   # Read in spatial data which we assume will not update dynamically
   shp_tame <- st_read(
     "./inst/extdata/Upper_Tame_Wbs_Complete_SubCtchmnts_Dsslvd.shp"
@@ -163,15 +165,36 @@ be_start <- function() {
 
   be$job <- mirai::mirai(
     {
+      # Helper functions
+      source("R/small_helpers.R")
+
+      # Config variables
       source("R/config.R")
+
+      # Columns for filtering large and wide submission data
+      source("R/get_relevent_dataset_columns.R")
+
+      # Download data from google sheets
       source("R/get_submissions.R")
       source("R/get_locations.R")
+
+      # Submission cleaning and checking
       source('R/clean_submissions.R')
+
+      # Create ARMI values and plots
       source('R/make_riverfly_ARMI.R')
       source("R/sum_up_ARMI.r")
       source("R/create_armi_plots.R")
-      source("R/small_helpers.R")
+      source('R/make_ARMI_plot_data.r')
 
+      # Water quality
+      source("R/make_water_quality_plot_data.r")
+
+      # Species
+      source("R/make_species_plots.r")
+
+      # Required libraries sourced here
+      # Mirai worker is a seperate process
       library(lgr)
       library(googlesheets4)
       library(dplyr)
@@ -179,6 +202,8 @@ be_start <- function() {
       library(stringr)
       library(ggplot2)
       library(lubridate)
+      library(tidyr)
+      library(RColorBrewer)
 
       log_info <- function(msg) {
         if (enable_logging) {
@@ -232,21 +257,76 @@ be_start <- function() {
               relationship = "many-to-many"
             )
 
-          log_info("Created ARMI assignment for Riverfly data and plots")
+          # All plot objects are made using the below
+          # Should note that these ggplot2 objects are
+          # not rendered by like lists which contain the
+          # plot data.
 
-          # Create ARMI data
-          # Select only the data needed for the plots
-          riverfly_armi_assignment <- df_geolocated_submissions |>
+          # # All Riverfly plots
+          BRC_locs <- locations
+
+          Unique_BRC_Sampling_Locs <-
+            BRC_locs |>
+            distinct(sampling_site, .keep_all = TRUE)
+
+          riverfly_data <- df_geolocated_submissions |>
             filter(dataset == "Urban Riverfly") |>
-            select(any_of(riverfly_cols)) |>
-            make_riverfly_ARMI() |>
-            sum_up_ARMI() |>
-            select(sampling_site, organisation, survey_date, ARMI)
+            select(any_of(riverfly_cols))
 
-          # # Pre-create plots for ARMI
-          riverfly_plot <- create_armi_plots(riverfly_armi_assignment)
+          # Creates plots in large nested list
+          Riverfly_Species_Plot_All <- species_plots(
+            riverfly_data,
+            Unique_BRC_Sampling_Locs
+          )
 
-          log_info("Finished creating plot objects")
+          # # Pull out each list into named variable
+          Riverfly_Species_Plot <- Riverfly_Species_Plot_All[[1]]
+          Riverfly_Species_Plot_Recent <- Riverfly_Species_Plot_All[[2]]
+          Riverfly_Other_Species_Plot <- Riverfly_Species_Plot_All[[3]]
+          Riverfly_Other_Species_Plot_Recent <- Riverfly_Species_Plot_All[[4]]
+
+          # log_info("Riverfly plot data created")
+
+          # # Riverfly ARMI plots
+          ARMI_assignment <- make_riverfly_ARMI(riverfly_data)
+          ARMI_data <- sum_up_ARMI(ARMI_assignment)
+          riverflyARMIDataList <- make_ARMI_plot_data(
+            ARMI_data,
+            Unique_BRC_Sampling_Locs
+          )
+
+          # log_info("Riverfly ARMI plots created")
+
+          # # Water plot data
+          # # Create water data quality data as expected by function
+          cols <- get_relevant_dataset_columns("Water Quality")
+          BRC_wq <- df_geolocated_submissions |>
+            filter(dataset == "Water Quality") |>
+            select(!c("LONG", "LAT")) |>
+            select(any_of(cols))
+
+          WQ_plot_data <- make_water_quality_plot_data(
+            BRC_wq,
+            Unique_BRC_Sampling_Locs
+          )
+
+          # log_info("Water Quality plots created")
+
+          plot_palette <- brewer.pal(n = 9, name = "Blues")
+
+          cols <-
+            get_relevant_dataset_columns("Invasive Species")
+          BBCInvSpcs <- df_geolocated_submissions |>
+            filter(dataset == "Invasive Species") |>
+            select(!c("LONG", "LAT")) |>
+            select(any_of(cols))
+          BRCINvSpcs_Plot_Recent <- make_recent_inv_spp(
+            BRCInvSpcs,
+            BRC_locs,
+            plot_palette
+          )
+
+          log_info("Invasive Species plots created")
 
           # Return data from Mirai worker
           return(df_geolocated_submissions)
