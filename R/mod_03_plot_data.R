@@ -18,7 +18,7 @@ mod_03_plot_data_ui <- function(id) {
         choices = c(
           " ",
           "Urban Riverfly",
-          "Invasive Species",
+          #"Invasive Species",
           "Water Chemistry"
         )
       ),
