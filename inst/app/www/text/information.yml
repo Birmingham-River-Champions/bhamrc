@@ -13,7 +13,7 @@ information:
     image_alt: "A photo of various hands being raised in the air"
     title: "Register a new group"
     description: "Information for volunteer group leads on how to get their organisation involved - please read this and then click <a href='https://forms.office.com/Pages/DesignPageV2.aspx?origin=NeoPortalPage&subpage=design&id=z8oksN7eQUKhXDyX1VPp81sI4vhUl6NFmBOJwbJoQY1UQUZPVVU2NzFHT0FRN0FIQzYwSzc5VkszUy4u' target=_blank/>here</a> to register"
-    link: "window.open('www/images/Volunteer group lead sign up info UPDATED.pdf', '_blank')"
+    url: "window.open('www/images/Volunteer group lead sign up info UPDATED.pdf', '_blank')"
   - image_src: "www/images/Hands up.png"
     image_alt: "A photo of various hands being raised in the air"
     title: "Volunteer sign up information"
