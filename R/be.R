@@ -297,6 +297,8 @@ be_start <- function() {
             ARMI_data,
             Unique_BRC_Sampling_Locs
           )
+          riverflyARMIMap <- riverflyARMIDataList[[2]]
+          Riverfly_ARMI_Popups <- riverflyARMIDataList[[1]]
 
           # log_info("Riverfly ARMI plots created")
 
@@ -349,6 +351,8 @@ be_start <- function() {
               Riverfly_Species_Plot_Recent = Riverfly_Species_Plot_Recent,
               Riverfly_Other_Species_Plot = Riverfly_Other_Species_Plot,
               Riverfly_Other_Species_Plot_Recent = Riverfly_Other_Species_Plot_Recent,
+              riverflyARMIMap = riverflyARMIMap,
+              Riverfly_ARMI_Popups = Riverfly_ARMI_Popups,
               ARMI_assignment = ARMI_assignment,
               ARMI_data = ARMI_data,
               riverflyARMIDataList = riverflyARMIDataList,
@@ -383,6 +387,8 @@ be_start <- function() {
           Riverfly_Species_Plot_All = Riverfly_Species_Plot_All,
           Riverfly_Species_Plot = Riverfly_Species_Plot,
           Riverfly_Species_Plot_Recent = Riverfly_Species_Plot_Recent,
+          riverflyARMIMap = riverflyARMIMap,
+          Riverfly_ARMI_Popups = Riverfly_ARMI_Popups,
           Riverfly_Other_Species_Plot = Riverfly_Other_Species_Plot,
           Riverfly_Other_Species_Plot_Recent = Riverfly_Other_Species_Plot_Recent,
           ARMI_assignment = ARMI_assignment,
