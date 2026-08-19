@@ -50,10 +50,10 @@ app_server <- function(input, output, session) {
 
   # Remove notification once data is loaded
   observeEvent(
-    be_result(),
+    be_result()$df_geolocated_submissions,
     {
-      req(!is.null(be_result()))
-      req(nrow(be_result()) > 0)
+      req(!is.null(be_result()$df_geolocated_submissions))
+      req(nrow(be_result()$df_geolocated_submissions) > 0)
 
       removeNotification(data_notification)
     },
