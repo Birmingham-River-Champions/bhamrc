@@ -134,11 +134,13 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
 
     # Loop through the site-averaged map points and create a popup ggplot for each
     plots <- lapply(1:nrow(map_data), function(i) {
-      plotPopups(i, popup_width)
+      #plotPopups(i, popup_width)
     })
 
     mapProxy |>
       addCircleMarkers(
+        # ID used to identify popup required
+        layerId = ~ seq_len(nrow(map_data)),
         data = map_data,
         lng = ~LONG,
         lat = ~LAT,
@@ -152,9 +154,9 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
         fillOpacity = 1,
         group = "ARMI points" #,
         # popup = popupGraph(
-        #     plots,
-        #     width = popup_width,
-        #     height = popup_height
+        #   plots,
+        #   width = popup_width,
+        #   height = popup_height
         # )
       ) |>
       addLegend(
