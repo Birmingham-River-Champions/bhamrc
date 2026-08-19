@@ -93,7 +93,7 @@ mod_03_plot_data_ui <- function(id) {
       ),
     ),
     mainPanel(
-      leafletOutput(ns('submission_map')),
+      #leafletOutput(ns('submission_map')),
       div(
         id = "yourdata-descriptor",
         HTML(
@@ -103,7 +103,7 @@ mod_03_plot_data_ui <- function(id) {
       # Map: Use a separate class for the Leaflet map
       div(
         class = "leaflet-map-container",
-        leaflet::leafletOutput(ns("map"))
+        leaflet::leafletOutput(ns("submission_map"))
       ),
 
       # ggplot output: Use a separate class for the ggplot popups
@@ -141,38 +141,91 @@ mod_03_plot_data_server <- function(id, be_result) {
         addPolygonsAndLines(zoomLevel = 10) # Add polygons and lines at initial zoom level
     })
 
-    # Watch for changes in data and options
-    # then update map
-    observeEvent(
-      list(be_result(), selected_metric()),
-      {
-        req(be_result())
+    # Reactive expressions to capture user selections
+    selected_metric <- reactive(input$metric)
+    selected_riverfly <- reactive(input$riverfly)
+    selected_riverfly_species <- reactive(input$riverflySpecies)
+    selected_other_species <- reactive(input$otherSpecies)
+    selected_invasive_type <- reactive(input$invasiveType)
+    selected_reading_type <- reactive(input$readingType)
+    screen_width <- reactive(input$screen_width)
 
-        selected_dataset <- selected_metric()
-        if (selected_dataset == "Water Chemistry") {
-          selected_dataset <- "Water Quality"
-        }
-
-        # Picks if the user selects Water Quality, Urban Riverfly or Invasive Species
-        plot_data <- be_result() |>
-          filter(dataset == selected_dataset)
-
-        leafletProxy('submission_map') |>
-          clearGroup("Points") |>
-          addCircleMarkers(
-            data = plot_data,
-            lng = ~LONG,
-            lat = ~LAT,
-            radius = 6,
-            weight = 2,
-            group = "Points",
-            color = "black",
-            stroke = TRUE,
-            opacity = 0.5,
-            fill = TRUE,
-            fillOpacity = 1
-          )
+    # Update the map with appropriate data
+    updateMap <- function(input, output, session) {
+      selected_dataset <- selected_metric()
+      if (selected_dataset == "Water Chemistry") {
+        selected_dataset <- "Water Quality"
       }
+
+      # Picks if the user selects Water Quality, Urban Riverfly or Invasive Species
+      plot_data <- be_result()$df_geolocated_submissions |>
+        filter(dataset == selected_dataset)
+
+      # Map proxy which is updated depending on selection
+      mapProxy <- leafletProxy("submission_map")
+
+      mapProxy |>
+        clearMapLayers()
+
+      ## Urban riverfly
+      if (selected_metric() == "Urban Riverfly") {
+        if (selected_riverfly() == "ARMI") {
+          # Plot ARMI data
+          mapProxy |>
+            addARMIMarkers(
+              map_data = be_result()$riverflyARMIMap,
+              popup_data = be_result()$Riverfly_ARMI_Popups,
+              screen_width = screen_width()
+            ) |>
+            showGroup("ARMI points")
+        } else if (selected_riverfly() == "Urban Riverfly species") {
+          # Plot urban riverfly species data
+          # If the user chooses Urban Riverfly species, plot abundance data
+          # Filter by the selected Taxa
+          selectedTaxa <- names(which(
+            riverfly_spp_bw == selected_riverfly_species()
+          ))
+          riverfly_species_popups <- be_result()$Riverfly_Species_Plot[grepl(
+            selectedTaxa,
+            names(be_result()$Riverfly_Species_Plot)
+          )]
+          mapProxy |>
+            addRiverflySpeciesMarkers(
+              popup_data = be_result()$riverfly_species_popups,
+              map_data = be_result()$Riverfly_Species_Plot_Recent[[
+                selectedTaxa
+              ]],
+              selectedTaxa,
+              screen_width()
+            ) |>
+            showGroup("Riverfly points")
+        } else if (selected_riverfly() == "Other species") {
+          # Plot other riverfly species data
+        } else if (selected_metric() == "Invasive Species") {
+          # Plot invasiv species
+        } else if (selected_metric() == "Water Chemistry") {
+          # Plot qater qualiry data
+        }
+      }
+    }
+
+    observeEvent(
+      {
+        list(
+          input$metric,
+          input$readingType,
+          input$invasiveType,
+          input$riverfly,
+          input$riverflySpecies,
+          input$otherSpecies,
+          be_result()$df_geolocated_submissions
+        )
+      },
+      {
+        req(be_result()$df_geolocated_submissions)
+        updateMap(input, output, session)
+      },
+      ignoreInit = TRUE
     )
 
     # We want the plot to be rendered
@@ -183,15 +236,6 @@ mod_03_plot_data_server <- function(id, be_result) {
       "submission_map",
       suspendWhenHidden = FALSE
     )
-
-    # Reactive expressions to capture user selections
-    selected_metric <- reactive(input$metric)
-    selected_riverfly <- reactive(input$riverfly)
-    selected_riverfly_species <- reactive(input$riverflySpecies)
-    selected_other_species <- reactive(input$otherSpecies)
-    selected_invasive_type <- reactive(input$invasiveType)
-    selected_reading_type <- reactive(input$readingType)
-    screen_width <- reactive(input$screen_width)
   })
 }
 
