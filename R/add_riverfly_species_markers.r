@@ -10,218 +10,217 @@
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
 addRiverflySpeciesMarkers <- function(
-    mapProxy,
-    map_data,
-    popup_data,
-    taxaType,
-    screen_width
+  mapProxy,
+  map_data,
+  popup_data,
+  taxaType,
+  screen_width
 ) {
+  # mapProxy |>
+  #     clearPopups() |>
+  #     clearGroup("Riverfly points")
+  riverflyspeciesData_Recent_Map <- map_data |>
+    drop_na()
+
+  current_breaks <- c(-Inf, 0:4)
+  pal <- colorFactor(
+    palette = levels(
+      riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
+    ),
+    domain = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
+  )
+
+  # If no records for the specific taxaType, display popup message
+  if (nrow(riverflyspeciesData_Recent_Map) == 0) {
+    # Handle no data case
+    if (all(is.na(data$LONG)) || all(is.na(data$LAT))) {
+      default_lng <- -1.89983 # Example: center of Birmingham
+      default_lat <- 52.48624 # Example: center of Birmingham
+    } else {
+      default_lng <- mean(data$LONG, na.rm = TRUE)
+      default_lat <- mean(data$LAT, na.rm = TRUE)
+    }
+
     mapProxy |>
-        clearPopups() |>
-        clearGroup("Riverfly points")
+      addPopups(
+        lng = default_lng,
+        lat = default_lat,
+        popup = "<div style='text-align:center;'><strong>No project records currently</strong></div>",
+        options = popupOptions(
+          closeButton = TRUE,
+          closeOnClick = FALSE
+        )
+      )
+  } else {
+    # Proceed if riverflyspeciesData_Recent_Map data is available
+    plotPopups <- function(i, popup_width) {
+      site_id <- riverflyspeciesData_Recent_Map$sampling_site[i]
+      organisation <- riverflyspeciesData_Recent_Map$organisation[
+        i
+      ]
 
-    riverflyspeciesData_Recent_Map <- map_data |>
-        drop_na()
+      # Get all Urban Riverfly species data for this specific site and taxa
+      # Turn NAs into 0s since these should be negative abundance observations, not lack of sampling
+      riverflyspeciesData_All_ggplot <- popup_data[[paste0(
+        taxaType,
+        ".",
+        site_id
+      )]] |>
+        mutate(abundance = tidyr::replace_na(abundance, 0))
 
-    current_breaks <- c(-Inf, 0:4)
-    pal <- colorFactor(
-        palette = levels(
-            riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
-        ),
-        domain = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
+      # Custom changing of some organisations (those ) for "Flat bodied stone clinger mayfly"
+      organisation <- if (
+        organisation != "Hall Green's Keepin' It Clean" &
+          organisation != "Birmingham Conservation Society"
+      ) {
+        organisation <- paste("the", organisation)
+      } else {
+        organisation <- organisation # This line is optional, just for clarity
+      }
+      # Custom shortening for "Flat bodied stone clinger mayfly"
+      taxaType_CommonName <- gsub(
+        "\\s*\\([^\\)]+\\)",
+        "",
+        riverfly_spp_bw[[taxaType]]
+      )
+      if (taxaType_CommonName == "Flat-bodied stone clinger mayfly") {
+        taxaType_CommonName <- "Stone clinger mayfly"
+      }
+
+      # Calculate date range buffer if there's only one sample
+      date_range <- range(
+        riverflyspeciesData_All_ggplot$survey_date,
+        na.rm = TRUE
+      )
+      if (diff(date_range) == 0) {
+        date_range <- c(date_range[1] - 15, date_range[2] + 15)
+      }
+
+      title_wrap_width <- ifelse(
+        popup_width <= 300,
+        37,
+        ifelse(popup_width <= 450, 50, 75)
+      )
+      title_text <- paste0(
+        taxaType_CommonName,
+        " numbers at ",
+        site_id,
+        ". Sampled by ",
+        organisation,
+        "."
+      )
+      p <- ggplot(
+        riverflyspeciesData_All_ggplot,
+        aes(
+          x = as.Date(survey_date),
+          y = abundance,
+          fill = cut(
+            abundance,
+            breaks = current_breaks,
+            labels = c(
+              "0",
+              "1-9",
+              "10-99",
+              "100-999",
+              ">1000"
+            )
+          )
+        )
+      ) +
+        geom_point(size = 5, pch = 21, colour = "black") +
+        theme_minimal() +
+        scale_fill_manual(
+          values = brewer.pal(n = 5, name = "Greys"),
+          drop = FALSE
+        ) +
+        xlab("Date") +
+        ylab("Abundance") +
+        scale_x_date(
+          date_breaks = "1 month",
+          date_labels = "%b '%y",
+          limits = date_range
+        ) + # Set date limits with buffer
+        scale_y_continuous(
+          breaks = c(0, 1, 2, 3, 4), # Custom breaks for y-axis
+          labels = c("0", "1-9", "10-99", "100-999", ">1000"),
+          limits = c(0, 4)
+        ) + # Custom labels
+        theme(
+          plot.title.position = "plot",
+          axis.title.x = element_text(face = "bold"),
+          axis.title.y = element_text(face = "bold"),
+          legend.position = "none",
+          plot.title = element_text(
+            size = 13,
+            face = "bold",
+            hjust = 0.5
+          ),
+          axis.text.x = element_text(angle = 45, hjust = 1)
+        ) + ##Did have the text over the y-axis title, but changed to centre - "","
+        ggtitle(str_wrap(title_text, width = title_wrap_width))
+
+      return(p)
+    }
+
+    if (!is.null(screen_width)) {
+      if (screen_width <= 480) {
+        popup_width <- 300
+        popup_height <- 250
+      } else if (screen_width <= 768) {
+        popup_width <- 400
+        popup_height <- 275
+      } else {
+        popup_width <- 600
+        popup_height <- 350
+      }
+    } else {
+      popup_width <- 600
+      popup_height <- 350
+    }
+
+    # Generate a plot for each marker based on the filtered data
+    plots <- lapply(
+      1:nrow(riverflyspeciesData_Recent_Map),
+      function(i) {
+        plotPopups(i, popup_width)
+      }
     )
 
-    # If no records for the specific taxaType, display popup message
-    if (nrow(riverflyspeciesData_Recent_Map) == 0) {
-        # Handle no data case
-        if (all(is.na(data$LONG)) || all(is.na(data$LAT))) {
-            default_lng <- -1.89983 # Example: center of Birmingham
-            default_lat <- 52.48624 # Example: center of Birmingham
-        } else {
-            default_lng <- mean(data$LONG, na.rm = TRUE)
-            default_lat <- mean(data$LAT, na.rm = TRUE)
-        }
-
-        mapProxy |>
-            addPopups(
-                lng = default_lng,
-                lat = default_lat,
-                popup = "<div style='text-align:center;'><strong>No project records currently</strong></div>",
-                options = popupOptions(
-                    closeButton = TRUE,
-                    closeOnClick = FALSE
-                )
-            )
-    } else {
-        # Proceed if riverflyspeciesData_Recent_Map data is available
-        plotPopups <- function(i, popup_width) {
-            site_id <- riverflyspeciesData_Recent_Map$sampling_site[i]
-            organisation <- riverflyspeciesData_Recent_Map$organisation[
-                i
-            ]
-
-            # Get all Urban Riverfly species data for this specific site and taxa
-            # Turn NAs into 0s since these should be negative abundance observations, not lack of sampling
-            riverflyspeciesData_All_ggplot <- popup_data[[paste0(
-                taxaType,
-                ".",
-                site_id
-            )]] |>
-                mutate(abundance = tidyr::replace_na(abundance, 0))
-
-            # Custom changing of some organisations (those ) for "Flat bodied stone clinger mayfly"
-            organisation <- if (
-                organisation != "Hall Green's Keepin' It Clean" &
-                    organisation != "Birmingham Conservation Society"
-            ) {
-                organisation <- paste("the", organisation)
-            } else {
-                organisation <- organisation # This line is optional, just for clarity
-            }
-            # Custom shortening for "Flat bodied stone clinger mayfly"
-            taxaType_CommonName <- gsub(
-                "\\s*\\([^\\)]+\\)",
-                "",
-                riverfly_spp_bw[[taxaType]]
-            )
-            if (taxaType_CommonName == "Flat-bodied stone clinger mayfly") {
-                taxaType_CommonName <- "Stone clinger mayfly"
-            }
-
-            # Calculate date range buffer if there's only one sample
-            date_range <- range(
-                riverflyspeciesData_All_ggplot$survey_date,
-                na.rm = TRUE
-            )
-            if (diff(date_range) == 0) {
-                date_range <- c(date_range[1] - 15, date_range[2] + 15)
-            }
-
-            title_wrap_width <- ifelse(
-                popup_width <= 300,
-                37,
-                ifelse(popup_width <= 450, 50, 75)
-            )
-            title_text <- paste0(
-                taxaType_CommonName,
-                " numbers at ",
-                site_id,
-                ". Sampled by ",
-                organisation,
-                "."
-            )
-            p <- ggplot(
-                riverflyspeciesData_All_ggplot,
-                aes(
-                    x = as.Date(survey_date),
-                    y = abundance,
-                    fill = cut(
-                        abundance,
-                        breaks = current_breaks,
-                        labels = c(
-                            "0",
-                            "1-9",
-                            "10-99",
-                            "100-999",
-                            ">1000"
-                        )
-                    )
-                )
-            ) +
-                geom_point(size = 5, pch = 21, colour = "black") +
-                theme_minimal() +
-                scale_fill_manual(
-                    values = brewer.pal(n = 5, name = "Greys"),
-                    drop = FALSE
-                ) +
-                xlab("Date") +
-                ylab("Abundance") +
-                scale_x_date(
-                    date_breaks = "1 month",
-                    date_labels = "%b '%y",
-                    limits = date_range
-                ) + # Set date limits with buffer
-                scale_y_continuous(
-                    breaks = c(0, 1, 2, 3, 4), # Custom breaks for y-axis
-                    labels = c("0", "1-9", "10-99", "100-999", ">1000"),
-                    limits = c(0, 4)
-                ) + # Custom labels
-                theme(
-                    plot.title.position = "plot",
-                    axis.title.x = element_text(face = "bold"),
-                    axis.title.y = element_text(face = "bold"),
-                    legend.position = "none",
-                    plot.title = element_text(
-                        size = 13,
-                        face = "bold",
-                        hjust = 0.5
-                    ),
-                    axis.text.x = element_text(angle = 45, hjust = 1)
-                ) + ##Did have the text over the y-axis title, but changed to centre - "","
-                ggtitle(str_wrap(title_text, width = title_wrap_width))
-
-            return(p)
-        }
-
-        if (!is.null(screen_width)) {
-            if (screen_width <= 480) {
-                popup_width <- 300
-                popup_height <- 250
-            } else if (screen_width <= 768) {
-                popup_width <- 400
-                popup_height <- 275
-            } else {
-                popup_width <- 600
-                popup_height <- 350
-            }
-        } else {
-            popup_width <- 600
-            popup_height <- 350
-        }
-
-        # Generate a plot for each marker based on the filtered data
-        plots <- lapply(
-            1:nrow(riverflyspeciesData_Recent_Map),
-            function(i) {
-                plotPopups(i, popup_width)
-            }
-        )
-
-        # Add markers to the map using riverflyspeciesData_Recent_Map for points
-        mapProxy |>
-            addCircleMarkers(
-                data = riverflyspeciesData_Recent_Map,
-                lng = ~LONG,
-                lat = ~LAT,
-                radius = 6,
-                weight = 2,
-                fillColor = ~ pal(Riverfly_Species_Colour),
-                color = "black",
-                stroke = TRUE,
-                opacity = 0.5,
-                fill = TRUE,
-                fillOpacity = 1,
-                group = "Riverfly points",
-                popup = popupGraph(
-                    plots,
-                    width = popup_width,
-                    height = popup_height
-                )
-            ) |>
-            addLegend(
-                position = "topright",
-                values = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour,
-                colors = rev(brewer.pal(5, "Greys")),
-                labels = rev(c(
-                    "0",
-                    "1-9",
-                    "10-99",
-                    "100-999",
-                    ">1000"
-                )),
-                title = "Abundance",
-                opacity = 0.75,
-                group = "legend"
-            )
-    }
+    # Add markers to the map using riverflyspeciesData_Recent_Map for points
+    mapProxy |>
+      addCircleMarkers(
+        data = riverflyspeciesData_Recent_Map,
+        lng = ~LONG,
+        lat = ~LAT,
+        radius = 6,
+        weight = 2,
+        fillColor = ~ pal(Riverfly_Species_Colour),
+        color = "black",
+        stroke = TRUE,
+        opacity = 0.5,
+        fill = TRUE,
+        fillOpacity = 1,
+        group = "Riverfly points" #,
+        # popup = popupGraph(
+        #   plots,
+        #   width = popup_width,
+        #   height = popup_height
+        # )
+      ) |>
+      addLegend(
+        position = "topright",
+        values = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour,
+        colors = rev(brewer.pal(5, "Greys")),
+        labels = rev(c(
+          "0",
+          "1-9",
+          "10-99",
+          "100-999",
+          ">1000"
+        )),
+        title = "Abundance",
+        opacity = 0.75,
+        group = "legend"
+      )
+  }
 }
