@@ -216,37 +216,37 @@ mod_03_plot_data_server <- function(id, be_result) {
               selectedTaxa
             ) |>
             showGroup("Other spp points")
-        } else if (selected_metric() == "Invasive Species") {
-          # Plot invasiv species
-          # If the user chooses Invasive Species, plot presence/absence data
-          mapProxy |>
-            addInvasiveSpeciesMarkers(
-              be_result()$BRCInvSpcs_Plot_Recent,
-              selected_invasive_type(),
-              rev(brewer.pal(n = 4, name = "Blues"))
-            ) |>
-            showGroup("Invasive points")
-        } else if (selected_metric() == "Water Chemistry") {
-          # If the user chooses Water Chemistry, plot water quality data
-
-          wq_Recent_Map <- be_result()$WQ_plot_data$recent[[selected_reading_type()]]
-
-          wq_data <- be_result()$WQ_plot_data$all_obs[grepl(
-            selected_reading_type(),
-            names(be_result()$WQ_plot_data$all_obs)
-          )]
-
-          mapProxy |>
-            addWaterQualityMarkers(
-              wq_data = wq_data,
-              wq_data_recent = wq_Recent_Map,
-              metric = selected_reading_type(),
-              screen_width = screen_width()
-            )
-
-          mapProxy |>
-            showGroup("Water Quality points")
         }
+      } else if (selected_metric() == "Invasive Species") {
+        # Plot invasiv species
+        # If the user chooses Invasive Species, plot presence/absence data
+        mapProxy |>
+          addInvasiveSpeciesMarkers(
+            be_result()$BRCInvSpcs_Plot_Recent,
+            selected_invasive_type(),
+            rev(brewer.pal(n = 4, name = "Blues"))
+          ) |>
+          showGroup("Invasive points")
+      } else if (selected_metric() == "Water Chemistry") {
+        # If the user chooses Water Chemistry, plot water quality data
+
+        wq_Recent_Map <- be_result()$WQ_plot_data$recent[[selected_reading_type()]]
+
+        wq_data <- be_result()$WQ_plot_data$all_obs[grepl(
+          selected_reading_type(),
+          names(be_result()$WQ_plot_data$all_obs)
+        )]
+
+        mapProxy |>
+          addWaterQualityMarkers(
+            wq_data = wq_data,
+            wq_data_recent = wq_Recent_Map,
+            metric = selected_reading_type(),
+            screen_width = screen_width()
+          )
+
+        mapProxy |>
+          showGroup("Water Quality points")
       }
     }
 
