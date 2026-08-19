@@ -189,9 +189,10 @@ mod_03_plot_data_server <- function(id, be_result) {
             selectedTaxa,
             names(be_result()$Riverfly_Species_Plot)
           )]
+
           mapProxy |>
             addRiverflySpeciesMarkers(
-              popup_data = be_result()$riverfly_species_popups,
+              popup_data = riverfly_species_popups,
               map_data = be_result()$Riverfly_Species_Plot_Recent[[
                 selectedTaxa
               ]],
@@ -200,11 +201,51 @@ mod_03_plot_data_server <- function(id, be_result) {
             ) |>
             showGroup("Riverfly points")
         } else if (selected_riverfly() == "Other species") {
-          # Plot other riverfly species data
+          # If the user chooses Other species, plot abundance data
+          # Filter data for the selected 'other species' from the radio buttons
+          selectedTaxa <- names(which(
+            other_spp_bw == selected_other_species()
+          ))
+          otherspeciesData_Recent_Map <- be_result()$Riverfly_Other_Species_Plot_Recent[[
+            selectedTaxa
+          ]]
+          # TODO: Check if other species data should have map
+          mapProxy |>
+            addOtherSpeciesMarkers(
+              otherspeciesData_Recent_Map,
+              selectedTaxa
+            ) |>
+            showGroup("Other spp points")
         } else if (selected_metric() == "Invasive Species") {
           # Plot invasiv species
+          # If the user chooses Invasive Species, plot presence/absence data
+          mapProxy |>
+            addInvasiveSpeciesMarkers(
+              be_result()$BRCInvSpcs_Plot_Recent,
+              selected_invasive_type(),
+              rev(brewer.pal(n = 4, name = "Blues"))
+            ) |>
+            showGroup("Invasive points")
         } else if (selected_metric() == "Water Chemistry") {
-          # Plot qater qualiry data
+          # If the user chooses Water Chemistry, plot water quality data
+
+          wq_Recent_Map <- be_result()$WQ_plot_data$recent[[selected_reading_type()]]
+
+          wq_data <- be_result()$WQ_plot_data$all_obs[grepl(
+            selected_reading_type(),
+            names(be_result()$WQ_plot_data$all_obs)
+          )]
+
+          mapProxy |>
+            addWaterQualityMarkers(
+              wq_data = wq_data,
+              wq_data_recent = wq_Recent_Map,
+              metric = selected_reading_type(),
+              screen_width = screen_width()
+            )
+
+          mapProxy |>
+            showGroup("Water Quality points")
         }
       }
     }
@@ -223,6 +264,9 @@ mod_03_plot_data_server <- function(id, be_result) {
       },
       {
         req(be_result()$df_geolocated_submissions)
+        mapProxy <- leafletProxy("submission_map")
+        mapProxy |>
+          clearMarkers()
         updateMap(input, output, session)
       },
       ignoreInit = TRUE
