@@ -110,7 +110,9 @@ mod_05_show_data_server <- function(id, be_result) {
       # Show data if available, otherwise blank table
       initial_data <- isolate({
         if (
-          !is.null(be_result()) && nrow(be_result()) > 0 && !is.null(survey())
+          !is.null(be_result()$df_geolocated_submissions) &&
+            nrow(be_result()$df_geolocated_submissions) > 0 &&
+            !is.null(survey())
         ) {
           filtered_data() |>
             select(!c("Organisation")) |>
@@ -151,7 +153,7 @@ mod_05_show_data_server <- function(id, be_result) {
     #   and based on search terms in the search box.
     download_data <- reactive({
       # Only trigger if data is available and survey selected
-      req(!is.null(be_result()), survey())
+      req(!is.null(be_result()$df_geolocated_submissions), survey())
 
       # Get columns for specific dataset and only show those columns
       cols_to_show <- get_relevant_dataset_columns(survey_map[[survey()]])
@@ -207,7 +209,7 @@ mod_05_show_data_server <- function(id, be_result) {
     # selection changes.
     # Note: we use DT:: to use the datatable updated functions
     observeEvent(
-      list(be_result(), survey()),
+      list(be_result()$df_geolocated_submissions, survey()),
       {
         req(!is.null(be_result()$df_geolocated_submissions))
         req(survey())
