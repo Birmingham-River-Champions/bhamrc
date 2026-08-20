@@ -281,90 +281,95 @@ mod_03_plot_data_server <- function(id, be_result) {
 
       # look up the row from whichever dataset is currently selected
       # (mirrors the branching logic already in updateMap())
-      if (
-        selected_metric() == "Urban Riverfly" && selected_riverfly() == "ARMI"
-      ) {
-        row <- be_result()$riverflyARMIMap[click$id, ]
-        plot_data <- be_result()$Riverfly_ARMI_Popups[[unique(
-          row$sampling_site
-        )]]
+      if (selected_metric() == "Urban Riverfly") {
+        if (selected_riverfly() == "ARMI") {
+          row <- be_result()$riverflyARMIMap[click$id, ]
+          plot_data <- be_result()$Riverfly_ARMI_Popups[[unique(
+            row$sampling_site
+          )]]
 
-        breaks_vector <- filter(plot_breaks, reading_type == "ARMI") |>
-          select(bin_breaks) |>
-          unlist()
+          breaks_vector <- filter(plot_breaks, reading_type == "ARMI") |>
+            select(bin_breaks) |>
+            unlist()
 
-        pal_name <- "RdBu"
-        pal <- colorBin(
-          palette = pal_name,
-          #domain = map_data$ARMI,
-          bins = breaks_vector,
-          pretty = FALSE
-        )
+          pal_name <- "RdBu"
+          pal <- colorBin(
+            palette = pal_name,
+            #domain = map_data$ARMI,
+            bins = breaks_vector,
+            pretty = FALSE
+          )
 
-        # Calculate date range buffer if there's only one sample
-        date_range <- range(
-          plot_data$survey_date,
-          na.rm = TRUE
-        )
+          # Calculate date range buffer if there's only one sample
+          date_range <- range(
+            plot_data$survey_date,
+            na.rm = TRUE
+          )
 
-        if (diff(date_range) == 0) {
-          date_range <- c(date_range[1] - 15, date_range[2] + 15)
+          if (diff(date_range) == 0) {
+            date_range <- c(date_range[1] - 15, date_range[2] + 15)
+          }
+
+          #browser()
+
+          # Screen width appears unavailable here! TODO: Investigate
+
+          # screen_width <- screen_width()
+          # # Adjust plot size based on screen width
+          # if (!is.null(screen_width)) {
+          #   if (screen_width <= 480) {
+          #     # For small screens like iPhones
+          #     popup_width <- 300
+          #     popup_height <- 250
+          #   } else if (screen_width <= 768) {
+          #     # For tablets
+          #     popup_width <- 400
+          #     popup_height <- 275
+          #   } else {
+          #     # For larger screens
+          #     popup_width <- 600
+          #     popup_height <- 350
+          #   }
+          # } else {
+          popup_width <- 600
+          popup_height <- 350
+          # }
+
+          site_id <- row$sampling_site[1]
+          organisation <- row$organisation[1]
+
+          # Set character width for str_wrap based on popup width
+          title_wrap_width <- ifelse(
+            popup_width <= 300,
+            37,
+            ifelse(popup_width <= 450, 50, 75)
+          )
+          title_text <- paste0(
+            "ARMI score at ",
+            site_id,
+            ". Sampled by ",
+            organisation,
+            "."
+          )
+
+          p <- make_armi_popup(
+            #row,
+            plot_data,
+            breaks_vector,
+            date_range,
+            title_text,
+            title_wrap_width
+          )
+        } else if (selected_riverfly() == "Urban Riverfly species") {
+          # other branches per dataset
+        } else if (selected_riverfly() == "Other Species") {
+          # if the user chooses other species plot abundance data
         }
-
-        #browser()
-
-        # Screen width appears unavailable here! TODO: Investigate
-
-        # screen_width <- screen_width()
-        # # Adjust plot size based on screen width
-        # if (!is.null(screen_width)) {
-        #   if (screen_width <= 480) {
-        #     # For small screens like iPhones
-        #     popup_width <- 300
-        #     popup_height <- 250
-        #   } else if (screen_width <= 768) {
-        #     # For tablets
-        #     popup_width <- 400
-        #     popup_height <- 275
-        #   } else {
-        #     # For larger screens
-        #     popup_width <- 600
-        #     popup_height <- 350
-        #   }
-        # } else {
-        popup_width <- 600
-        popup_height <- 350
-        # }
-
-        site_id <- row$sampling_site[1]
-        organisation <- row$organisation[1]
-
-        # Set character width for str_wrap based on popup width
-        title_wrap_width <- ifelse(
-          popup_width <= 300,
-          37,
-          ifelse(popup_width <= 450, 50, 75)
-        )
-        title_text <- paste0(
-          "ARMI score at ",
-          site_id,
-          ". Sampled by ",
-          organisation,
-          "."
-        )
-
-        p <- make_armi_popup(
-          #row,
-          plot_data,
-          breaks_vector,
-          date_range,
-          title_text,
-          title_wrap_width
-        )
-      } else if (...) {
-        # other branches per dataset
+      } else if (selected_metric() == 'Invasive Species') {
+        # Invasive species
+      } else if (selected_metric == 'Water Chemistry') {
+        # Water Chemistry
       }
-
       mapProxy |>
         clearPopups() |>
         addPopups(lng = click$lng, lat = click$lat, popup = p)
