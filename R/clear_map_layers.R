@@ -7,12 +7,13 @@
 #' @importFrom leaflet clearMarkers clearControls clearGroup addPolygons addPolylines addCircleMarkers addPopups popupOptions pathOptions hideGroup
 #' @noRd
 clearMapLayers <- function(mapProxy) {
-    mapProxy |>
-        clearControls() |>
-        leaflet::hideGroup("Riverfly points") |>
-        leaflet::hideGroup("Invasive points") |>
-        leaflet::hideGroup("Other spp points") |>
-        leaflet::hideGroup("ARMI points") |>
-        leaflet::hideGroup("Water Quality points") |>
-        leaflet::removeControl("legend")
+  mapProxy |>
+    clearPopups() |>
+    clearControls() |>
+    leaflet::hideGroup("Riverfly points") |>
+    leaflet::hideGroup("Invasive points") |>
+    leaflet::hideGroup("Other spp points") |>
+    leaflet::hideGroup("ARMI points") |>
+    leaflet::hideGroup("Water Quality points") |>
+    leaflet::removeControl("legend")
 }
