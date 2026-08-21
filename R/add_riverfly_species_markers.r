@@ -189,6 +189,8 @@ addRiverflySpeciesMarkers <- function(
     # Add markers to the map using riverflyspeciesData_Recent_Map for points
     mapProxy |>
       addCircleMarkers(
+        # ID used to identify popup required
+        layerId = ~ seq_len(nrow(riverflyspeciesData_Recent_Map)),
         data = riverflyspeciesData_Recent_Map,
         lng = ~LONG,
         lat = ~LAT,

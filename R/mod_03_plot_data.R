@@ -93,8 +93,6 @@ mod_03_plot_data_ui <- function(id) {
       ),
     ),
     mainPanel(
-      #leafletOutput(ns('submission_map')),
-      textOutput(ns("click_debug")),
       div(
         id = "yourdata-descriptor",
         HTML(
@@ -104,7 +102,10 @@ mod_03_plot_data_ui <- function(id) {
       # Map: Use a separate class for the Leaflet map
       div(
         class = "leaflet-map-container",
-        leaflet::leafletOutput(ns("submission_map"))
+        leaflet::leafletOutput(
+          ns("submission_map"),
+          height = "calc(100vh - 150px)"
+        )
       ),
 
       # ggplot output: Use a separate class for the ggplot popups
@@ -210,7 +211,6 @@ mod_03_plot_data_server <- function(id, be_result) {
           otherspeciesData_Recent_Map <- be_result()$Riverfly_Other_Species_Plot_Recent[[
             selectedTaxa
           ]]
-          # TODO: Check if other species data should have map
           mapProxy |>
             addOtherSpeciesMarkers(
               otherspeciesData_Recent_Map,
@@ -273,6 +273,22 @@ mod_03_plot_data_server <- function(id, be_result) {
       ignoreInit = TRUE
     )
 
+    output$click_debug <- renderText({
+      click <- input$submission_map_marker_click
+      if (is.null(click)) {
+        "No click yet"
+      } else {
+        paste(
+          "Clicked marker id:",
+          click$id,
+          "| lat:",
+          click$lat,
+          "| lng:",
+          click$lng
+        )
+      }
+    })
+
     observeEvent(input$submission_map_marker_click, {
       click <- input$submission_map_marker_click
       req(click$id)
@@ -310,30 +326,28 @@ mod_03_plot_data_server <- function(id, be_result) {
             date_range <- c(date_range[1] - 15, date_range[2] + 15)
           }
 
-          #browser()
-
           # Screen width appears unavailable here! TODO: Investigate
 
-          # screen_width <- screen_width()
-          # # Adjust plot size based on screen width
-          # if (!is.null(screen_width)) {
-          #   if (screen_width <= 480) {
-          #     # For small screens like iPhones
-          #     popup_width <- 300
-          #     popup_height <- 250
-          #   } else if (screen_width <= 768) {
-          #     # For tablets
-          #     popup_width <- 400
-          #     popup_height <- 275
-          #   } else {
-          #     # For larger screens
-          #     popup_width <- 600
-          #     popup_height <- 350
-          #   }
-          # } else {
-          popup_width <- 600
-          popup_height <- 350
-          # }
+          screen_width <- screen_width()
+          # Adjust plot size based on screen width
+          if (!is.null(screen_width)) {
+            if (screen_width <= 480) {
+              # For small screens like iPhones
+              popup_width <- 300
+              popup_height <- 250
+            } else if (screen_width <= 768) {
+              # For tablets
+              popup_width <- 400
+              popup_height <- 275
+            } else {
+              # For larger screens
+              popup_width <- 600
+              popup_height <- 350
+            }
+          } else {
+            popup_width <- 600
+            popup_height <- 350
+          }
 
           site_id <- row$sampling_site[1]
           organisation <- row$organisation[1]
@@ -358,21 +372,185 @@ mod_03_plot_data_server <- function(id, be_result) {
             breaks_vector,
             date_range,
             title_text,
-            title_wrap_width
+            title_wrap_width,
+            popup_width,
+            popup_height
           )
+
+          mapProxy |>
+            clearPopups() |>
+            addPopups(
+              lng = click$lng,
+              lat = click$lat,
+              popup = p
+            )
         } else if (selected_riverfly() == "Urban Riverfly species") {
           # other branches per dataset
+          selectedTaxa <- names(which(
+            riverfly_spp_bw == selected_riverfly_species()
+          ))
+          riverfly_species_popups <- be_result()$Riverfly_Species_Plot[grepl(
+            selectedTaxa,
+            names(be_result()$Riverfly_Species_Plot)
+          )]
+
+          map_points <- be_result()$Riverfly_Species_Plot_Recent[[selectedTaxa]]
+
+          riverflyspeciesData_Recent_Map <- map_points |> drop_na()
+
+          # If no records for the specific taxaType, display popup message
+          if (nrow(riverflyspeciesData_Recent_Map) == 0) {
+            # Handle no data case
+            if (all(is.na(data$LONG)) || all(is.na(data$LAT))) {
+              default_lng <- -1.89983 # Example: center of Birmingham
+              default_lat <- 52.48624 # Example: center of Birmingham
+            } else {
+              default_lng <- mean(data$LONG, na.rm = TRUE)
+              default_lat <- mean(data$LAT, na.rm = TRUE)
+            }
+
+            mapProxy |>
+              addPopups(
+                lng = default_lng,
+                lat = default_lat,
+                popup = "<div style='text-align:center;'><strong>No project records currently</strong></div>",
+                options = popupOptions(
+                  closeButton = TRUE,
+                  closeOnClick = FALSE
+                )
+              )
+          } else {
+            # popup_data <- riverfly_species_popups[[selectedTaxa]]
+            # Get all popup data containing desired Taxa across locations
+            site_id <- map_points[click$id, ]$sampling_site[1]
+
+            plot_data <- riverfly_species_popups[
+              names(riverfly_species_popups) ==
+                paste0(
+                  selectedTaxa,
+                  ".",
+                  site_id
+                )
+            ]
+
+            # pull out of list
+            plot_data <- plot_data[[1]]
+
+            organisation <- plot_data$organisation[1]
+
+            current_breaks <- c(-Inf, 0:4)
+            pal <- colorFactor(
+              palette = levels(
+                riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
+              ),
+              domain = riverflyspeciesData_Recent_Map$Riverfly_Species_Colour
+            )
+
+            # Get all Urban Riverfly species data for this specific site and taxa
+            # Turn NAs into 0s since these should be negative abundance observations, not lack of sampling
+            riverflyspeciesData_All_ggplot <- riverfly_species_popups[[paste0(
+              selectedTaxa,
+              ".",
+              site_id
+            )]] |>
+              mutate(abundance = tidyr::replace_na(abundance, 0))
+
+            # Custom changing of some organisations (those ) for "Flat bodied stone clinger mayfly"
+            organisation <- if (
+              organisation != "Hall Green's Keepin' It Clean" &
+                organisation != "Birmingham Conservation Society"
+            ) {
+              organisation <- paste("the", organisation)
+            } else {
+              organisation <- organisation # This line is optional, just for clarity
+            }
+            # Custom shortening for "Flat bodied stone clinger mayfly"
+            taxaType_CommonName <- gsub(
+              "\\s*\\([^\\)]+\\)",
+              "",
+              riverfly_spp_bw[[selectedTaxa]]
+            )
+            if (taxaType_CommonName == "Flat-bodied stone clinger mayfly") {
+              taxaType_CommonName <- "Stone clinger mayfly"
+            }
+
+            # Calculate date range buffer if there's only one sample
+            date_range <- range(
+              riverflyspeciesData_All_ggplot$survey_date,
+              na.rm = TRUE
+            )
+            if (diff(date_range) == 0) {
+              date_range <- c(date_range[1] - 15, date_range[2] + 15)
+            }
+
+            screen_width <- screen_width()
+            # Adjust plot size based on screen width
+            if (!is.null(screen_width)) {
+              if (screen_width <= 480) {
+                # For small screens like iPhones
+                popup_width <- 300
+                popup_height <- 250
+              } else if (screen_width <= 768) {
+                # For tablets
+                popup_width <- 400
+                popup_height <- 275
+              } else {
+                # For larger screens
+                popup_width <- 600
+                popup_height <- 350
+              }
+            } else {
+              popup_width <- 600
+              popup_height <- 350
+            }
+
+            # Set character width for str_wrap based on popup width
+            title_wrap_width <- ifelse(
+              popup_width <= 300,
+              37,
+              ifelse(popup_width <= 450, 50, 75)
+            )
+            title_text <- paste0(
+              "ARMI score at ",
+              site_id,
+              ". Sampled by ",
+              organisation,
+              "."
+            )
+
+            p <- make_riverflySpecies_popup(
+              riverflyspeciesData_All_ggplot,
+              current_breaks,
+              date_range,
+              title_text,
+              title_wrap_width,
+              popup_width,
+              popup_height
+            )
+
+            mapProxy |>
+              clearPopups() |>
+              addPopups(
+                lng = click$lng,
+                lat = click$lat,
+                popup = p
+              )
+          }
+
+          #row <- be_result()$
         } else if (selected_riverfly() == "Other Species") {
           # if the user chooses other species plot abundance data
+          # Blank as no plots currently created for this datatset
         }
       } else if (selected_metric() == 'Invasive Species') {
         # Invasive species
-      } else if (selected_metric == 'Water Chemistry') {
+        # Blank as no plots currently created for this datatset
+      } else if (selected_metric() == 'Water Chemistry') {
         # Water Chemistry
+        mapProxy |>
+          clearPopups() |>
+          addPopups(lng = click$lng, lat = click$lat, popup = p)
       }
-      mapProxy |>
-        clearPopups() |>
-        addPopups(lng = click$lng, lat = click$lat, popup = p)
     })
 
     # output$click_debug <- renderText({
