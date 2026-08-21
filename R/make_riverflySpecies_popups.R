@@ -1,4 +1,4 @@
-make_armi_popup <- function(
+make_riverflySpecies_popup <- function(
   row_data,
   breaks_vector,
   date_range,
@@ -11,27 +11,37 @@ make_armi_popup <- function(
     row_data,
     aes(
       x = as.Date(survey_date),
-      y = ARMI,
+      y = abundance, #ARMabundanceI,
       fill = cut(
-        ARMI,
+        abundance,
         breaks = breaks_vector,
-        labels = c(brewer.pal(n = 5, name = "RdBu"))
+        labels = c(
+          "0",
+          "1-9",
+          "10-99",
+          "100-999",
+          ">1000"
+        )
       )
     )
   ) +
     geom_point(size = 5, pch = 21, colour = "black") +
     theme_minimal() +
     scale_fill_manual(
-      name = "ARMI",
-      values = brewer.pal(n = 6, name = "RdBu"),
+      values = brewer.pal(n = 5, name = "Greys"),
       drop = FALSE
     ) +
-    xlab("Survey Date") +
-    ylab("ARMI Score") +
+    xlab("Date") +
+    ylab("Abundance") +
     scale_x_date(
       date_breaks = "1 month",
       date_labels = "%b '%y",
       limits = date_range
+    ) +
+    scale_y_continuous(
+      breaks = c(0, 1, 2, 3, 4), # Custom breaks for y-axis
+      labels = c("0", "1-9", "10-99", "100-999", ">1000"),
+      limits = c(0, 4)
     ) +
     theme(
       plot.title.position = "plot",
