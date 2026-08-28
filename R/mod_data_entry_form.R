@@ -789,13 +789,17 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
 
                     # Put timestamp ahead of email address for new sheet
-                    new_row <- select(
-                        new_row,
-                        id,
-                        timestamp,
-                        email_address,
-                        organisation:tail(names(new_row), n = 1)
-                    )
+                    new_row <- new_row |>
+                        mutate(
+                            email_address = "na"
+                        ) |>
+                        select(
+                            new_row,
+                            id,
+                            timestamp,
+                            email_address,
+                            organisation:tail(names(new_row), n = 1)
+                        )
 
                     # Put the data in the Google Sheet as well
                     googlesheets4::sheet_append(
