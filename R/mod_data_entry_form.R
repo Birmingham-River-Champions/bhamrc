@@ -206,8 +206,7 @@ mod_data_entry_form_server <- function(id, table_name) {
         mandatory_fields <- c(
             "organisation",
             "sampling_site",
-            "survey_date",
-            "email_address"
+            "survey_date"
         )
 
         # helper to coerce table_name param to string
@@ -467,11 +466,6 @@ mod_data_entry_form_server <- function(id, table_name) {
                         tags$h1(tbl),
                         # Placeholder div for pollution image, not shown for other tabs
                         shiny::tags$div(id = ns("outfall_images")),
-                        shiny::textInput(
-                            ns("email_address"),
-                            label = with_red_star("Email"),
-                            value = NULL
-                        ),
                         ui_elems,
                         # placeholder container for inserted extra taxa UI (insertUI will target this)
                         shiny::tags$div(id = ns("extra_container")),
@@ -629,13 +623,6 @@ mod_data_entry_form_server <- function(id, table_name) {
         # Make sure entries are valid before submitting
         # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
         observeEvent(input$submit, {
-            if (!isValidEmail(input$email_address)) {
-                shiny::showNotification(
-                    "Please enter a valid email address.",
-                    type = "warning"
-                )
-                allow_submit(FALSE)
-            }
             if (
                 (!is.null(input$conductivity_mS) &&
                     !is.na(input$conductivity_mS) &&
@@ -794,7 +781,6 @@ mod_data_entry_form_server <- function(id, table_name) {
                             email_address = "na"
                         ) |>
                         select(
-                            new_row,
                             id,
                             timestamp,
                             email_address,
