@@ -25,7 +25,7 @@ addWaterQualityMarkers <- function(
     current_breaks <- filter(plot_breaks, reading_type == metric) |>
         select(bin_breaks) |>
         unlist()
-    pal_name = "RdBu"
+    pal_name <- "RdBu"
     pal <- colorBin(
         palette = pal_name,
         bins = current_breaks,
@@ -71,7 +71,7 @@ addWaterQualityMarkers <- function(
                 ifelse(popup_width <= 450, 50, 75)
             )
             title_text <- paste0(
-                "Water quality at ",
+                "Water chemistry at ",
                 site_id,
                 ". Sampled by ",
                 organisation,
