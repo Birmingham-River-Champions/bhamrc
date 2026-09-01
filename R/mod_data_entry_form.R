@@ -222,7 +222,13 @@ mod_data_entry_form_server <- function(id, table_name) {
             shiny::tagList(
                 h3("Submit your entry using the form."),
                 p(
-                    "Choose a data type on the left to reveal form fields for that table."
+                    "Choose a data type on the left to reveal form fields for that table. The ",
+                    tags$a(
+                        href = "https://www.birmingham.ac.uk/privacy",
+                        "University of Birmingham privacy policy",
+                        target = "_blank"
+                    ),
+                    " describes how we will use your data."
                 )
             )
         })
