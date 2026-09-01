@@ -679,6 +679,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 "data.sqlite",
                 extended_types = TRUE
             )
+
             tbl <- current_table()
             tbl_name <- data_types_bw[[which(names(data_types_bw) == tbl)]]
 
@@ -797,7 +798,12 @@ mod_data_entry_form_server <- function(id, table_name) {
                     googlesheets4::sheet_append(
                         ss = google_sheet_id,
                         data = as.data.frame(select(new_row, -id)),
-                        sheet = tbl
+                        # to catch change from Water Quality to Water Chemistry
+                        sheet = ifelse(
+                            tbl == "Water Chemistry",
+                            "Water Quality",
+                            tbl
+                        )
                     )
 
                     # If all checks pass, show a confirmation notification

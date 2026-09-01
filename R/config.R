@@ -50,7 +50,7 @@ water_quality_bw <- list(
 
 data_types_bw <- list(
     "Urban Riverfly" = "riverfly",
-    "Water Quality" = "water_quality",
+    "Water Chemistry" = "water_quality",
     "Invasive Species" = "invasive_species",
     "Riverfly Locations" = "riverfly_locs",
     "Urban Outfall Safari" = "outfall_safari"
@@ -218,7 +218,7 @@ survey_questions <- list(
     phosphate_ppm = "Phosphate (ppm)",
     nitrate_ppm = "Nitrate (ppm)",
     turbidity_NTU = "Turbidity (NTU)",
-    other_water_quality = "Other comments on water quality",
+    other_water_quality = "Other comments on water chemistry",
     invasive_spp_wtw = "What.three.words location of invasive species seen 'out and about' - (separate with period - e.g., \"above.awake.nature\") If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified). Click on other nearby squares if the GPS isn't accurate enough.",
     killer_demon_shrimp = "Number of killer / demon shrimp counted in a kick sample - leave blank if 0",
     signal_crayfish = "Number of signal crayfish counted in a kick sample / observed on riverbed - leave blank if 0",
