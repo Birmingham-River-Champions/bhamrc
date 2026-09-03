@@ -134,7 +134,7 @@ app_ui <- function(request) {
         ),
         tabPanel(
           value = "submission_form",
-          title = "Submission Form",
+          title = "Submit Data",
           mod_02_data_input_ui("02_data_input_1")
         )
       ),
