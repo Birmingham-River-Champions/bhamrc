@@ -486,7 +486,14 @@ mod_data_entry_form_server <- function(id, table_name) {
                             ns("submit"),
                             "Submit",
                             class = "btn-primary"
-                        )
+                        ),
+                        if (tbl == "Urban Riverfly") {
+                            shiny::actionButton(
+                                ns('submitWaterChemistry'),
+                                "Submit and add water chemistry data",
+                                class = "btn-primary"
+                            )
+                        }
                     )
                 )
             )
@@ -536,6 +543,10 @@ mod_data_entry_form_server <- function(id, table_name) {
                 observeEvent(input[[i]], {
                     shinyjs::toggleState(
                         id = "submit",
+                        condition = toggle_submit(mandatory_fields)
+                    )
+                    shinyjs::toggleState(
+                        id = "submitWaterChemistry",
                         condition = toggle_submit(mandatory_fields)
                     )
                 })
@@ -633,9 +644,9 @@ mod_data_entry_form_server <- function(id, table_name) {
 
         allow_submit <- shiny::reactiveVal(TRUE)
 
-        # Make sure entries are valid before submitting
-        # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
-        observeEvent(input$submit, {
+        validate_and_submit_entry <- function(selected_form = "Same") {
+            # Make sure entries are valid before submitting
+            # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
             if (
                 (!is.null(input$conductivity_mS) &&
                     !is.na(input$conductivity_mS) &&
@@ -824,12 +835,23 @@ mod_data_entry_form_server <- function(id, table_name) {
                     shinyjs::hide("form_header")
                     shinyjs::show("submission_feedback")
 
+                    # Change the form if required
+                    if (selected_form == "Water Chemistry") {
+                        shinyjs::runjs(
+                            "
+  $('#02_data_input_1-data_type-data_type')[0].selectize.setValue('Water Chemistry');
+"
+                        )
+                    }
+
                     # Display form after 3 seconds
                     shinyjs::delay(
                         3000,
                         {
                             # Reset form elements
-                            shinyjs::reset("02_data_input_1-data_entry-form_ui")
+                            shinyjs::reset(
+                                "02_data_input_1-data_entry-form_ui"
+                            )
 
                             # Show form again
                             shinyjs::hide('submission_feedback')
@@ -847,11 +869,27 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
                     allow_submit(FALSE)
                 }
-
                 DBI::dbDisconnect(con)
             }
             allow_submit(TRUE)
-        })
+        }
+
+        # Validate entry, submit and change form to Water Chemistry
+        observeEvent(
+            input$submitWaterChemistry,
+            {
+                validate_and_submit_entry("Water Chemistry")
+            }
+        )
+
+        # Validate entry and submit
+        observeEvent(
+            input$submit,
+            {
+                validate_and_submit_entry()
+            }
+        )
+
         list(
             values = values,
             submit = shiny::reactive(input$submit)
