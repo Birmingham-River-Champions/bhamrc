@@ -206,8 +206,7 @@ mod_data_entry_form_server <- function(id, table_name) {
         mandatory_fields <- c(
             "organisation",
             "sampling_site",
-            "survey_date",
-            "email_address"
+            "survey_date"
         )
 
         # helper to coerce table_name param to string
@@ -223,7 +222,13 @@ mod_data_entry_form_server <- function(id, table_name) {
             shiny::tagList(
                 h3("Submit your entry using the form."),
                 p(
-                    "Choose a data type on the left to reveal form fields for that table."
+                    "Choose a data type on the left to reveal form fields for that table. The ",
+                    tags$a(
+                        href = "https://www.birmingham.ac.uk/privacy",
+                        "University of Birmingham privacy policy",
+                        target = "_blank"
+                    ),
+                    " describes how we will use your data."
                 )
             )
         })
@@ -467,11 +472,6 @@ mod_data_entry_form_server <- function(id, table_name) {
                         tags$h1(tbl),
                         # Placeholder div for pollution image, not shown for other tabs
                         shiny::tags$div(id = ns("outfall_images")),
-                        shiny::textInput(
-                            ns("email_address"),
-                            label = with_red_star("Email"),
-                            value = NULL
-                        ),
                         ui_elems,
                         # placeholder container for inserted extra taxa UI (insertUI will target this)
                         shiny::tags$div(id = ns("extra_container")),
@@ -629,13 +629,6 @@ mod_data_entry_form_server <- function(id, table_name) {
         # Make sure entries are valid before submitting
         # Check that the email address is valid, temperature, conductivity, and ammonia are within expected ranges.
         observeEvent(input$submit, {
-            if (!isValidEmail(input$email_address)) {
-                shiny::showNotification(
-                    "Please enter a valid email address.",
-                    type = "warning"
-                )
-                allow_submit(FALSE)
-            }
             if (
                 (!is.null(input$conductivity_mS) &&
                     !is.na(input$conductivity_mS) &&
@@ -686,6 +679,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 "data.sqlite",
                 extended_types = TRUE
             )
+
             tbl <- current_table()
             tbl_name <- data_types_bw[[which(names(data_types_bw) == tbl)]]
 
@@ -789,19 +783,27 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
 
                     # Put timestamp ahead of email address for new sheet
-                    new_row <- select(
-                        new_row,
-                        id,
-                        timestamp,
-                        email_address,
-                        organisation:tail(names(new_row), n = 1)
-                    )
+                    new_row <- new_row |>
+                        mutate(
+                            email_address = "na"
+                        ) |>
+                        select(
+                            id,
+                            timestamp,
+                            email_address,
+                            organisation:tail(names(new_row), n = 1)
+                        )
 
                     # Put the data in the Google Sheet as well
                     googlesheets4::sheet_append(
                         ss = google_sheet_id,
                         data = as.data.frame(select(new_row, -id)),
-                        sheet = tbl
+                        # to catch change from Water Quality to Water Chemistry
+                        sheet = ifelse(
+                            tbl == "Water Chemistry",
+                            "Water Quality",
+                            tbl
+                        )
                     )
 
                     # If all checks pass, show a confirmation notification
@@ -824,6 +826,7 @@ mod_data_entry_form_server <- function(id, table_name) {
 
                 DBI::dbDisconnect(con)
             }
+            allow_submit(TRUE)
         })
         list(
             values = values,
