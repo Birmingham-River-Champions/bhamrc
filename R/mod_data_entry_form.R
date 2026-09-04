@@ -232,8 +232,15 @@ mod_data_entry_form_server <- function(id, table_name) {
                 )
             )
         })
+
+        # Reactive value used to trigger form refresh
+        form_counter <- reactiveVal(0)
+
         # render UI for selected table
         output$form_ui <- shiny::renderUI({
+            # Dependency to prompt refresh
+            form_counter()
+
             # Get the reactive value of the currently-selected table
             tbl <- current_table()
 
@@ -816,6 +823,23 @@ mod_data_entry_form_server <- function(id, table_name) {
                     shinyjs::hide("form_ui")
                     shinyjs::hide("form_header")
                     shinyjs::show("submission_feedback")
+
+                    # Display form after 3 seconds
+                    shinyjs::delay(
+                        3000,
+                        {
+                            # Reset form elements
+                            shinyjs::reset("02_data_input_1-data_entry-form_ui")
+
+                            # Show form again
+                            shinyjs::hide('submission_feedback')
+                            shinyjs::show('form_ui')
+                            shinyjs::show('form_header')
+
+                            # Incriment counter to prompt refresh
+                            form_counter(form_counter() + 1)
+                        }
+                    )
                 } else {
                     shiny::showNotification(
                         "The data could not be submitted because the database structure has changed. Please contact the administrator.",
