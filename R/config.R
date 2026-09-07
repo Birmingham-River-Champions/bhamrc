@@ -72,7 +72,8 @@ column_names <- list(
         other_spp_bw,
         unspecified_bw,
         names_of_other_taxa = "Names of Other Taxa",
-        other_urban_riverfly = "Other Urban Riverfly Comments"
+        other_urban_riverfly = "Other Urban Riverfly Comments",
+        number_participants = "Number of participants"
     ),
     "water_quality" = c(
         organisation = "Organisation",
@@ -80,7 +81,8 @@ column_names <- list(
         data_type = "Data Type",
         sampling_site = "Sampling Site",
         water_quality_bw,
-        other_water_quality = "Other Water Quality Comments"
+        other_water_quality = "Other Water Quality Comments",
+        number_participants = "Number of participants"
     ),
     "invasive_species" = c(
         organisation = "Organisation",
@@ -94,7 +96,8 @@ column_names <- list(
         himalayan_balsam = "Himalayan Balsam Prevalence",
         japanese_knotweed = "Japanese Knotweed Prevalence",
         giant_hogweed = "Giant Hogweed Prevalence",
-        any_other_invasive_spp = "Any Other Invasive Species"
+        any_other_invasive_spp = "Any Other Invasive Species",
+        number_participants = "Number of participants"
     ),
     "outfall_safari" = c(
         organisation = "Organisation",
@@ -106,7 +109,8 @@ column_names <- list(
         outfall_flow = "Outfall Flow",
         outfall_pollution_distance = "Outfall Pollution Distance",
         outfall_aesthetics = "Outfall Aesthetics",
-        other_pollution_description = "Other Pollution Description"
+        other_pollution_description = "Other Pollution Description",
+        participant_number = "Number of participants"
     )
 )
 
@@ -236,7 +240,8 @@ survey_questions <- list(
     any_other_invasive_spp = "Note any invasive species or comments here (images of unidentifiable species should be emailed to birminghamriverchampions@gmail.com)",
     outfall_location_wtw = "Outfall location - What.three.words (separate with period - e.g., \"above.awake.nature\"). If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified).
      Click on other nearby squares if the GPS isn't accurate enough.",
-    other_unspecified_1 = "Additional taxa not in Urban Riverfly. If 'other taxa', please specify the name and abundance below."
+    other_unspecified_1 = "Additional taxa not in Urban Riverfly. If 'other taxa', please specify the name and abundance below.",
+    participant_number = "Number of participants"
 )
 
 

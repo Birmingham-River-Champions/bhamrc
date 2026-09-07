@@ -80,7 +80,8 @@ turn_newsheet_into_db <- function(
             "other_unspecified_7",
             "other_unspecified_8",
             "names_of_other_taxa",
-            "other_urban_riverfly"
+            "other_urban_riverfly",
+            "participant_number"
         )
     )
 
@@ -94,7 +95,8 @@ turn_newsheet_into_db <- function(
             "phosphate_ppm",
             "nitrate_ppm",
             "turbidity_NTU",
-            "other_water_quality"
+            "other_water_quality",
+            "participant_number"
         )
     )
     column_names[[3]] <- c(
@@ -106,7 +108,8 @@ turn_newsheet_into_db <- function(
             "outfall_flow",
             "outfall_pollution_distance",
             "outfall_aesthetics",
-            "other_pollution_description"
+            "other_pollution_description",
+            "participant_number"
         )
     )
 
@@ -121,27 +124,28 @@ turn_newsheet_into_db <- function(
             "himalayan_balsam",
             "japanese_knotweed",
             "giant_hogweed",
-            "any_other_invasive_spp"
+            "any_other_invasive_spp",
+            "participant_number"
         )
     )
 
     column_types[[1]] <- paste(
-        rep("c", length(column_names[[1]])),
+        c(rep("c", length(column_names[[1]]) - 1), rep("n", 1)),
         collapse = ""
     )
 
     column_types[[2]] <- paste(
-        c(rep("c", 6), rep("n", 6), rep("c", 1)),
+        c(rep("c", 6), rep("n", 6), rep("c", 1), rep("n", 1)),
         collapse = ""
     )
 
     column_types[[3]] <- paste(
-        rep("c", length(column_names[[3]])),
+        c(rep("c", length(column_names[[3]]) - 1), rep("n", 1)),
         collapse = ""
     )
 
     column_types[[4]] <- paste(
-        rep("c", length(column_names[[4]])),
+        c(rep("c", length(column_names[[4]]) - 1), rep("n", 1)),
         collapse = ""
     )
 

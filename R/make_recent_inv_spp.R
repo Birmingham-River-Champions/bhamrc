@@ -35,6 +35,7 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
                 survey_date,
                 invasive_spp_sampling_date,
                 sampling_site,
+                participant_number,
                 LONG,
                 LAT
             ),

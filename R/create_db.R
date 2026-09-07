@@ -25,14 +25,14 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
             other_rhyacophilidae TEXT, other_planorbidae TEXT, other_sphaeriidae TEXT,
             other_acroloxidae_ancylidae TEXT, other_bullhead TEXT, other_unspecified_1 TEXT,
             other_unspecified_2 TEXT, other_unspecified_3 TEXT, other_unspecified_4 TEXT, other_unspecified_5 TEXT,
-            other_unspecified_6 TEXT, other_unspecified_7 TEXT, other_unspecified_8 TEXT, names_of_other_taxa TEXT, other_urban_riverfly TEXT)"
+            other_unspecified_6 TEXT, other_unspecified_7 TEXT, other_unspecified_8 TEXT, names_of_other_taxa TEXT, other_urban_riverfly TEXT, participant_number REAL)"
         ),
         "water_quality" = paste(
             "CREATE TABLE",
             table_name,
             "(id INTEGER PRIMARY KEY, email_address TEXT, timestamp TEXT, organisation TEXT, survey_date TEXT, data_type TEXT, sampling_site TEXT, 
             conductivity_mS REAL, temperature_C REAL, ammonia_ppm REAL, phosphate_ppm REAL, 
-            nitrate_ppm REAL, turbidity_NTU REAL, other_water_quality TEXT)"
+            nitrate_ppm REAL, turbidity_NTU REAL, other_water_quality TEXT, participant_number REAL)"
         ),
         "riverfly_locs" = paste(
             "CREATE TABLE",
@@ -47,14 +47,14 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
             sampling_site TEXT,
             invasive_spp_wtw TEXT, signal_crayfish TEXT, killer_demon_shrimp TEXT,
             himalayan_balsam TEXT, japanese_knotweed TEXT, giant_hogweed TEXT,
-            any_other_invasive_spp TEXT)"
+            any_other_invasive_spp TEXT, participant_number REAL)"
         ),
         "outfall_safari" = paste(
             "CREATE TABLE",
             table_name,
             "(id INTEGER PRIMARY KEY, email_address TEXT, timestamp TEXT, organisation TEXT, survey_date TEXT, data_type TEXT, outfall_survey_date TEXT,
             sampling_site TEXT, outfall_photo TEXT,
-            outfall_flow TEXT, outfall_pollution_distance TEXT, outfall_aesthetics TEXT, other_pollution_description TEXT)"
+            outfall_flow TEXT, outfall_pollution_distance TEXT, outfall_aesthetics TEXT, other_pollution_description TEXT, participant_number REAL)"
         ),
         "riverflytest" = paste(
             "CREATE TABLE",

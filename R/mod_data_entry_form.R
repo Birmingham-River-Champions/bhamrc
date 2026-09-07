@@ -32,6 +32,8 @@ mod_data_entry_form_server <- function(id, table_name) {
     prefilled_location <- reactiveVal(NULL)
     prefilled_riverfly_comments <- reactiveVal(NULL)
 
+    prefilled_number_participants <- reactiveVal(NULL)
+
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
         # Define columns and types for each table (matching create_db.R)
@@ -76,7 +78,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 other_unspecified_7 = "TEXT",
                 other_unspecified_8 = "TEXT",
                 names_of_other_taxa = "TEXT",
-                other_urban_riverfly = "TEXT"
+                other_urban_riverfly = "TEXT",
+                participant_number = "REAL"
             ),
             water_quality = c(
                 email_address = "TEXT",
@@ -91,7 +94,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 phosphate_ppm = "TEXT",
                 nitrate_ppm = "TEXT",
                 turbidity_NTU = "TEXT",
-                other_water_quality = "TEXT"
+                other_water_quality = "TEXT",
+                participant_number = "REAL"
             ),
             riverfly_locs = c(
                 email_address = "TEXT",
@@ -116,7 +120,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 japanese_knotweed = "TEXT",
                 giant_hogweed = "TEXT",
                 any_other_invasive_spp = "TEXT",
-                invasive_spp_wtw = "TEXT"
+                invasive_spp_wtw = "TEXT",
+                participant_number = "REAL"
             ),
             outfall_safari = c(
                 email_address = "TEXT",
@@ -130,7 +135,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 outfall_pollution_distance = "TEXT",
                 outfall_aesthetics = "TEXT",
                 other_pollution_description = "TEXT",
-                outfall_location_wtw = "TEXT"
+                outfall_location_wtw = "TEXT",
+                participant_number = "REAL"
             ),
             riverflytest = c(
                 email_address = "TEXT",
@@ -467,6 +473,12 @@ mod_data_entry_form_server <- function(id, table_name) {
                         ns(input_id),
                         label = label,
                         value = prefilled_riverfly_comments()
+                    )
+                } else if (column_name == "participant_number") {
+                    shiny::textInput(
+                        ns(input_id),
+                        label = label,
+                        value = prefilled_number_participants()
                     )
                 } else if (
                     column_name %in%
@@ -898,6 +910,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 prefilled_date(input$survey_date)
                 prefilled_location(input$sampling_site)
 
+                prefilled_number_participants(input$participant_number)
+
                 # Prefill comments if Urban Riverfly entry
                 if (current_table() == "Urban Riverfly") {
                     prefilled_riverfly_comments(input$other_urban_riverfly)
@@ -917,6 +931,9 @@ mod_data_entry_form_server <- function(id, table_name) {
                 prefilled_date(NULL)
                 prefilled_location(NULL)
                 prefilled_riverfly_comments(NULL)
+
+                prefilled_number_participants(NULL)
+
                 validate_and_submit_entry()
             }
         )
