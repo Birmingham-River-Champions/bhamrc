@@ -30,6 +30,7 @@ mod_data_entry_form_server <- function(id, table_name) {
     prefilled_organisation <- reactiveVal(NULL)
     prefilled_date <- reactiveVal(NULL)
     prefilled_location <- reactiveVal(NULL)
+    prefilled_riverfly_comments <- reactiveVal(NULL)
 
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
@@ -74,7 +75,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                 other_unspecified_6 = "TEXT",
                 other_unspecified_7 = "TEXT",
                 other_unspecified_8 = "TEXT",
-                names_of_other_taxa = "TEXT"
+                names_of_other_taxa = "TEXT",
+                other_urban_riverfly = "TEXT"
             ),
             water_quality = c(
                 email_address = "TEXT",
@@ -459,6 +461,12 @@ mod_data_entry_form_server <- function(id, table_name) {
                             label = "No",
                             value = FALSE
                         )
+                    )
+                } else if (column_name == "other_water_quality") {
+                    shiny::textInput(
+                        ns(input_id),
+                        label = label,
+                        value = prefilled_riverfly_comments()
                     )
                 } else if (
                     column_name %in%
@@ -890,6 +898,11 @@ mod_data_entry_form_server <- function(id, table_name) {
                 prefilled_date(input$survey_date)
                 prefilled_location(input$sampling_site)
 
+                # Prefill comments if Urban Riverfly entry
+                if (current_table() == "Urban Riverfly") {
+                    prefilled_riverfly_comments(input$other_urban_riverfly)
+                }
+
                 # Validate and change form
                 validate_and_submit_entry("Water Chemistry")
             }
@@ -903,6 +916,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 prefilled_organisation(NULL)
                 prefilled_date(NULL)
                 prefilled_location(NULL)
+                prefilled_riverfly_comments(NULL)
                 validate_and_submit_entry()
             }
         )

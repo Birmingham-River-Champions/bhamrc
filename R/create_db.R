@@ -25,7 +25,7 @@ db_create <- function(table_name = "riverfly", db_path = "data.sqlite") {
             other_rhyacophilidae TEXT, other_planorbidae TEXT, other_sphaeriidae TEXT,
             other_acroloxidae_ancylidae TEXT, other_bullhead TEXT, other_unspecified_1 TEXT,
             other_unspecified_2 TEXT, other_unspecified_3 TEXT, other_unspecified_4 TEXT, other_unspecified_5 TEXT,
-            other_unspecified_6 TEXT, other_unspecified_7 TEXT, other_unspecified_8 TEXT, names_of_other_taxa TEXT)"
+            other_unspecified_6 TEXT, other_unspecified_7 TEXT, other_unspecified_8 TEXT, names_of_other_taxa TEXT, other_urban_riverfly TEXT)"
         ),
         "water_quality" = paste(
             "CREATE TABLE",

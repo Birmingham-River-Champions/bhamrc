@@ -79,7 +79,8 @@ turn_newsheet_into_db <- function(
             "other_unspecified_6",
             "other_unspecified_7",
             "other_unspecified_8",
-            "names_of_other_taxa"
+            "names_of_other_taxa",
+            "other_urban_riverfly"
         )
     )
 
