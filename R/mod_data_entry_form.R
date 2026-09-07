@@ -25,6 +25,12 @@ mod_data_entry_form_ui <- function(id) {
 mod_data_entry_form_server <- function(id, table_name) {
     stopifnot(shiny::is.reactive(table_name) || is.character(table_name))
 
+    # Reactive vals populated when clicking alternative
+    # submit button
+    prefilled_organisation <- reactiveVal(NULL)
+    prefilled_date <- reactiveVal(NULL)
+    prefilled_location <- reactiveVal(NULL)
+
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
         # Define columns and types for each table (matching create_db.R)
@@ -273,7 +279,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                     shiny::dateInput(
                         ns(input_id),
                         label = with_red_star(label),
-                        value = NULL,
+                        value = prefilled_date(),
                         max = Sys.Date()
                     )
                 } else if (column_name == "organisation") {
@@ -284,7 +290,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                             "Select organisation" = "",
                             organisation_choices
                         ),
-                        selected = NULL
+                        selected = prefilled_organisation()
                     )
                 } else if (column_name == "sampling_site") {
                     shiny::selectInput(
@@ -293,7 +299,8 @@ mod_data_entry_form_server <- function(id, table_name) {
                         choices = c(
                             "Select sampling site" = "",
                             site_choices_riverfly
-                        )
+                        ),
+                        selected = prefilled_location()
                     )
                 } else if (column_name %in% cols_to_not_create) {} else if (
                     type == "INTEGER"
@@ -878,6 +885,12 @@ mod_data_entry_form_server <- function(id, table_name) {
         observeEvent(
             input$submitWaterChemistry,
             {
+                # Extract entries to prefill
+                prefilled_organisation(input$organisation)
+                prefilled_date(input$survey_date)
+                prefilled_location(input$sampling_site)
+
+                # Validate and change form
                 validate_and_submit_entry("Water Chemistry")
             }
         )
@@ -886,6 +899,10 @@ mod_data_entry_form_server <- function(id, table_name) {
         observeEvent(
             input$submit,
             {
+                # Reset prefilled organisation
+                prefilled_organisation(NULL)
+                prefilled_date(NULL)
+                prefilled_location(NULL)
                 validate_and_submit_entry()
             }
         )
