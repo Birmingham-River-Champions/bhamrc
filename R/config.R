@@ -71,7 +71,8 @@ column_names <- list(
         riverfly_spp_bw,
         other_spp_bw,
         unspecified_bw,
-        names_of_other_taxa = "Names of Other Taxa"
+        names_of_other_taxa = "Names of Other Taxa",
+        other_urban_riverfly = "Other Urban Riverfly Comments"
     ),
     "water_quality" = c(
         organisation = "Organisation",
@@ -218,7 +219,8 @@ survey_questions <- list(
     phosphate_ppm = "Phosphate (ppm)",
     nitrate_ppm = "Nitrate (ppm)",
     turbidity_NTU = "Turbidity (NTU)",
-    other_water_quality = "Other comments on water chemistry",
+    other_water_quality = "Other comments (e.g., field conditions, sampling kit errors)",
+    other_urban_riverfly = "Other comments (e.g., field conditions - images of unidentifiable species should be emailed to birminghamriverchampions@gmail.com)",
     invasive_spp_wtw = "What.three.words location of invasive species seen 'out and about' - (separate with period - e.g., \"above.awake.nature\") If you don't have the app, go to what3words.com, and select the geolocate button (you may have to allow your location to be identified). Click on other nearby squares if the GPS isn't accurate enough.",
     killer_demon_shrimp = "Number of killer / demon shrimp counted in a kick sample - leave blank if 0",
     signal_crayfish = "Number of signal crayfish counted in a kick sample / observed on riverbed - leave blank if 0",
