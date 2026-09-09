@@ -24,6 +24,8 @@ jobs:
         shell: Rscript {0}
 
       - name: Restore renv packages
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: renv::restore(prompt = FALSE)
         shell: Rscript {0}
 
