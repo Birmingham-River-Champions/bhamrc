@@ -27,6 +27,8 @@ Imports:
     lubridate,
     markdown,
     purrr,
+    pkgload,
+    devtools,
     RColorBrewer,
     RSQLite,
     sf,
