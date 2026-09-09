@@ -1,11 +1,19 @@
-#' @importFrom googlesheets4 gs4_auth gs4_deauth
 .onLoad <- function(libname, pkgname) {
     options(bhamrc.dbname = "data.sqlite")
 
-    # Initialize and populate db when package is loaded
-    #googlesheets4::gs4_auth(
-    #    path = "./inst/extdata/birminghamriverchampions-36c3c5598be5.json"
-    #)
-    googlesheets4::gs4_deauth()
+    # If running locally
+    # googlesheets4::gs4_auth(
+    #     path = "./inst/extdata/birminghamriverchampions-db5399f61d80.json"
+    # )
+
+    # If running on github repo
+    cred_file <- Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
+    if (nzchar(cred_file) && file.exists(cred_file)) {
+        googlesheets4::gs4_auth(path = cred_file)
+    } else {
+        googlesheets4::gs4_deauth()
+    }
+
     turn_newsheet_into_db()
 }
