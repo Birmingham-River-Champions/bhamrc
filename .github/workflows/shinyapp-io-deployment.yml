@@ -17,6 +17,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libudunits2-dev libgdal-dev libgeos-dev libproj-dev cmake gdal-bin libabsl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev pandoc
 
+      - name: Debug terra
+        run: |
+          Rscript -e 'install.packages("terra", repos="https://cloud.r-project.org")'
+
       - uses: r-lib/actions/setup-r@v2
 
       - name: Install renv
