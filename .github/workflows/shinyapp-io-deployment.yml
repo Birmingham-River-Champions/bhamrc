@@ -27,10 +27,12 @@ jobs:
           echo "Name length: ${#SHINYAPPS_NAME}"
           echo "Token length: ${#SHINYAPPS_TOKEN}"
           echo "Secret length: ${#SHINYAPPS_SECRET}"
+          echo "ID length: ${#SHINYAPPS_APP_ID}"
         env:
-          SHINYAPPS_NAME: ${{ secrets.MAIN_SHINYAPPS_NAME }}
-          SHINYAPPS_TOKEN: ${{ secrets.MAIN_SHINYAPPS_TOKEN }}
-          SHINYAPPS_SECRET: ${{ secrets.MAIN_SHINYAPPS_SECRET }}
+          SHINYAPPS_NAME: ${{ secrets.DEV_SHINYAPPS_NAME }}
+          SHINYAPPS_TOKEN: ${{ secrets.DEV_SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.DEV_SHINYAPPS_SECRET }}
+          SHINYAPPS_APP_ID: ${{ secrets.DEV_SHINYAPPS_APP_ID }}
 
       - name: Install rsconnect requirements
         run: install.packages(c("rsconnect", "desc"))
@@ -38,15 +40,19 @@ jobs:
 
       - name: Deploy to shinyapps.io
         env:
-          SHINYAPPS_NAME: ${{ secrets.MAIN_SHINYAPPS_NAME }}
-          SHINYAPPS_TOKEN: ${{ secrets.MAIN_SHINYAPPS_TOKEN }}
-          SHINYAPPS_SECRET: ${{ secrets.MAIN_SHINYAPPS_SECRET }}
+          SHINYAPPS_NAME: ${{ secrets.DEV_SHINYAPPS_NAME }}
+          SHINYAPPS_TOKEN: ${{ secrets.DEV_SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.DEV_SHINYAPPS_SECRET }}
+          SHINYAPPS_APP_ID: ${{ secrets.DEV_SHINYAPPS_APP_ID }}
         run: |
           rsconnect::setAccountInfo(
             name = Sys.getenv("SHINYAPPS_NAME"),
             token = Sys.getenv("SHINYAPPS_TOKEN"),
             secret = Sys.getenv("SHINYAPPS_SECRET")
           )
+
+          app_id <- Sys.getenv("SHINYAPPS_APP_ID")
+          app_id <- if (nzchar(app_id)) app_id else NULL
 
           rsconnect::deployApp(
             appName = desc::desc_get_field("Package"),
@@ -58,6 +64,7 @@ jobs:
               "DESCRIPTION",
               "app.R"
             ),
+            appId = app_id,
             lint = FALSE,
             forceUpdate = TRUE
           )
