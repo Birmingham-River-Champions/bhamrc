@@ -15,5 +15,10 @@
         googlesheets4::gs4_deauth()
     }
 
+    # Verify credential is created
+    message("cred_file = ", cred_file)
+
+    message("exists = ", file.exists(cred_file))
+
     turn_newsheet_into_db()
 }
