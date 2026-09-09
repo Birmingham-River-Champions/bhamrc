@@ -103,7 +103,17 @@ mod_03_plot_data_ui <- function(id) {
         class = "leaflet-map-container",
         leaflet::leafletOutput(ns("map"))
       ),
-
+      div(
+        id = "attribution-statement",
+        p(
+          "Contains public sector information licensed under the",
+          tags$a(
+            href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+            "Open Government Licence v3.0"
+          ),
+          style = "text-align:right;font-size: 90%;"
+        )
+      ),
       # ggplot output: Use a separate class for the ggplot popups
       div(
         class = "ggplot-container",
