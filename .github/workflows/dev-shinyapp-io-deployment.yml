@@ -60,11 +60,17 @@ jobs:
           SHINYAPPS_SECRET: ${{ secrets.DEV_SHINYAPPS_SECRET }}
           SHINYAPPS_APP_ID: ${{ secrets.DEV_SHINYAPPS_APP_ID }}
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          DEV_URL: ${{ secrets.DEV_URL }}
         run: |
           rsconnect::setAccountInfo(
             name = Sys.getenv("SHINYAPPS_NAME"),
             token = Sys.getenv("SHINYAPPS_TOKEN"),
             secret = Sys.getenv("SHINYAPPS_SECRET")
+          )
+
+          writeLines(
+            Sys.getenv("DEV_URL"),
+            "inst/extdata/dev_url.txt"
           )
 
           writeLines(

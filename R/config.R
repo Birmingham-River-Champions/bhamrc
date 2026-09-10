@@ -318,11 +318,13 @@ choices_list <- list(
     )
 )
 
-# This is the ID for the new sheet with four separate tables
-google_sheet_id <-
-    "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?pli=1&gid=2035392267#gid=2035392267"
+# Read data source URL
+# So we can parameterise this within github actions
+URL <- readLines("inst/extdata/dev_url.txt", warn = FALSE)
 
-new_sheet_id <- "https://docs.google.com/spreadsheets/d/1jRIIBVBYvEJNkgIcEqnOmFHn4bw7Syimw_4Ad3lV7XY/edit?usp=sharing"
+# This is the ID for the new sheet with four separate tables
+google_sheet_id <- URL
+new_sheet_id <- URL
 
 # Create location data frames for the two different location tables
 sampling_locations_url <- 'https://docs.google.com/spreadsheets/d/1ZEkLC3HBkB8SJynA3pHtmntMOiCT8p4e2BFNYsMUR4c/edit?usp=sharing'
