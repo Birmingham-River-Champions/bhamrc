@@ -27,13 +27,6 @@ jobs:
         run: |
           Rscript -e 'install.packages("pkgload", repos="https://cloud.r-project.org")'
 
-      - name: Create Google credentials file
-        env:
-          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
-        run: |
-          mkdir -p inst/extdata
-          echo "$GOOGLE_CREDENTIALS_JSON" > inst/extdata/birminghamriverchampions-db5399f61d80.json
-
       - name: Install renv
         run: install.packages("renv")
         shell: Rscript {0}
@@ -66,12 +59,17 @@ jobs:
           SHINYAPPS_TOKEN: ${{ secrets.DEV_SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.DEV_SHINYAPPS_SECRET }}
           SHINYAPPS_APP_ID: ${{ secrets.DEV_SHINYAPPS_APP_ID }}
-
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
         run: |
           rsconnect::setAccountInfo(
             name = Sys.getenv("SHINYAPPS_NAME"),
             token = Sys.getenv("SHINYAPPS_TOKEN"),
             secret = Sys.getenv("SHINYAPPS_SECRET")
+          )
+
+          writeLines(
+            Sys.getenv("GOOGLE_CREDENTIALS_JSON"),
+            "inst/extdata/birminghamriverchampions-db5399f61d80.json"
           )
 
           app_id <- Sys.getenv("SHINYAPPS_APP_ID")
