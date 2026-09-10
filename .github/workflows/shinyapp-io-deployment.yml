@@ -59,7 +59,7 @@ jobs:
           SHINYAPPS_TOKEN: ${{ secrets.DEV_SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.DEV_SHINYAPPS_SECRET }}
           SHINYAPPS_APP_ID: ${{ secrets.DEV_SHINYAPPS_APP_ID }}
-          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: |
           rsconnect::setAccountInfo(
             name = Sys.getenv("SHINYAPPS_NAME"),
