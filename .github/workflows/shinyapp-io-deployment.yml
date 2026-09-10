@@ -32,10 +32,7 @@ jobs:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
         run: |
           mkdir -p inst/extdata
-
-          cat > inst/extdata/birminghamriverchampions-db5399f61d80.json <<'EOF'
-          $GOOGLE_CREDENTIALS_JSON
-          EOF
+          echo "$GOOGLE_CREDENTIALS_JSON" > inst/extdata/birminghamriverchampions-db5399f61d80.json
 
       - name: Install renv
         run: install.packages("renv")
