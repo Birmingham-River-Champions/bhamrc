@@ -23,10 +23,6 @@ jobs:
         run: |
           Rscript -e 'install.packages("terra", repos="https://cloud.r-project.org")'
 
-      - name: Install pkgload
-        run: |
-          Rscript -e 'install.packages("pkgload", repos="https://cloud.r-project.org")'
-
       - name: Install renv
         run: install.packages("renv")
         shell: Rscript {0}
