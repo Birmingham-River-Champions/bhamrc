@@ -9,15 +9,7 @@
 *.png
 *.pdf
 *.jpg
-*.shp
-*.dbf
-*.sbn
-*.sbx
-*.shx
-*.prj
-*.cpg
 *.tiff
-*.xml
 *.sr.lock
 *.vscode
 *.json
