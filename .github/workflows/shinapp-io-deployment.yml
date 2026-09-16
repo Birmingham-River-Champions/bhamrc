@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install system dependencies
         run: |
@@ -40,11 +40,15 @@ jobs:
           echo "Token length: ${#SHINYAPPS_TOKEN}"
           echo "Secret length: ${#SHINYAPPS_SECRET}"
           echo "ID length: ${#SHINYAPPS_APP_ID}"
+          echo "URL length: ${#DEPLOY_URL}"
+          echo "GOOGLE_CREDENTIALS_JSON length: ${#GOOGLE_CREDENTIALS_JSON}"
         env:
           SHINYAPPS_NAME: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_NAME || secrets.DEV_SHINYAPPS_NAME }}
           SHINYAPPS_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_TOKEN || secrets.DEV_SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_SECRET || secrets.DEV_SHINYAPPS_SECRET }}
           SHINYAPPS_APP_ID: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_APP_ID || secrets.DEV_SHINYAPPS_APP_ID }}
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          DEPLOY_URL: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_URL || secrets.DEV_URL }}
 
       - name: Install rsconnect requirements
         run: install.packages(c("rsconnect", "desc"))
@@ -66,7 +70,7 @@ jobs:
           )
 
           writeLines(
-            Sys.getenv("MAIN_URL"),
+            Sys.getenv("DEPLOY_URL"),
             "inst/extdata/google_url.txt"
           )
 
