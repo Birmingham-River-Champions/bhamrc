@@ -1,38 +1,9 @@
 # based on https://github.com/nmfs-ost/ghactions4r/blob/main/.github/workflows/r-cmd-check.yml
 on:
-  workflow_dispatch:
-    inputs:
-      use_full_build_matrix:
-        required: false
-        type: boolean
-      gha_timeout_minutes:
-        required: false
-        type: number
-        default: 360
-      depends_on_tmb:
-        required: false
-        type: boolean
-        default: false
-      depends_on_quarto:
-        required: false
-        type: boolean
-        default: false
-      additional_args_windows:
-        required: false
-        type: string
-        default: ""
-      additional_args_macos:
-        required: false
-        type: string
-        default: ""
-      additional_args_ubuntu:
-        required: false
-        type: string
-        default: ""
-  pull_request:
+  push:
     branches:
-    - main
-    - dev
+      - main
+      - dev
 
 # no permissions are needed by the default github token for this workflow to 
 # run, so don't pass any.
@@ -62,7 +33,7 @@ jobs:
         pwd
     - id: set-matrix
       run: |
-        if ${{ inputs.use_full_build_matrix }} == 'true';
+        if true';
         then
           JSON=$(cat ./github/matrix_includes_full.json)
         else
@@ -78,7 +49,7 @@ jobs:
   R-CMD-check:
     needs: matrix_prep
     runs-on: ${{matrix.config.os }}
-    timeout-minutes: ${{ inputs.gha_timeout_minutes }}
+    timeout-minutes: 360
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
@@ -93,18 +64,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      
-      - name: run additional args on windows
-        if: matrix.config.os == 'windows-latest'
-        run: ${{ inputs.additional_args_windows }}
-      
-      - name: run additional args on macOS
-        if: matrix.config.os == 'macOS-latest'
-        run: ${{ inputs.additional_args_macos }}
-        
-      - name: run additional args on ubuntu
-        if: matrix.config.os == 'ubuntu-latest'
-        run: ${{ inputs.additional_args_ubuntu }}
         
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -116,15 +75,6 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
-
-      - name: If dependent on TMB, install Matrix from source for windows and mac
-        if: inputs.depends_on_tmb == true && runner.os != 'Linux'
-        run: install.packages("Matrix", type = "source")
-        shell: Rscript {0}
-
-      - name: If depends on quarto, install.
-        if: inputs.depends_on_quarto == true
-        uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Create credentials files
         shell: Rscript {0}
