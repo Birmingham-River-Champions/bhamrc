@@ -320,7 +320,14 @@ choices_list <- list(
 
 # Read data source URL
 # So we can parameterise this within github actions
-URL <- readLines("inst/extdata/google_url.txt", warn = FALSE)
+URL <- readLines(
+    system.file(
+        "extdata",
+        "google_url.txt",
+        package = "bhamrc"
+    ),
+    warn = FALSE
+)
 
 # This is the ID for the new sheet with four separate tables
 google_sheet_id <- URL

@@ -91,14 +91,22 @@ jobs:
 
           writeLines(
             Sys.getenv("DEPLOY_URL"),
-            "inst/extdata/google_url.txt"
+            path = system.file(
+                        "extdata",
+                        "google_url.txt",
+                        package = "bhamrc"
+                        )
           )
 
           writeLines(
             Sys.getenv("GOOGLE_CREDENTIALS_JSON"),
-            "inst/extdata/birminghamriverchampions-db5399f61d80.json"
+                        path = system.file(
+                        "extdata",
+                        "birminghamriverchampions-db5399f61d80.json",
+                        package = "bhamrc"
+                        )
           )
-            
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
