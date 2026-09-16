@@ -91,7 +91,7 @@ jobs:
 
           writeLines(
             Sys.getenv("DEPLOY_URL"),
-            path = system.file(
+            system.file(
                         "extdata",
                         "google_url.txt",
                         package = "bhamrc"
@@ -100,7 +100,7 @@ jobs:
 
           writeLines(
             Sys.getenv("GOOGLE_CREDENTIALS_JSON"),
-                        path = system.file(
+                        system.file(
                         "extdata",
                         "birminghamriverchampions-db5399f61d80.json",
                         package = "bhamrc"

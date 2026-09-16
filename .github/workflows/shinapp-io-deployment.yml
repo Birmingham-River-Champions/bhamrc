@@ -71,12 +71,20 @@ jobs:
 
           writeLines(
             Sys.getenv("DEPLOY_URL"),
-            "inst/extdata/google_url.txt"
+            system.file(
+                        "extdata",
+                        "google_url.txt",
+                        package = "bhamrc"
+                        )
           )
 
           writeLines(
             Sys.getenv("GOOGLE_CREDENTIALS_JSON"),
-            "inst/extdata/birminghamriverchampions-db5399f61d80.json"
+                        system.file(
+                        "extdata",
+                        "birminghamriverchampions-db5399f61d80.json",
+                        package = "bhamrc"
+                        )
           )
 
           app_id <- Sys.getenv("SHINYAPPS_APP_ID")
