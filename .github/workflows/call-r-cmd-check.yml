@@ -1,8 +1,6 @@
-# Reusable workflow for R-CMD-check
-# based on https://github.com/r-lib/actions/blob/v2/examples/check-full.yaml
 # based on https://github.com/nmfs-ost/ghactions4r/blob/main/.github/workflows/r-cmd-check.yml
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       use_full_build_matrix:
         required: false
@@ -31,6 +29,10 @@ on:
         required: false
         type: string
         default: ""
+  pull_request:
+    branches:
+    - main
+    - dev
 
 # no permissions are needed by the default github token for this workflow to 
 # run, so don't pass any.
