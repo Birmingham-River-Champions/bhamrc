@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
   deploy:
@@ -40,10 +41,10 @@ jobs:
           echo "Secret length: ${#SHINYAPPS_SECRET}"
           echo "ID length: ${#SHINYAPPS_APP_ID}"
         env:
-          SHINYAPPS_NAME: ${{ secrets.MAIN_SHINYAPPS_NAME }}
-          SHINYAPPS_TOKEN: ${{ secrets.MAIN_SHINYAPPS_TOKEN }}
-          SHINYAPPS_SECRET: ${{ secrets.MAIN_SHINYAPPS_SECRET }}
-          SHINYAPPS_APP_ID: ${{ secrets.MAIN_SHINYAPPS_APP_ID }}
+          SHINYAPPS_NAME: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_NAME || secrets.DEV_SHINYAPPS_NAME }}
+          SHINYAPPS_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_TOKEN || secrets.DEV_SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_SECRET || secrets.DEV_SHINYAPPS_SECRET }}
+          SHINYAPPS_APP_ID: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_APP_ID || secrets.DEV_SHINYAPPS_APP_ID }}
 
       - name: Install rsconnect requirements
         run: install.packages(c("rsconnect", "desc"))
@@ -51,12 +52,12 @@ jobs:
 
       - name: Deploy to shinyapps.io
         env:
-          SHINYAPPS_NAME: ${{ secrets.MAIN_SHINYAPPS_NAME }}
-          SHINYAPPS_TOKEN: ${{ secrets.MAIN_SHINYAPPS_TOKEN }}
-          SHINYAPPS_SECRET: ${{ secrets.MAIN_SHINYAPPS_SECRET }}
-          SHINYAPPS_APP_ID: ${{ secrets.MAIN_SHINYAPPS_APP_ID }}
+          SHINYAPPS_NAME: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_NAME || secrets.DEV_SHINYAPPS_NAME }}
+          SHINYAPPS_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_TOKEN || secrets.DEV_SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_SECRET || secrets.DEV_SHINYAPPS_SECRET }}
+          SHINYAPPS_APP_ID: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_SHINYAPPS_APP_ID || secrets.DEV_SHINYAPPS_APP_ID }}
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          DEV_URL: ${{ secrets.MAIN_URL }}
+          DEPLOY_URL: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_URL || secrets.DEV_URL }}
         run: |
           rsconnect::setAccountInfo(
             name = Sys.getenv("SHINYAPPS_NAME"),
@@ -66,7 +67,7 @@ jobs:
 
           writeLines(
             Sys.getenv("MAIN_URL"),
-            "inst/extdata/dev_url.txt"
+            "inst/extdata/google_url.txt"
           )
 
           writeLines(
