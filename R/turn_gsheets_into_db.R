@@ -25,7 +25,7 @@ turn_gsheets_into_db <- function(
     col_indices = c(6, 6, 7, 7)
 ) {
     # Function to create the SQLite database and tables if they don't exist
-    full_form_url <- "https://docs.google.com/spreadsheets/d/1458OWr2_x3vdM_LGAQaf0lcOWitO9LtnRm2GsAF_pys/edit?usp=sharing"
+    full_form_url <- 'inst/extdata/google_url.txt'
     BRC_full_form <- as.data.frame(
         googlesheets4::read_sheet(
             full_form_url, # Get rid of duplicate columns, spaces, and other odd characters in column names
