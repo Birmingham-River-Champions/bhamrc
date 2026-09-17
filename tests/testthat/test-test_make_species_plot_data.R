@@ -190,7 +190,9 @@ test_that("make_recent_inv_spp works", {
       -id,
       -invasive_spp_wtw,
       -any_other_invasive_spp,
-      -data_type
+      -data_type,
+      -email_address,
+      -participant_number
     ) |>
     pivot_longer(
       -c(
