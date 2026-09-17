@@ -89,22 +89,10 @@ jobs:
         run: |
           dir.create("inst/extdata", recursive = TRUE, showWarnings = FALSE)
 
-          writeLines(
-            Sys.getenv("DEPLOY_URL"),
-            system.file(
-                        "extdata",
-                        "google_url.txt",
-                        package = "bhamrc"
-                        )
-          )
-
+          writeLines(Sys.getenv("DEPLOY_URL"), "inst/extdata/google_url.txt")
           writeLines(
             Sys.getenv("GOOGLE_CREDENTIALS_JSON"),
-                        system.file(
-                        "extdata",
-                        "birminghamriverchampions-db5399f61d80.json",
-                        package = "bhamrc"
-                        )
+            "inst/extdata/birminghamriverchampions-db5399f61d80.json"
           )
 
       - uses: r-lib/actions/check-r-package@v2
