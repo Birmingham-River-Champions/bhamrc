@@ -19,13 +19,16 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
                 "LAT",
                 "LONG"
             )],
-            multiple = "first"
+            by = join_by(sampling_site),
+            #multiple = "first"
         ) |>
         dplyr::select(
             -id,
             -invasive_spp_wtw,
             -any_other_invasive_spp,
-            -data_type
+            -data_type,
+            -email_address,
+            -participant_number
         )
 
     BRCInvSpcs_Plot <- BRCInvSpcs_Plot |> # Remove unneeded columns
@@ -35,7 +38,6 @@ make_recent_inv_spp <- function(cleaned_data, sampling_locs, plot_palette) {
                 survey_date,
                 invasive_spp_sampling_date,
                 sampling_site,
-                participant_number,
                 LONG,
                 LAT
             ),
