@@ -267,7 +267,7 @@ test_that("make_recent_inv_spp works", {
     plot_palette
   )
 
-  expect_equal(test_inv_spp |> select(-participant_number), inv_spp_test_recent)
+  expect_equal(test_inv_spp, inv_spp_test_recent)
 })
 
 test_that("flip_site_names works", {
