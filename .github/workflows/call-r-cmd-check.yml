@@ -1,18 +1,113 @@
-# Run r cmd check
-name: call-r-cmd-check
-# on specifies the build triggers. See more info at https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
+# based on https://github.com/nmfs-ost/ghactions4r/blob/main/.github/workflows/r-cmd-check.yml
 on:
-  workflow_dispatch:
   push:
-  pull_request:
     branches:
-    - main
+      - main
+      - dev
 
 # no permissions are needed by the default github token for this workflow to 
 # run, so don't pass any.
 # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
 permissions: {}
 
+# Cancel runs happening simultaneously on the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+name: R-CMD-check
 jobs:
-  call-workflow:
-    uses: nmfs-ost/ghactions4r/.github/workflows/r-cmd-check.yml@main
+  matrix_prep:
+  # Determine the build matrix (OS and versions of R)
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        repository: 'nmfs-ost/ghactions4r'
+        ref: 'main'
+    - name: check path
+      run: |
+        ls -r
+        pwd
+    - id: set-matrix
+      run: |
+       
+        JSON=$(cat ./github/matrix_includes_standard.json)
+
+        # note: if users were inputting the $JSON info, would want to 
+        # randomize the delimiter. See 
+        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        echo 'matrix<<EOF' >> $GITHUB_OUTPUT
+        echo "$JSON">> $GITHUB_OUTPUT
+        echo 'EOF' >> $GITHUB_OUTPUT
+
+  R-CMD-check:
+    needs: matrix_prep
+    runs-on: ${{matrix.config.os }}
+    timeout-minutes: 360
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check secrets exist
+        run: |
+          echo "URL length: ${#DEPLOY_URL}"
+          echo "GOOGLE_CREDENTIALS_JSON length: ${#GOOGLE_CREDENTIALS_JSON}"
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          DEPLOY_URL: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_URL || secrets.DEV_URL }}
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - name: Create credentials files
+        shell: Rscript {0}
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          DEPLOY_URL: ${{ secrets.DEV_URL }}
+        run: |
+          dir.create("inst/extdata", recursive = TRUE, showWarnings = FALSE)
+
+          writeLines(Sys.getenv("DEPLOY_URL"), "inst/extdata/google_url.txt")
+          writeLines(
+            Sys.getenv("GOOGLE_CREDENTIALS_JSON"),
+            "inst/extdata/birminghamriverchampions-db5399f61d80.json"
+          )
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          error-on: '"error"'
+
+      - name: Show testthat output
+        if: always()
+        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@main
+        with:
+          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+          path: check
