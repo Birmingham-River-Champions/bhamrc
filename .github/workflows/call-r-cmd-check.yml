@@ -87,6 +87,13 @@ jobs:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           DEPLOY_URL: ${{ secrets.DEV_URL }}
         run: |
+
+          print(getwd())
+
+          print(list.dirs())
+
+          print(list.files())
+
           dir.create("inst/extdata", recursive = TRUE, showWarnings = FALSE)
 
           writeLines(Sys.getenv("DEPLOY_URL"), "inst/extdata/google_url.txt")
