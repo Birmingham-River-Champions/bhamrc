@@ -1,18 +1,14 @@
 .onLoad <- function(libname, pkgname) {
     options(bhamrc.dbname = "data.sqlite")
 
-    googlesheets4::gs4_auth(
-        path = system.file(
-            "extdata",
-            "birminghamriverchampions-db5399f61d80.json",
-            package = "bhamrc"
-        )
-    )
-
     path <- system.file(
         "extdata",
         "birminghamriverchampions-db5399f61d80.json",
         package = "bhamrc"
+    )
+
+    googlesheets4::gs4_auth(
+        path = path
     )
 
     if (!nzchar(path)) {
