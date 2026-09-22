@@ -1,17 +1,107 @@
+# Modified version of nmfs-ost/ghactions4r/.github/workflows/calc-cov-summaries.yml@main
 # call a workflow that runs covr::codecov() to calculate code coverage, then
 # uses octocov to summarize the coverage information and post it as appropriate.
 
 # note that a .octocov.yml file in the repository is also necessary.
-name: call-calc-cov-summaries
-# on specifies the build triggers. See more info at https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
 on:
-  pull_request:
+  push:
+    branches:
+      - main
+      - dev
 
-# limits permissions to write, as the common use case is for pull requests;
-# this means certain options may not work, but makes the workflow more secure
 permissions:
+  contents: read
   pull-requests: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  call-workflow:
-    uses: nmfs-ost/ghactions4r/.github/workflows/calc-cov-summaries.yml@main
+  calc-cov-summaries:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets exist
+        run: |
+          echo "URL length: ${#DEPLOY_URL}"
+          echo "GOOGLE_CREDENTIALS_JSON length: ${#GOOGLE_CREDENTIALS_JSON}"
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          DEPLOY_URL: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_URL || secrets.DEV_URL }}
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Create credentials files
+        shell: Rscript {0}
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          DEPLOY_URL: ${{ secrets.DEV_URL }}
+        run: |
+          dir.create("inst/extdata", recursive = TRUE, showWarnings = FALSE)
+
+          writeLines(Sys.getenv("DEPLOY_URL"), "inst/extdata/google_url.txt")
+          writeLines(
+            Sys.getenv("GOOGLE_CREDENTIALS_JSON"),
+            "inst/extdata/birminghamriverchampions-db5399f61d80.json"
+          )
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::covr
+            any::xml2
+            any::DT
+            any::htmltools
+          needs: coverage
+
+      # Remove this entire step if the package never needs Quarto
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Calculate test coverage
+        shell: Rscript {0}
+        run: |
+          cov <- covr::package_coverage(
+            quiet = FALSE,
+            clean = FALSE,
+            install_path = file.path(
+              normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"),
+              "package"
+            )
+          )
+
+          print(cov)
+
+          covr::to_cobertura(
+            cov,
+            filename = "coverage.xml"
+          )
+
+          covr::report(
+            cov,
+            browse = FALSE,
+            file = "coverage_report.html"
+          )
+
+      - name: Generate Octocov summary
+        uses: k1LoW/octocov-action@v1
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage_report.html
+
+      - name: Upload cobertura XML
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml

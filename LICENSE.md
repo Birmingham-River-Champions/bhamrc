@@ -1,6 +1,8 @@
 # MIT License
 
-Copyright (c) 2025 Golem User
+Except where otherwise stated, this code is:
+
+Copyright (c) 2025 RGS Team University of Birmingham
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
