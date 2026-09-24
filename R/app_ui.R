@@ -51,6 +51,11 @@ app_ui <- function(request) {
                 src = "www/images/UoB logo.png",
                 class = "UOB-logo",
                 alt = "The logo of the University of Birmingham",
+              ),
+              img(
+                src = "www/images/BLOSSOM logo.jpg",
+                class = "BLOSSOM-logo",
+                alt = "The logo of the University of Birmingham",
               )
             ),
             div(

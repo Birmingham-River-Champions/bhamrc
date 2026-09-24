@@ -48,8 +48,13 @@
 }
 
 .title-panel img.UOB-logo {
-  height: 80px;
+  height: 60px;
   /* Slightly smaller size for the UOB logo */
+}
+
+.title-panel img.BLOSSOM-logo {
+  height: 75px;
+  /* Slightly smaller size for the BLOSSOM logo */
 }
 
 .title-panel img.ea-logo {
@@ -164,6 +169,15 @@
     /* Add space between stacked logos on phones */
   }
 
+  .title-panel img.BLOSSOM-logo {
+    height: 30px;
+    /* Adjust size for tablets */
+    margin-left: 0;
+    /* Remove margins for logos on phones */
+    margin-bottom: 5px;
+    /* Add space between stacked logos on phones */
+  }
+
   .title-panel img.ea-logo {
     height: 35px;
     /* Adjust size for tablets */
@@ -209,6 +223,15 @@
   }
 
   .title-panel img.UOB-logo {
+    height: 30px;
+    /* Adjust size for tablets */
+    margin-left: 0;
+    /* Remove margins for logos on phones */
+    margin-bottom: 5px;
+    /* Add space between stacked logos on phones */
+  }
+
+  .title-panel img.BLOSSOM-logo {
     height: 30px;
     /* Adjust size for tablets */
     margin-left: 0;
