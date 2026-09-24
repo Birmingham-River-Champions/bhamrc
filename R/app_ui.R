@@ -51,7 +51,7 @@ app_ui <- function(request) {
                 src = "www/images/UoB logo.png",
                 class = "UOB-logo",
                 alt = "The logo of the University of Birmingham",
-              ),
+              )
             ),
             div(
               img(
@@ -86,28 +86,28 @@ app_ui <- function(request) {
             div(
               class = 'img-container',
               img(
-                src = 'www/images/Urban Riverfly group photo 1_6_24.jpg',
+                src = 'www/images/Main page photo 1 - Trittiford inspecting tray.jpg',
                 alt = "A photograph of volunteers at an Urban Riverfly training course"
               )
             ),
             div(
               class = 'img-container',
               img(
-                src = 'www/images/Urban Riverfly training Rea Birmingham Uni volunteers.jpg',
+                src = 'www/images/Main page photo 2 - Come to campus event.jpg',
                 alt = "A photograph of an Urban Riverfly trainer demonstrating techniques to volunteers"
               )
             ),
             div(
               class = 'img-container',
               img(
-                src = 'www/images/JCW and Friends Trittiford.jpg',
+                src = 'www/images/Main page photo 3 - Kick sample.jpg',
                 alt = "A group of Birmingham River Champions volunteers collecting Urban Riverfly samples"
               )
             ),
             div(
               class = 'img-container',
               img(
-                src = 'www/images/HGKIC with certificate.png',
+                src = 'www/images/Main page photo 4 - May half term photo credited.jpg',
                 alt = "A photograph of volunteers holding their Urban Riverfly certification after receiving training"
               )
             )
