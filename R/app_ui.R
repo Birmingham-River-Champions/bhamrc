@@ -60,22 +60,9 @@ app_ui <- function(request) {
             ),
             div(
               img(
-                src = "www/images/EA logo.png",
-                class = "ea-logo",
-                alt = "The logo of the Environment Agency"
-              ),
-              img(
-                src = "www/images/BBCWT logo.png",
-                class = "footer-logo",
-                alt = paste(
-                  "The logo of the Birmingham and Black Country",
-                  "Wildlife Trust"
-                )
-              ),
-              img(
-                src = "www/images/Severn Trent logo.png",
-                class = "ST-logo",
-                alt = "The logo of Severn Trent Water"
+                src = "www/images/BLOSSOM logo.jpg",
+                class = "BLOSSOM-logo",
+                alt = "The logo of the University of Birmingham",
               )
             )
           )
@@ -120,6 +107,10 @@ app_ui <- function(request) {
           align = "left",
           class = "welcome-text"
         ),
+        # tabPanel(
+        #   "Blossom",
+        #   mod_07_blossom_ui("07_blossom_1")
+        # ),
         tabPanel(
           "Information / resources",
           mod_04_information_ui("04_information_1")
