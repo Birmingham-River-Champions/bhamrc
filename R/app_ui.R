@@ -45,25 +45,15 @@ app_ui <- function(request) {
           ),
           # Right side: Smaller footer images, with EA logo slightly bigger
           div(
-            # UoB logo above the other three logos
-            div(
-              img(
-                src = "www/images/UoB logo.png",
-                class = "UOB-logo",
-                alt = "The logo of the University of Birmingham",
-              ) #,
-              # img(
-              #   src = "www/images/BLOSSOM logo.jpg",
-              #   class = "BLOSSOM-logo",
-              #   alt = "The logo of the University of Birmingham",
-              # )
+            img(
+              src = "www/images/UoB logo.png",
+              class = "UOB-logo",
+              alt = "The logo of the University of Birmingham",
             ),
-            div(
-              img(
-                src = "www/images/BLOSSOM logo.jpg",
-                class = "BLOSSOM-logo",
-                alt = "The logo of the University of Birmingham",
-              )
+            img(
+              src = "www/images/BLOSSOM logo.png",
+              class = "BLOSSOM-logo",
+              alt = "The logo of the University of Birmingham",
             )
           )
         )
@@ -99,7 +89,7 @@ app_ui <- function(request) {
             div(
               class = 'img-container',
               img(
-                src = 'www/images/Main page photo 4 - May half term photo credited.jpg',
+                src = 'www/images/Main page photo 4 - Freshwater Watch sample.jpeg',
                 alt = "A photograph of volunteers holding their Urban Riverfly certification after receiving training"
               )
             )
