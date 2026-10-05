@@ -43,6 +43,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 timestamp = "TEXT",
                 organisation = "TEXT",
                 survey_date = "TEXT",
+                participant_number = "REAL",
                 data_type = "TEXT",
                 sampling_site = "TEXT",
                 cased_caddisfly = "TEXT",
@@ -78,14 +79,14 @@ mod_data_entry_form_server <- function(id, table_name) {
                 other_unspecified_7 = "TEXT",
                 other_unspecified_8 = "TEXT",
                 names_of_other_taxa = "TEXT",
-                other_urban_riverfly = "TEXT",
-                participant_number = "REAL"
+                other_urban_riverfly = "TEXT"
             ),
             water_quality = c(
                 email_address = "TEXT",
                 timestamp = "TEXT",
                 organisation = "TEXT",
                 survey_date = "TEXT",
+                participant_number = "REAL",
                 data_type = "TEXT",
                 sampling_site = "TEXT",
                 conductivity_mS = "REAL",
@@ -94,8 +95,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 phosphate_ppm = "TEXT",
                 nitrate_ppm = "TEXT",
                 turbidity_NTU = "TEXT",
-                other_water_quality = "TEXT",
-                participant_number = "REAL"
+                other_water_quality = "TEXT"
             ),
             riverfly_locs = c(
                 email_address = "TEXT",
@@ -113,6 +113,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 organisation = "TEXT",
                 data_type = "TEXT",
                 survey_date = "TEXT",
+                participant_number = "REAL",
                 sampling_site = "TEXT",
                 signal_crayfish = "TEXT",
                 killer_demon_shrimp = "TEXT",
@@ -120,8 +121,7 @@ mod_data_entry_form_server <- function(id, table_name) {
                 japanese_knotweed = "TEXT",
                 giant_hogweed = "TEXT",
                 any_other_invasive_spp = "TEXT",
-                invasive_spp_wtw = "TEXT",
-                participant_number = "REAL"
+                invasive_spp_wtw = "TEXT"
             ),
             outfall_safari = c(
                 email_address = "TEXT",
@@ -129,14 +129,14 @@ mod_data_entry_form_server <- function(id, table_name) {
                 organisation = "TEXT",
                 data_type = "TEXT",
                 survey_date = "TEXT",
+                participant_number = "REAL",
                 sampling_site = "TEXT",
                 outfall_photo = "TEXT",
                 outfall_flow = "TEXT",
                 outfall_pollution_distance = "TEXT",
                 outfall_aesthetics = "TEXT",
                 other_pollution_description = "TEXT",
-                outfall_location_wtw = "TEXT",
-                participant_number = "REAL"
+                outfall_location_wtw = "TEXT"
             ),
             riverflytest = c(
                 email_address = "TEXT",

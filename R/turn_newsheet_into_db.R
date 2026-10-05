@@ -22,7 +22,7 @@ turn_newsheet_into_db <- function(
         "outfall_safari",
         "invasive_species"
     ),
-    col_indices = c(6, 6, 7, 7)
+    col_indices = c(7, 7, 8, 8)
 ) {
     # Function to create the SQLite database and tables if they don't exist
     sheet_url <- new_sheet_id
@@ -40,6 +40,7 @@ turn_newsheet_into_db <- function(
         "email_address",
         "organisation",
         "survey_date",
+        "participant_number",
         "data_type"
     )
 
@@ -80,8 +81,7 @@ turn_newsheet_into_db <- function(
             "other_unspecified_7",
             "other_unspecified_8",
             "names_of_other_taxa",
-            "other_urban_riverfly",
-            "participant_number"
+            "other_urban_riverfly"
         )
     )
 
@@ -95,8 +95,7 @@ turn_newsheet_into_db <- function(
             "phosphate_ppm",
             "nitrate_ppm",
             "turbidity_NTU",
-            "other_water_quality",
-            "participant_number"
+            "other_water_quality"
         )
     )
     column_names[[3]] <- c(
@@ -108,8 +107,7 @@ turn_newsheet_into_db <- function(
             "outfall_flow",
             "outfall_pollution_distance",
             "outfall_aesthetics",
-            "other_pollution_description",
-            "participant_number"
+            "other_pollution_description"
         )
     )
 
@@ -124,32 +122,49 @@ turn_newsheet_into_db <- function(
             "himalayan_balsam",
             "japanese_knotweed",
             "giant_hogweed",
-            "any_other_invasive_spp",
-            "participant_number"
+            "any_other_invasive_spp"
         )
     )
 
-    column_types[[1]] <- paste(
-        c(rep("c", length(column_names[[1]]) - 1), rep("n", 1)),
-        collapse = ""
-    )
+    column_types[[1]] <-
+        paste(
+            c("c", "c", "c", "c", "n", rep("c", 36)),
+            collapse = ""
+        )
 
-    column_types[[2]] <- paste(
-        c(rep("c", 6), rep("n", 6), rep("c", 1), rep("n", 1)),
-        collapse = ""
-    )
+    column_types[[2]] <-
+        paste(
+            c(
+                "c",
+                "c",
+                "c",
+                "c",
+                "n",
+                "c",
+                "c",
+                "n",
+                "n",
+                "n",
+                "n",
+                "n",
+                "n",
+                "c"
+            ),
+            collapse = ''
+        )
 
     column_types[[3]] <- paste(
-        c(rep("c", length(column_names[[3]]) - 1), rep("n", 1)),
+        c("c", "c", "c", "c", "n", "c", "c", "c", "c", "c", "c", "c", "c"),
         collapse = ""
     )
 
     column_types[[4]] <- paste(
-        c(rep("c", length(column_names[[4]]) - 1), rep("n", 1)),
+        c("c", "c", "c", "c", "n", rep("c", 10)),
         collapse = ""
     )
 
     for (i in seq_len(length(data_types))) {
+        print(i)
         if (
             length(column_names[[i]]) != stringr::str_length(column_types[[i]])
         ) {
