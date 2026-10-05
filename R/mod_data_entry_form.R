@@ -852,10 +852,10 @@ mod_data_entry_form_server <- function(id, table_name) {
                     )
 
                     # If all checks pass, show a confirmation notification
-                    shiny::showNotification(
-                        "Your data has been submitted successfully. Thank you!",
-                        type = "message"
-                    )
+                    # shiny::showNotification(
+                    #     "Your data has been submitted successfully. Thank you!",
+                    #     type = "message"
+                    # )
 
                     #After data is submitted, hide the form and provide feedback.
                     shinyjs::hide("form_ui")
@@ -871,9 +871,19 @@ mod_data_entry_form_server <- function(id, table_name) {
                         )
                     }
 
+                    shiny::showNotification(
+                        HTML(paste0(
+                            "You have successfully submitted your data to the Birmingham River Champions project, thank you for your contribution.<br><br>",
+                            "If you refresh the page you will be able to see this data entry within Map Data and Tabulated Data tabs.<br><br>",
+                            "For any queries or comments regarding your data submission, please email birminghamriverchampions@gmail.com"
+                        )),
+                        type = "message",
+                        duration = 5
+                    )
+
                     # Display form after 3 seconds
                     shinyjs::delay(
-                        3000,
+                        0,
                         {
                             # Reset form elements
                             shinyjs::reset(
