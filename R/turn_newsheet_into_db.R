@@ -164,7 +164,6 @@ turn_newsheet_into_db <- function(
     )
 
     for (i in seq_len(length(data_types))) {
-        print(i)
         if (
             length(column_names[[i]]) != stringr::str_length(column_types[[i]])
         ) {
