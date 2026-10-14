@@ -97,10 +97,10 @@ app_ui <- function(request) {
           align = "left",
           class = "welcome-text"
         ),
-        # tabPanel(
-        #   "Blossom",
-        #   mod_07_blossom_ui("07_blossom_1")
-        # ),
+        tabPanel(
+          "Blossom",
+          mod_07_blossom_ui("07_blossom_1")
+        ),
         tabPanel(
           "Information / resources",
           mod_04_information_ui("04_information_1")
