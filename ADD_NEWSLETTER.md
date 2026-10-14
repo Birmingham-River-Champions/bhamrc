@@ -32,3 +32,7 @@ You can add a new newsletter to this website using the online github editor. The
 ![Github web editor - Ready to commit changes(Fig7.png)
 
 There is an automated processes which builds the website and then deploys it onto shinyapp.io. This process can take up to 15 minutes. It is advisable to go to the website and make sure that the page has updated as expected.
+
+## Blossom newsletter entries
+
+The instructions for uploading a newsletter to the Blossom are identical to the above. The only difference is that in step 5 the location of the text file is int/app/www/text/blossom.yml.
