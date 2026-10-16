@@ -101,7 +101,7 @@ mod_03_plot_data_ui <- function(id) {
       # Map: Use a separate class for the Leaflet map
       div(
         class = "leaflet-map-container",
-        leaflet::leafletOutput(ns("map"))
+        leaflet::leafletOutput(ns("map"), height = "100%")
       ),
       div(
         id = "attribution-statement",
@@ -113,11 +113,6 @@ mod_03_plot_data_ui <- function(id) {
           ),
           style = "text-align:right;font-size: 90%;"
         )
-      ),
-      # ggplot output: Use a separate class for the ggplot popups
-      div(
-        class = "ggplot-container",
-        plotOutput(ns("ggplot"))
       )
     )
   )
@@ -140,7 +135,8 @@ mod_03_plot_data_server <- function(id) {
       leaflet(
         options = leafletOptions(
           zoomControl = FALSE,
-          attributionControl = FALSE
+          attributionControl = FALSE,
+          zoomSnap = 0.5
         )
       ) |>
         htmlwidgets::onRender(
@@ -149,7 +145,7 @@ mod_03_plot_data_server <- function(id) {
       }"
         ) |>
         addProviderTiles(providers$OpenStreetMap) |>
-        setView(lng = -1.83, lat = 52.45, zoom = 10) |>
+        setView(lng = -1.82, lat = 52.455, zoom = 10.5) |>
         addPolygonsAndLines(zoomLevel = 10) # Add polygons and lines at initial zoom level
     })
     # Reactive expressions to capture user selections
