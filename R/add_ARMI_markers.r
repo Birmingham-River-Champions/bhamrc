@@ -1,13 +1,12 @@
-#' This function adds ARMI markers to the map with popups containing ggplot graphs.
+#' Add ARMI markers to the map.
 #' @param mapProxy A leaflet map proxy object.
 #' @param map_data A data frame containing the site-averaged recent ARMI data to be plotted on the map.
-#' @param popup_data A data frame containing all ARMI data for generating the ggplot graphs.
-#' @param input The Shiny input object to access screen width for responsive popup sizing.
+#' @param popup_data Retained for compatibility; plots are generated when map
+#'   markers are clicked.
+#' @param screen_width Retained for compatibility; popup dimensions are
+#'   selected when a marker is clicked.
 #' @importFrom leaflet clearGroup addCircleMarkers popupOptions pathOptions colorBin addLegend showGroup
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom ggplot2 ggplot aes geom_point geom_line theme_minimal scale_fill_manual xlab ylab scale_x_date theme element_text ggtitle
-#' @importFrom stringr str_wrap
-#' @importFrom leafpop popupGraph
 addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
     breaks_vector <- filter(plot_breaks, reading_type == "ARMI") |>
         select(bin_breaks) |>
@@ -29,116 +28,11 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
     mapProxy |> clearGroup("ARMI points")
 
     if (!is.null(map_data) && nrow(map_data) > 0) {
-        plotPopups <- function(i, popup_width) {
-            site_id <- map_data$sampling_site[i]
-            organisation <- map_data$organisation[i]
-
-            # Get all ARMI data for this specific site
-            riverflyARMIData_SiteID <- popup_data[[site_id]]
-
-            # Some organisations don't sound right with "the" in front
-            organisation <- if (
-                organisation != "Hall Green's Keepin' It Clean" &
-                    organisation != "Birmingham Conservation Society"
-            ) {
-                organisation <- paste("the", organisation)
-            } else {
-                organisation <- organisation # This line is optional, just for clarity
-            }
-
-            # Calculate date range buffer if there's only one sample
-            date_range <- range(
-                riverflyARMIData_SiteID$survey_date,
-                na.rm = TRUE
-            )
-            if (diff(date_range) == 0) {
-                date_range <- c(date_range[1] - 15, date_range[2] + 15)
-            }
-
-            # Set character width for str_wrap based on popup width
-            title_wrap_width <- ifelse(
-                popup_width <= 300,
-                37,
-                ifelse(popup_width <= 450, 50, 75)
-            )
-            title_text <- paste0(
-                "ARMI score at ",
-                site_id,
-                ". Sampled by ",
-                organisation,
-                "."
-            )
-
-            p <- ggplot(
-                riverflyARMIData_SiteID,
-                aes(
-                    x = as.Date(survey_date),
-                    y = ARMI,
-                    fill = cut(
-                        ARMI,
-                        breaks = breaks_vector,
-                        labels = c(brewer.pal(n = 5, name = "RdBu"))
-                    )
-                )
-            ) +
-                geom_point(size = 5, pch = 21, colour = "black") +
-                theme_minimal() +
-                scale_fill_manual(
-                    name = "ARMI",
-                    values = brewer.pal(n = 6, name = "RdBu"),
-                    drop = FALSE
-                ) +
-                xlab("Survey Date") +
-                ylab("ARMI Score") +
-                scale_x_date(
-                    date_breaks = "1 month",
-                    date_labels = "%b '%y",
-                    limits = date_range
-                ) +
-                theme(
-                    plot.title.position = "plot",
-                    axis.title.x = element_text(face = "bold"),
-                    axis.title.y = element_text(face = "bold"),
-                    legend.position = "none",
-                    plot.title = element_text(
-                        size = 13,
-                        face = "bold",
-                        hjust = 0.5
-                    ),
-                    axis.text.x = element_text(angle = 45, hjust = 1)
-                ) + ##Did have the text over the y-axis title, but changed to centre - ","
-                ggtitle(str_wrap(title_text, width = title_wrap_width)) # Wrap the title based on width
-
-            return(p)
-        }
-
-        # Adjust plot size based on screen width
-        if (!is.null(screen_width)) {
-            if (screen_width <= 480) {
-                # For small screens like iPhones
-                popup_width <- 300
-                popup_height <- 250
-            } else if (screen_width <= 768) {
-                # For tablets
-                popup_width <- 400
-                popup_height <- 275
-            } else {
-                # For larger screens
-                popup_width <- 600
-                popup_height <- 350
-            }
-        } else {
-            popup_width <- 600
-            popup_height <- 350
-        }
-
-        # Loop through the site-averaged map points and create a popup ggplot for each
-        plots <- lapply(1:nrow(map_data), function(i) {
-            plotPopups(i, popup_width)
-        })
-
         mapProxy |>
             addCircleMarkers(
+                # Keep IDs aligned with map_data rows so the click handler can
+                # resolve a marker back to its site's full ARMI time series.
+                layerId = ~ seq_len(nrow(map_data)),
                 data = map_data,
                 lng = ~LONG,
                 lat = ~LAT,
@@ -150,12 +44,7 @@ addARMIMarkers <- function(mapProxy, map_data, popup_data, screen_width) {
                 opacity = 0.5,
                 fill = TRUE,
                 fillOpacity = 1,
-                group = "ARMI points",
-                popup = popupGraph(
-                    plots,
-                    width = popup_width,
-                    height = popup_height
-                )
+                group = "ARMI points"
             ) |>
             addLegend(
                 position = "topright",

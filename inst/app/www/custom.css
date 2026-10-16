@@ -53,7 +53,7 @@
 }
 
 .title-panel img.BLOSSOM-logo {
-  height: 75px;
+  height: 80px;
   /* Slightly smaller size for the BLOSSOM logo */
 }
 
@@ -547,31 +547,13 @@
 /* Styles for the Leaflet map */
 .leaflet-map-container {
   width: 100% !important;
-  /* Ensure the map takes full width on all screens */
+  height: calc(100vh - 500px);
+  height: calc(100dvh - 500px);
+  min-height: 250px;
 }
 
-@media (max-width: 480px) {
-  .ggplot-container {
-    width: 25px !important;
-    /* Adjust width for phones */
-    margin: 0 auto !important;
-    /* Center the plot */
-  }
-}
-
-/* Responsive plot container for ggplot outputs */
-.ggplot-container {
-  width: 100%;
-  /* Ensure full width for larger screens */
-}
-
-@media (max-width: 480px) {
-  .ggplot-container {
-    width: 60% !important;
-    /* Adjust width for phones */
-    margin: 0 auto !important;
-    /* Center the plot */
-  }
+.leaflet-map-container > .shiny-html-output {
+  height: 100% !important;
 }
 
 /* Styles for the leaflet popup close button */
