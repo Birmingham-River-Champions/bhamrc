@@ -166,6 +166,7 @@ mod_03_plot_data_server <- function(id) {
       mapProxy <- leafletProxy("map")
 
       mapProxy |>
+        leaflet::clearPopups() |>
         clearMapLayers()
 
       if (selected_metric() == "Urban Riverfly") {
@@ -241,20 +242,6 @@ mod_03_plot_data_server <- function(id) {
         mapProxy |>
           showGroup("Water Quality points")
       }
-      # mapProxy |>
-      #   addLayersControl(
-      #     overlayGroups = c(
-      #       "Riverfly points",
-      #       "Invasive points",
-      #       "Other spp points",
-      #       "ARMI points",
-      #       "Water Quality points"
-      #     ),
-      #     options = layersControlOptions(
-      #       collapsed = FALSE,
-      #       position = "topright"
-      #     )
-      #   )
     }
 
     observeEvent(
@@ -270,6 +257,162 @@ mod_03_plot_data_server <- function(id) {
       },
       {
         updateMap(input, output, session)
+      },
+      ignoreInit = TRUE
+    )
+
+    # Adapt the performance branch's click-to-plot flow to main's preloaded
+    # site-split datasets: build only the selected site's plot after a click,
+    # rather than rendering a plot for every marker whenever the map updates.
+    observeEvent(
+      input$map_marker_click,
+      {
+        click <- input$map_marker_click
+        req(click$id)
+
+        # Marker IDs are sequential row indexes; guard against stale or invalid
+        # clicks before using the ID to subset the currently selected dataset.
+        marker_index <- suppressWarnings(as.integer(click$id))
+        req(
+          length(marker_index) == 1L,
+          !is.na(marker_index),
+          marker_index >= 1L
+        )
+
+        if (
+          selected_metric() == "Urban Riverfly" &&
+            selected_riverfly() %in% c("ARMI", "Urban Riverfly species")
+        ) {
+          # Preserve the popup sizing used by the existing map plots.
+          dimensions <- if (!is.null(screen_width()) && screen_width() <= 480) {
+            c(width = 300, height = 250)
+          } else if (!is.null(screen_width()) && screen_width() <= 768) {
+            c(width = 400, height = 275)
+          } else {
+            c(width = 600, height = 350)
+          }
+          title_wrap_width <- if (dimensions[["width"]] <= 300) {
+            37
+          } else if (dimensions[["width"]] <= 450) {
+            50
+          } else {
+            75
+          }
+
+          if (selected_riverfly() == "ARMI") {
+            # ARMI marker rows hold site IDs; the full dated observations are
+            # already split by site in Riverfly_ARMI_Popups.
+            req(marker_index <= nrow(riverflyARMIMap))
+            selected_marker <- riverflyARMIMap[marker_index, , drop = FALSE]
+            site_id <- selected_marker$sampling_site[[1]]
+            plot_data <- Riverfly_ARMI_Popups[[site_id]]
+            req(!is.null(plot_data), nrow(plot_data) > 0)
+
+            date_range <- range(plot_data$survey_date, na.rm = TRUE)
+            req(all(is.finite(as.numeric(date_range))))
+            # A single observation still needs a non-zero x-axis interval.
+            if (diff(date_range) == 0) {
+              date_range <- date_range + c(-15, 15)
+            }
+
+            organisation <- selected_marker$organisation[[1]]
+            if (
+              !organisation %in%
+                c(
+                  "Hall Green's Keepin' It Clean",
+                  "Birmingham Conservation Society"
+                )
+            ) {
+              organisation <- paste("the", organisation)
+            }
+
+            popup <- make_armi_popup(
+              row_data = plot_data,
+              breaks_vector = filter(plot_breaks, reading_type == "ARMI") |>
+                select(bin_breaks) |>
+                unlist(),
+              date_range = date_range,
+              title_text = paste0(
+                "ARMI score at ",
+                site_id,
+                ". Sampled by ",
+                organisation,
+                "."
+              ),
+              title_wrap_width = title_wrap_width,
+              width = dimensions[["width"]],
+              height = dimensions[["height"]]
+            )
+          } else {
+            # Species markers are drawn from the recent, NA-filtered subset, so
+            # use that same row order to find the site's complete time series.
+            selected_taxa <- names(which(
+              riverfly_spp_bw == selected_riverfly_species()
+            ))
+            req(length(selected_taxa) == 1L)
+            map_points <- Riverfly_Species_Plot_Recent[[selected_taxa]] |>
+              tidyr::drop_na()
+            req(marker_index <= nrow(map_points))
+
+            site_id <- map_points$sampling_site[[marker_index]]
+            plot_data <- Riverfly_Species_Plot[[
+              paste0(selected_taxa, ".", site_id)
+            ]]
+            req(!is.null(plot_data), nrow(plot_data) > 0)
+            # Missing abundance denotes a negative observation in these records.
+            plot_data <- plot_data |>
+              dplyr::mutate(abundance = tidyr::replace_na(abundance, 0))
+
+            date_range <- range(plot_data$survey_date, na.rm = TRUE)
+            req(all(is.finite(as.numeric(date_range))))
+            if (diff(date_range) == 0) {
+              date_range <- date_range + c(-15, 15)
+            }
+
+            taxa_common_name <- gsub(
+              "\\s*\\([^\\)]+\\)",
+              "",
+              riverfly_spp_bw[[selected_taxa]]
+            )
+            if (taxa_common_name == "Flat-bodied stone clinger mayfly") {
+              taxa_common_name <- "Stone clinger mayfly"
+            }
+
+            organisation <- plot_data$organisation[[1]]
+            if (
+              !organisation %in%
+                c(
+                  "Hall Green's Keepin' It Clean",
+                  "Birmingham Conservation Society"
+                )
+            ) {
+              organisation <- paste("the", organisation)
+            }
+
+            popup <- make_riverflySpecies_popup(
+              row_data = plot_data,
+              breaks_vector = c(-Inf, 0:4),
+              date_range = date_range,
+              title_text = paste0(
+                taxa_common_name,
+                " numbers at ",
+                site_id,
+                ". Sampled by ",
+                organisation,
+                "."
+              ),
+              title_wrap_width = title_wrap_width,
+              width = dimensions[["width"]],
+              height = dimensions[["height"]]
+            )
+          }
+
+          # Replace any previous click popup so only the newly selected plot is
+          # shown at the marker's coordinates.
+          leafletProxy("map") |>
+            leaflet::clearPopups() |>
+            leaflet::addPopups(lng = click$lng, lat = click$lat, popup = popup)
+        }
       },
       ignoreInit = TRUE
     )
