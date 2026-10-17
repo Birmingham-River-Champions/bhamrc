@@ -2,7 +2,8 @@
 #'
 #' Plot one site's ARMI observations for display in a Leaflet marker popup.
 #'
-#' @param row_data A data frame with `survey_date` and `ARMI` columns.
+#' @param row_data A data frame with `survey_date` and `ARMI`
+#' columns.
 #' @param breaks_vector Numeric interval breaks used to classify ARMI values.
 #' @param date_range The date limits to display on the x-axis.
 #' @param title_text Text to wrap and display as the plot title.
@@ -10,7 +11,8 @@
 #' @param width Popup plot width in pixels.
 #' @param height Popup plot height in pixels.
 #' @return A Leaflet popup graph widget.
-#' @importFrom ggplot2 aes element_text geom_point ggplot ggtitle scale_fill_manual scale_x_date scale_y_continuous theme theme_minimal xlab ylab
+#' @importFrom ggplot2 aes element_text geom_point ggplot ggtitle
+#' scale_fill_manual scale_x_date scale_y_continuous theme theme_minimal xlab ylab
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom stringr str_wrap
 #' @importFrom leafpop popupGraph
@@ -80,8 +82,8 @@ make_armi_popup <- function(
 
 #' Build a riverfly species popup plot
 #'
-#' Plot one site's riverfly abundance observations using the abundance
-#' categories shown in the map legend.
+#' Plot one site's riverfly abundance observations using
+#' the abundance categories shown in the map legend.
 #'
 #' @param row_data A data frame with `survey_date` and `abundance` columns.
 #' @param breaks_vector Numeric interval breaks for the abundance categories.
