@@ -47,34 +47,40 @@ mod_05_show_data_ui <- function(id) {
 # readable fallback for fields not yet listed in the display-name config.
 format_survey_table <- function(data, table) {
   data <- data |>
-    dplyr::select(-dplyr::any_of(c(
-      "id",
-      "timestamp",
-      "email_address"
-    ))) |>
+    dplyr::select(
+      -c(
+        id,
+        timestamp,
+        email_address
+      )
+    ) |>
     dplyr::mutate(
       survey_date = lubridate::dmy(survey_date)
     ) |>
     dplyr::arrange(dplyr::desc(survey_date))
 
-  labels <- vapply(names(data), function(column) {
-    table_labels <- column_names[[table]]
-    label_index <- match(column, names(table_labels))
-    label <- if (is.na(label_index)) NULL else table_labels[[label_index]]
-    if (is.null(label) && column == "participant_number") {
-      # The display-name config uses this legacy name for the same field.
-      label_index <- match("number_participants", names(table_labels))
-      if (!is.na(label_index)) {
-        label <- table_labels[[label_index]]
+  labels <- vapply(
+    names(data),
+    function(column) {
+      table_labels <- column_names[[table]]
+      label_index <- match(column, names(table_labels))
+      label <- if (is.na(label_index)) NULL else table_labels[[label_index]]
+      if (is.null(label) && column == "participant_number") {
+        # The display-name config uses this legacy name for the same field.
+        label_index <- match("number_participants", names(table_labels))
+        if (!is.na(label_index)) {
+          label <- table_labels[[label_index]]
+        }
       }
-    }
-    if (is.null(label)) {
-      label <- stringr::str_to_sentence(
-        stringr::str_replace_all(column, "_", " ")
-      )
-    }
-    as.character(label)
-  }, character(1))
+      if (is.null(label)) {
+        label <- stringr::str_to_sentence(
+          stringr::str_replace_all(column, "_", " ")
+        )
+      }
+      as.character(label)
+    },
+    character(1)
+  )
   names(data) <- labels
   data$.survey_table <- rep(table, nrow(data))
   data
@@ -93,13 +99,12 @@ filter_table_search <- function(data, search_term) {
   matching_rows <- rep(FALSE, nrow(data))
   for (column in data) {
     values <- as.character(column)
-    matching_rows <- matching_rows | (
-      !is.na(values) &
+    matching_rows <- matching_rows |
+      (!is.na(values) &
         stringr::str_detect(
           values,
           stringr::fixed(search_term, ignore_case = TRUE)
-        )
-    )
+        ))
   }
   data[matching_rows, , drop = FALSE]
 }
@@ -162,9 +167,9 @@ mod_05_show_data_server <- function(id) {
         dplyr::select(dplyr::all_of(all_columns))
     })
     download_data <- reactive({
-        data <- table_data() |>
-          dplyr::select(dplyr::all_of(visible_columns()))
-        filter_table_search(data, input$table_search)
+      data <- table_data() |>
+        dplyr::select(dplyr::all_of(visible_columns()))
+      filter_table_search(data, input$table_search)
     })
     visible_columns <- reactive({
       req(survey())
@@ -178,7 +183,8 @@ mod_05_show_data_server <- function(id) {
     initial_survey <- "riverfly"
     initially_hidden <- which(
       !all_columns %in% names(survey_data[[initial_survey]])
-    ) - 1L
+    ) -
+      1L
     output$entries <- DT::renderDT({
       options <- list(
         dom = "fript",
@@ -207,25 +213,33 @@ mod_05_show_data_server <- function(id) {
 
     # Reuse the existing widget as the selection changes. Keep the current
     # page where possible, and show only columns relevant to that survey.
-    observeEvent(survey(), {
-      DT::replaceData(
-        table_proxy,
-        table_data(),
-        resetPaging = FALSE,
-        clearSelection = "none"
-      )
-      shown <- which(all_columns %in% visible_columns())
-      hidden <- which(!all_columns %in% visible_columns())
-      DT::showCols(table_proxy, shown)
-      DT::hideCols(table_proxy, hidden)
-    }, ignoreInit = TRUE)
+    observeEvent(
+      survey(),
+      {
+        DT::replaceData(
+          table_proxy,
+          table_data(),
+          resetPaging = FALSE,
+          clearSelection = "none"
+        )
+        shown <- which(all_columns %in% visible_columns())
+        hidden <- which(!all_columns %in% visible_columns())
+        DT::showCols(table_proxy, shown)
+        DT::hideCols(table_proxy, hidden)
+      },
+      ignoreInit = TRUE
+    )
 
-    observeEvent(input$table_search, {
-      DT::updateSearch(
-        table_proxy,
-        keywords = list(global = input$table_search)
-      )
-    }, ignoreInit = TRUE)
+    observeEvent(
+      input$table_search,
+      {
+        DT::updateSearch(
+          table_proxy,
+          keywords = list(global = input$table_search)
+        )
+      },
+      ignoreInit = TRUE
+    )
 
     outputOptions(output, "entries", suspendWhenHidden = FALSE)
     output$table_name <- renderText(table_name())

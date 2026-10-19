@@ -294,7 +294,6 @@ mod_03_plot_data_server <- function(id) {
           } else {
             75
           }
-          browser()
           if (selected_riverfly() == "ARMI") {
             # ARMI marker rows hold site IDs; the full dated observations are
             # already split by site in Riverfly_ARMI_Popups.
