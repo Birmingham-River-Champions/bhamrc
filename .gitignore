@@ -16,4 +16,4 @@
 *.dcf
 .radian_profile
 data.sqlite
-.secrets
+*google_url.txt
