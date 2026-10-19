@@ -1,12 +1,14 @@
 #' Add Urban Riverfly species markers to the map.
 #' @param mapProxy A leaflet map proxy object.
-#' @param map_data A data frame containing the Urban Riverfly species data to be plotted on the map.
+#' @param map_data A data frame containing the Urban Riverfly species data to be
+#' plotted on the map.
 #' @param popup_data Retained for compatibility; plots are generated when map
 #'   markers are clicked.
 #' @param taxaType The specific Urban Riverfly species to filter and plot.
 #' @param screen_width Retained for compatibility; popup dimensions are
 #'   selected when a marker is clicked.
-#' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions pathOptions colorFactor
+#' @importFrom leaflet clearPopups clearGroup addCircleMarkers popupOptions
+#' pathOptions colorFactor
 #' @importFrom RColorBrewer brewer.pal
 addRiverflySpeciesMarkers <- function(
     mapProxy,
