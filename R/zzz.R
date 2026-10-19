@@ -3,12 +3,12 @@
 
     path <- system.file(
         "extdata",
-        "birminghamriverchampions-db5399f61d80.json",
+        "birminghamriverchampions-0baea860f08f.json",
         package = "bhamrc"
     )
 
     googlesheets4::gs4_auth(
-        path = path
+        #   path = path
     )
 
     if (!nzchar(path)) {
