@@ -6,9 +6,6 @@
 .DS_Store
 .quarto
 .secrets
-*.png
-*.pdf
-*.jpg
 *.tiff
 *.sr.lock
 *.vscode
