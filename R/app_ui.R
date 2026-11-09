@@ -98,10 +98,6 @@ app_ui <- function(request) {
           class = "welcome-text"
         ),
         tabPanel(
-          "Blossom",
-          mod_07_blossom_ui("07_blossom_1")
-        ),
-        tabPanel(
           "Information / resources",
           mod_04_information_ui("04_information_1")
         ),
@@ -122,6 +118,10 @@ app_ui <- function(request) {
           value = "submission_form",
           title = "Submit Data",
           mod_02_data_input_ui("02_data_input_1")
+        ),
+        tabPanel(
+          "Blossom",
+          mod_07_blossom_ui("07_blossom_1")
         )
       ),
       div(
