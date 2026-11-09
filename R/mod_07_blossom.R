@@ -12,18 +12,17 @@
 mod_07_blossom_ui <- function(id) {
   ns <- NS(id)
 
-  information_data <- yaml::read_yaml(
+  newsletter_data <- yaml::read_yaml(
     app_sys("app/www/text/blossom.yml")
-  )$information
+  )$newsletters
 
   tagList(
-    # Main Title (centered)
-    h1(id = "main-title", HTML("<b>Key information</b>")), # Using HTML() for bold text
     # Grid layout for left (summary) and right (news post)
     div(
-      id = "project-grid",
+      id = "newsletters",
+      #class = "project-grid",
       purrr::map(
-        information_data,
+        newsletter_data,
         ~ information_card(
           title = .x$title,
           description = .x$description,
