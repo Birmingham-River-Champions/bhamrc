@@ -20,15 +20,15 @@ mod_07_blossom_ui <- function(id) {
     # Grid layout for left (summary) and right (news post)
     div(
       id = "newsletters",
-      #class = "project-grid",
+      class = "project-grid",
       purrr::map(
         newsletter_data,
-        ~ information_card(
+        ~ newsletter_card(
           title = .x$title,
           description = .x$description,
           url = .x$url,
-          image_src = .x$image_src,
-          ns = ns
+          image_src = .x$image_src #,
+          #ns = ns
         )
       )
     )

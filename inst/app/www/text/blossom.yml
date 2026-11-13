@@ -3,9 +3,9 @@ newsletters:
     image_alt: "A polluting outfall discharging into a river"
     title: "Second community update on outfall pollution (November 2026)"
     description: "This latest update provides Outfall Safari results from several surface water outfalls along the parts of the River Cole and Sutton Park being monitored."
-    url: "window.open('www/forms/Community involvement in outfall pollution - second update.pdf', '_blank')"
+    url: 'www/forms/Community involvement in outfall pollution - second update.pdf'
   - image_src: "www/images/Person clipboard.jpg"
     image_alt: "A surveyor undertaking data collection next to a waterbody"
     title: "First community update on outfall pollution (July 2026)"
     description: "This community update provides an overview of pollution from surface water outfalls across the River Cole around Hall Green and Sutton Park, with specific details on water chemistry observations and legal processes related to resolving these issues highlighted."
-    url: "window.open('www/forms/Community involvement in outfall pollution - first update.pdf', '_blank')"
+    url: 'www/forms/Community involvement in outfall pollution - first update.pdf'
