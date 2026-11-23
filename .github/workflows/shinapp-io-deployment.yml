@@ -23,8 +23,11 @@ jobs:
           r-version: '4.6.1'
 
       - name: Install terra
+        env:
+          RSPM: https://packagemanager.posit.co/cran/__linux__/noble/latest
         run: |
-          Rscript -e 'install.packages("terra", repos="https://cloud.r-project.org")'
+          install.packages("terra", repos = Sys.getenv("RSPM"))
+        shell: Rscript {0}
 
       - name: Install renv
         run: install.packages("renv")
@@ -52,9 +55,16 @@ jobs:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           DEPLOY_URL: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_URL || secrets.DEV_URL }}
 
-      - name: Install rsconnect requirements
-        run: install.packages(c("rsconnect", "desc"))
+      # Install deployment-only packages outside the project library, so they do not
+      # make the restored project library differ from renv.lock.
+      - name: Install deployment tools
+        env:
+          R_TOOLS_LIB: ${{ runner.temp }}/r-tools
+        run: |
+          dir.create(Sys.getenv("R_TOOLS_LIB"), recursive = TRUE, showWarnings = FALSE)
+          install.packages(c("rsconnect", "desc"), lib = Sys.getenv("R_TOOLS_LIB"))
         shell: Rscript {0}
+
 
       - name: Deploy to shinyapps.io
         env:
