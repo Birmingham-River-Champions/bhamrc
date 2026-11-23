@@ -66,27 +66,28 @@ column_names <- list(
     "riverfly" = c(
         organisation = "Organisation",
         survey_date = "Survey Date",
+        number_participants = "Number of participants",
         data_type = "Data Type",
         sampling_site = "Sampling Site",
         riverfly_spp_bw,
         other_spp_bw,
         unspecified_bw,
         names_of_other_taxa = "Names of Other Taxa",
-        other_urban_riverfly = "Other Urban Riverfly Comments",
-        number_participants = "Number of participants"
+        other_urban_riverfly = "Other Urban Riverfly Comments"
     ),
     "water_quality" = c(
         organisation = "Organisation",
         survey_date = "Survey Date",
+        number_participants = "Number of participants",
         data_type = "Data Type",
         sampling_site = "Sampling Site",
         water_quality_bw,
-        other_water_quality = "Other Water Quality Comments",
-        number_participants = "Number of participants"
+        other_water_quality = "Other Water Quality Comments"
     ),
     "invasive_species" = c(
         organisation = "Organisation",
         survey_date = "Survey Date",
+        number_participants = "Number of participants",
         data_type = "Data Type",
         invasive_spp_sampling_date = "Invasive Species Sampling Date",
         sampling_site = "Sampling Site",
@@ -96,12 +97,12 @@ column_names <- list(
         himalayan_balsam = "Himalayan Balsam Prevalence",
         japanese_knotweed = "Japanese Knotweed Prevalence",
         giant_hogweed = "Giant Hogweed Prevalence",
-        any_other_invasive_spp = "Any Other Invasive Species",
-        number_participants = "Number of participants"
+        any_other_invasive_spp = "Any Other Invasive Species"
     ),
     "outfall_safari" = c(
         organisation = "Organisation",
         survey_date = "Survey Date",
+        participant_number = "Number of participants",
         data_type = "Data Type",
         outfall_survey_date = "Outfall Survey Date",
         sampling_site = "Sampling Site",
@@ -109,8 +110,7 @@ column_names <- list(
         outfall_flow = "Outfall Flow",
         outfall_pollution_distance = "Outfall Pollution Distance",
         outfall_aesthetics = "Outfall Aesthetics",
-        other_pollution_description = "Other Pollution Description",
-        participant_number = "Number of participants"
+        other_pollution_description = "Other Pollution Description"
     )
 )
 

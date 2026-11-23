@@ -64,10 +64,15 @@ mod_05_show_data_server <- function(id) {
           con,
           survey()
         ) |>
-          select(-id, -timestamp, -email_address) |>
+          select(
+            -id,
+            -timestamp,
+            -email_address
+          ) |>
           mutate(survey_date = lubridate::dmy(survey_date)) |>
           arrange(desc(survey_date)) |>
-          stats::setNames(column_names[[survey()]])
+          stats::setNames(column_names[[survey()]]) |>
+          select(-`Number of participants`, -`Data Type`)
       }
     )
 
